@@ -1,0 +1,16 @@
+.splash {
+  font-weight: 900;
+  margin: 10% 3rem;
+  opacity: 0.25;
+  text-align: center;
+}
+
+.splash h1 {
+  font-size: 3em;
+  line-height: 1.25;
+  opacity: 0.5;
+}
+
+.splash p {
+  font-size: 1em;
+}

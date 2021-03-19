@@ -1,0 +1,24 @@
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  height: 100%;
+}
+
+.form textarea {
+  background-color: white;
+  border-radius: 4px;
+  border: 2px solid;
+  display: block;
+  padding: 0.75rem;
+  width: 100%;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.item {
+}

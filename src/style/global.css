@@ -1,0 +1,12 @@
+@import "resetize";
+
+html {
+  background-color: #ebebeb;
+  color: #333;
+  font-family: Sora, sans-serif;
+  font-size: 14px;
+}
+
+button {
+  cursor: pointer;
+}

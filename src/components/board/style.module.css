@@ -1,0 +1,11 @@
+.board {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 2px hsla(0, 0%, 0%, 0.125);
+  display: grid;
+  gap: 1.5rem;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  padding: 1.5rem;
+  min-height: 40rem;
+}
