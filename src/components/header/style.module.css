@@ -2,12 +2,13 @@
   align-items: center;
   display: flex;
   justify-content: space-between;
-  padding: 3rem 3rem 0.75rem;
+  padding: 7% 3rem 0.75rem;
 }
 
 .brand {
   font-size: 2em;
   font-weight: 900;
+  line-height: 1;
 }
 
 .menu {
