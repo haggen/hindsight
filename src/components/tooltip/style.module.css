@@ -8,8 +8,8 @@
   max-width: 24ch;
   padding: 0.25rem 0.75rem;
   text-align: center;
-  transition-property: opacity, visibility;
   transition: none 0.125s ease-in-out;
+  transition-property: opacity, visibility;
   width: max-content;
   z-index: 10;
 }
@@ -34,11 +34,11 @@
 }
 
 .arrow.right {
-  right: calc(100% - 1px);
+  right: calc(100% - 3px);
 }
 
 .arrow.left {
-  left: calc(100% - 1px);
+  left: calc(100% - 3px);
 }
 
 .arrow svg {

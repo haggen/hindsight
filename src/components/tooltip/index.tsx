@@ -1,8 +1,7 @@
 import {
-  Children,
-  cloneElement,
-  ReactElement,
+  createContext,
   ReactNode,
+  useContext,
   useEffect,
   useRef,
   useState,
@@ -14,40 +13,56 @@ import { usePopper } from "react-popper";
 
 import style from "./style.module.css";
 
-const { setTimeout } = window;
-
-type Props = {
-  children: ReactElement;
-  text: ReactNode;
-  trigger?: "hover" | "click";
-  timeout?: number;
-  placement?: Placement;
-  offset?: number;
+type Config = {
+  active: boolean;
+  element: unknown;
+  text: string;
+  placement: Placement;
+  offset: number;
 };
 
-export const Tooltip = ({
-  trigger = "hover",
-  text,
-  children,
-  timeout = 250,
-  placement = "auto",
-  offset = 10,
-}: Props) => {
-  const [active, setActive] = useState(false);
-  const timeoutRef = useRef(0);
+const initialConfig: Config = {
+  active: false,
+  element: null,
+  text: "",
+  placement: "auto",
+  offset: 10,
+};
+
+type TooltipContext = {
+  config: Config;
+  open: <T extends HTMLElement>(
+    element: T,
+    text: string,
+    opts?: Partial<Config>
+  ) => void;
+  close: () => void;
+};
+
+const Context = createContext<TooltipContext>({
+  config: initialConfig,
+  open: () => undefined,
+  close: () => undefined,
+});
+
+type Props = {
+  children: ReactNode;
+};
+
+export const Provider = ({ children }: Props) => {
+  const [config, setConfig] = useState(initialConfig);
   const arrowRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const { state, styles, attributes, update } = usePopper(
-    triggerRef.current,
+    config.element as HTMLElement,
     tooltipRef.current,
     {
-      placement,
+      placement: config.placement,
       modifiers: [
         {
           name: "offset",
           options: {
-            offset: [0, offset],
+            offset: [0, config.offset],
           },
         },
         {
@@ -62,53 +77,46 @@ export const Tooltip = ({
 
   useEffect(() => {
     update?.();
-  }, [active, update]);
+  }, [config, update]);
 
-  useEffect(() => {
-    return () => {
-      clearTimeout(timeoutRef.current);
-    };
-  }, []);
-
-  const onClick = () => {
-    if (trigger === "click") {
-      setActive(true);
-    }
+  const open = <T extends HTMLElement>(
+    element: T,
+    text: string,
+    opts?: Partial<Config>
+  ) => {
+    setConfig((config: any) => ({
+      ...config,
+      active: true,
+      element,
+      text,
+      ...opts,
+    }));
   };
 
-  const onMouseEnter = () => {
-    if (trigger === "hover") {
-      setActive(true);
-    }
-    clearTimeout(timeoutRef.current);
+  const close = () => {
+    setConfig((config) => ({ ...config, active: false }));
   };
-
-  const onMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => {
-      setActive(false);
-    }, timeout);
-  };
-
-  const child = Children.only(children);
 
   return (
-    <>
+    <Context.Provider value={{ config, open, close }}>
+      {children}
+
       {createPortal(
         <div
           key="tooltip"
           ref={tooltipRef}
           className={c(style.tooltip, state ? style[state.placement] : null, {
-            [style.active]: active,
+            [style.active]: config.active,
           })}
           style={styles.popper}
           {...attributes.popper}
         >
-          {text}
+          {config.text}
 
           <div
             ref={arrowRef}
             className={c(style.arrow, state ? style[state.placement] : null, {
-              [style.active]: active,
+              [style.active]: config.active,
             })}
             style={styles.arrow}
             {...attributes.arrow}
@@ -120,21 +128,10 @@ export const Tooltip = ({
         </div>,
         document.body
       )}
-      {cloneElement(child, {
-        ref: triggerRef,
-        onClick: (e: Event) => {
-          onClick();
-          child.props.onClick?.(e);
-        },
-        onMouseEnter: (e: Event) => {
-          onMouseEnter();
-          child.props.onMouseEnter?.(e);
-        },
-        onMouseLeave: (e: Event) => {
-          onMouseLeave();
-          child.props.onMouseLeave?.(e);
-        },
-      })}
-    </>
+    </Context.Provider>
   );
+};
+
+export const useTooltip = () => {
+  return useContext(Context);
 };
