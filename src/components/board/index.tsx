@@ -2,6 +2,10 @@ import { useEffect } from "react";
 
 import { Column } from "src/components/column";
 import { useBoard } from "src/lib/board";
+import {
+  getLocalStorageInitializer,
+  useLocalStorageEffect,
+} from "src/lib/local-storage";
 
 import style from "./style.module.css";
 
@@ -11,21 +15,18 @@ type Props = {
 
 export const Board = ({ id }: Props) => {
   const [state, dispatch] = useBoard();
-  const { columns } = state;
   const key = `board-${id}`;
 
   useEffect(() => {
-    const item = localStorage.getItem(key);
-    dispatch({ type: "reset", state: item ? JSON.parse(item) : undefined });
+    const initialize = getLocalStorageInitializer(key);
+    dispatch({ type: "reset", state: initialize(undefined) });
   }, [key, dispatch]);
 
-  useEffect(() => {
-    localStorage.setItem(key, JSON.stringify(state));
-  }, [key, state]);
+  useLocalStorageEffect(key, state);
 
   return (
     <div className={style.board}>
-      {columns.map(({ id }) => (
+      {state.columns.map(({ id }) => (
         <Column key={id} id={id} />
       ))}
     </div>

@@ -1,16 +1,7 @@
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, ReactNode, useContext } from "react";
 import { nanoid } from "nanoid";
 
-import {
-  getLocalStorageInitializer,
-  useLocalStorageEffect,
-} from "src/lib/local-storage";
+import { useStoredState } from "src/lib/local-storage";
 
 const Context = createContext({
   id: "",
@@ -23,15 +14,7 @@ type Props = {
 const key = "current-user";
 
 export const Provider = ({ children }: Props) => {
-  const [id, setId] = useState(getLocalStorageInitializer(key));
-
-  useEffect(() => {
-    if (!id) {
-      setId(nanoid());
-    }
-  }, [id, setId]);
-
-  useLocalStorageEffect(key, id);
+  const [id] = useStoredState(key, () => nanoid());
 
   return <Context.Provider value={{ id }}>{children}</Context.Provider>;
 };
