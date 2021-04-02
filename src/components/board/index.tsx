@@ -15,13 +15,11 @@ export const Board = ({ id }: Props) => {
   const key = `board-${id}`;
 
   useEffect(() => {
-    console.log("load data", key);
     const item = localStorage.getItem(key);
     dispatch({ type: "reset", state: item ? JSON.parse(item) : undefined });
   }, [key, dispatch]);
 
   useEffect(() => {
-    console.log("save data", key);
     localStorage.setItem(key, JSON.stringify(state));
   }, [key, state]);
 
