@@ -3,6 +3,7 @@ import copy from "copy-to-clipboard";
 import { useBoard } from "src/lib/board";
 import { confirm } from "src/lib/confirm";
 import { Link } from "wouter";
+import { Tooltip } from "src/components/tooltip";
 
 import style from "./style.module.css";
 
@@ -23,15 +24,19 @@ export const Header = () => {
 
   return (
     <header className={style.header}>
-      <h1 className={style.brand}>
-        <Link href="/">
-          <a href=".">Hindsight</a>
-        </Link>
-      </h1>
+      <Tooltip text="Go to a new board." placement="top">
+        <h1 className={style.brand}>
+          <Link href="/">
+            <a href=".">Hindsight</a>
+          </Link>
+        </h1>
+      </Tooltip>
 
       <ul className={style.menu}>
         <li>
-          <button onClick={onShare}>Share</button>
+          <Tooltip text="Copy this board's link." placement="top">
+            <button onClick={onShare}>Share</button>
+          </Tooltip>
         </li>
         <li>
           <button onClick={onClear}>Clear</button>
