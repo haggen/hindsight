@@ -1,3 +1,5 @@
+import { Button } from "src/components/button";
+
 import style from "./style.module.css";
 
 export const Footer = () => {
@@ -7,31 +9,34 @@ export const Footer = () => {
 
       <ul className={style.menu}>
         <li>
-          <a
+          <Button
+            tag="a"
             href="https://github.com/haggen/hindsight"
             target="_blank"
             rel="noreferrer"
           >
             Source
-          </a>
+          </Button>
         </li>
         <li>
-          <a
+          <Button
+            tag="a"
             href="https://github.com/haggen/hindsight/issues"
             target="_blank"
             rel="noreferrer"
           >
             Feedback
-          </a>
+          </Button>
         </li>
         <li>
-          <a
+          <Button
+            tag="a"
             href="https://github.com/haggen/hindsight/discussions"
             target="_blank"
             rel="noreferrer"
           >
             Help
-          </a>
+          </Button>
         </li>
       </ul>
     </footer>

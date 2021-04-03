@@ -8,6 +8,5 @@
 
 .menu {
   display: flex;
-  font-weight: 700;
   gap: 1.5rem;
 }

@@ -1,0 +1,10 @@
+.button {
+  display: inline-block;
+  font-weight: 700;
+  transition: none 0.125s ease-in-out;
+  transition-property: color, text-shadow;
+}
+
+.button:hover {
+  color: gray;
+}

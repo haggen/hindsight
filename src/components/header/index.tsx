@@ -7,6 +7,7 @@ import { useTooltip } from "src/components/tooltip";
 
 import style from "./style.module.css";
 import { useRef } from "react";
+import { Button } from "../button";
 
 const { location } = window;
 
@@ -31,9 +32,9 @@ const Brand = () => {
       onMouseLeave={onMouseLeave}
     >
       <Link href="/">
-        <a ref={anchorRef} href="-">
+        <Button tag="a" ref={anchorRef}>
           Hindsight
-        </a>
+        </Button>
       </Link>
     </h1>
   );
@@ -58,14 +59,15 @@ const Share = () => {
   };
 
   return (
-    <button
+    <Button
+      tag="button"
       ref={buttonRef}
       onClick={onShare}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
       Share
-    </button>
+    </Button>
   );
 };
 
@@ -87,10 +89,12 @@ export const Header = () => {
           <Share />
         </li>
         <li>
-          <button onClick={onClear}>Clear</button>
+          <Button tag="button" onClick={onClear}>
+            Clear
+          </Button>
         </li>
         <li>
-          <button>Export</button>
+          <Button tag="button">Export</Button>
         </li>
       </ul>
     </header>

@@ -3,6 +3,7 @@ import c from "classnames";
 import { useBoard } from "src/lib/board";
 import { confirm } from "src/lib/confirm";
 import { useCurrentUser } from "src/lib/current-user";
+import { Button } from "src/components/button";
 
 import style from "./style.module.css";
 
@@ -38,12 +39,14 @@ export const Card = ({ id, color }: CardProps) => {
       <span className={style.content}>{card.content}</span>
       <ul className={style.toolbar}>
         <li>
-          <button onClick={onToggleVote}>
+          <Button tag="button" onClick={onToggleVote}>
             {isVoted ? "Unvote" : "Vote"} ({card.voters.length})
-          </button>
+          </Button>
         </li>
         <li>
-          <button onClick={onRemove}>Delete</button>
+          <Button tag="button" onClick={onRemove}>
+            Delete
+          </Button>
         </li>
       </ul>
     </div>
