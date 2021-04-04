@@ -5,10 +5,8 @@ type Props<T extends keyof JSX.IntrinsicElements> = {
   tag: T;
 } & JSX.IntrinsicElements[T];
 
-type Tags = "a" | "button";
-
-export const Button = forwardRef(
-  <T extends Tags>({ tag: Tag, ...props }: Props<T>, ref: unknown) => {
-    return <Tag ref={ref} className={style.button} {...(props as any)} />;
+export const Button = forwardRef<HTMLElement, any>(
+  ({ tag: Tag, ...props }, ref) => {
+    return <Tag ref={ref} className={style.button} {...props} />;
   }
-);
+) as <T extends "a" | "button">(props: Props<T>) => JSX.Element;
