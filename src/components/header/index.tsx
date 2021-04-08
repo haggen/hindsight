@@ -1,13 +1,13 @@
+import { useRef } from "react";
+import { Link } from "wouter";
 import copy from "copy-to-clipboard";
 
 import { useBoard } from "src/lib/board";
 import { confirm } from "src/lib/confirm";
-import { Link } from "wouter";
 import { useTooltip } from "src/components/tooltip";
+import { Button } from "src/components/button";
 
 import style from "./style.module.css";
-import { useRef } from "react";
-import { Button } from "../button";
 
 const { location } = window;
 
@@ -72,11 +72,11 @@ const Share = () => {
 };
 
 export const Header = () => {
-  const [, dispatch] = useBoard();
+  const { dispatch } = useBoard();
 
   const onClear = () => {
     if (confirm("Are you sure?")) {
-      dispatch({ type: "reset" });
+      dispatch({ type: "clear" });
     }
   };
 

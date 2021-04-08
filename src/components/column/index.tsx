@@ -11,7 +11,7 @@ type ColumnProps = {
 };
 
 export const Column = ({ id }: ColumnProps) => {
-  const [state, dispatch] = useBoard();
+  const { state, dispatch } = useBoard();
 
   const { cards, column } = {
     column: state.columns.find((column) => column.id === id),

@@ -4,15 +4,26 @@ import {
   Dispatch,
   ReactNode,
   useContext,
+  useEffect,
+  useState,
+  SetStateAction,
 } from "react";
 import { nanoid } from "nanoid";
 import update from "immutability-helper";
 
-const reset = (
-  _: BoardState,
-  action: { type: "reset"; state?: BoardState }
+const load = (
+  state: BoardState,
+  action: { type: "load"; state: BoardState }
 ) => {
-  return action.state ?? initialState;
+  return action.state;
+};
+
+const clear = (state: BoardState, action: { type: "clear" }) => {
+  return update(state, {
+    cards: {
+      $set: [],
+    },
+  });
 };
 
 const push = (
@@ -73,15 +84,19 @@ const toggleVote = (
 };
 
 type Action =
-  | Parameters<typeof reset>[1]
+  | Parameters<typeof load>[1]
+  | Parameters<typeof clear>[1]
   | Parameters<typeof push>[1]
   | Parameters<typeof remove>[1]
   | Parameters<typeof toggleVote>[1];
 
 const reducer = (state: BoardState, action: Action) => {
+  console.log(action);
   switch (action.type) {
-    case "reset":
-      return reset(state, action);
+    case "load":
+      return load(state, action);
+    case "clear":
+      return clear(state, action);
     case "push":
       return push(state, action);
     case "remove":
@@ -117,18 +132,51 @@ const initialState: BoardState = {
   cards: [],
 };
 
-type BoardContext = [BoardState, Dispatch<Action>];
+type BoardContext = {
+  id: string;
+  setId: Dispatch<SetStateAction<string>>;
+  state: BoardState;
+  dispatch: Dispatch<Action>;
+};
 
-const Context = createContext<BoardContext>([initialState, () => undefined]);
+const Context = createContext<BoardContext>({
+  id: "",
+  setId: () => undefined,
+  state: initialState,
+  dispatch: () => undefined,
+});
 
 type Props = {
   children: ReactNode;
 };
 
 export const Provider = ({ children }: Props) => {
-  const context = useReducer(reducer, initialState);
+  const [id, setId] = useState("");
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  return <Context.Provider value={context}>{children}</Context.Provider>;
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+
+    const item = localStorage.getItem(id);
+
+    dispatch({ type: "load", state: item ? JSON.parse(item) : initialState });
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+
+    localStorage.setItem(id, JSON.stringify(state));
+  }, [id, state]);
+
+  return (
+    <Context.Provider value={{ id, setId, state, dispatch }}>
+      {children}
+    </Context.Provider>
+  );
 };
 
 export const useBoard = () => {

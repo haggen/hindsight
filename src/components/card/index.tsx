@@ -14,7 +14,10 @@ type CardProps = {
 
 export const Card = ({ id, color }: CardProps) => {
   const { id: currentUserId } = useCurrentUser();
-  const [{ cards }, dispatch] = useBoard();
+  const {
+    state: { cards },
+    dispatch,
+  } = useBoard();
 
   const card = cards.find((card) => card.id === id);
 
