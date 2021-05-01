@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { Link } from "wouter";
 import copy from "copy-to-clipboard";
 
-import { useBoard } from "src/lib/board";
+import { useBoard } from "src/components/board/state";
 import { confirm } from "src/lib/confirm";
 import { useTooltip } from "src/components/tooltip";
 import { Button } from "src/components/button";
@@ -72,7 +72,7 @@ const Share = () => {
 };
 
 export const Header = () => {
-  const { dispatch } = useBoard();
+  const [,dispatch] = useBoard();
 
   const onClear = () => {
     if (confirm("Are you sure?")) {

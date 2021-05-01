@@ -2,7 +2,7 @@ import { nanoid } from "nanoid";
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 
-export const Home = () => {
+export const Start = () => {
   const [, setLocation] = useLocation();
 
   useEffect(() => {

@@ -1,8 +1,8 @@
 import c from "classnames";
 
-import { useBoard } from "src/lib/board";
+import { useBoard } from "src/components/board/state";
 import { confirm } from "src/lib/confirm";
-import { useCurrentUser } from "src/lib/current-user";
+import { useProfile } from "src/components/profile";
 import { Button } from "src/components/button";
 
 import style from "./style.module.css";
@@ -13,11 +13,8 @@ type CardProps = {
 };
 
 export const Card = ({ id, color }: CardProps) => {
-  const { id: currentUserId } = useCurrentUser();
-  const {
-    state: { cards },
-    dispatch,
-  } = useBoard();
+  const { id: currentUserId } = useProfile();
+  const [{ cards }, dispatch] = useBoard();
 
   const card = cards.find((card) => card.id === id);
 
@@ -28,7 +25,7 @@ export const Card = ({ id, color }: CardProps) => {
   const isVoted = card.voters.includes(currentUserId);
 
   const onToggleVote = () => {
-    dispatch({ type: "toggleVote", cardId: id, author: currentUserId });
+    dispatch({ type: "vote", cardId: id, author: currentUserId });
   };
 
   const onRemove = () => {

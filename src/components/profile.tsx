@@ -11,7 +11,7 @@ type Props = {
   children: ReactNode;
 };
 
-const key = "current-user";
+const key = "profile";
 
 export const Provider = ({ children }: Props) => {
   const [id] = useStoredState(key, () => nanoid());
@@ -19,6 +19,6 @@ export const Provider = ({ children }: Props) => {
   return <Context.Provider value={{ id }}>{children}</Context.Provider>;
 };
 
-export const useCurrentUser = () => {
+export const useProfile = () => {
   return useContext(Context);
 };

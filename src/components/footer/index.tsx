@@ -15,27 +15,7 @@ export const Footer = () => {
             target="_blank"
             rel="noreferrer"
           >
-            Source
-          </Button>
-        </li>
-        <li>
-          <Button
-            tag="a"
-            href="https://github.com/haggen/hindsight/issues"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Feedback
-          </Button>
-        </li>
-        <li>
-          <Button
-            tag="a"
-            href="https://github.com/haggen/hindsight/discussions"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Help
+            Code, feedback and support on GitHub.
           </Button>
         </li>
       </ul>

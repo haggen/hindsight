@@ -4,17 +4,17 @@ import {
   Dispatch,
   ReactNode,
   useContext,
-  useEffect,
-  useState,
-  SetStateAction,
 } from "react";
 import { nanoid } from "nanoid";
 import update from "immutability-helper";
 
 const load = (
-  state: BoardState,
-  action: { type: "load"; state: BoardState }
+  _: BoardState,
+  action: { type: "load"; id: string } | { type: "load"; state: BoardState }
 ) => {
+  if ("id" in action) {
+    return getInitialState(action.id);
+  }
   return action.state;
 };
 
@@ -55,10 +55,10 @@ const remove = (
   });
 };
 
-const toggleVote = (
+const vote = (
   state: BoardState,
   action: {
-    type: "toggleVote";
+    type: "vote";
     cardId: string;
     author: string;
   }
@@ -88,10 +88,11 @@ type Action =
   | Parameters<typeof clear>[1]
   | Parameters<typeof push>[1]
   | Parameters<typeof remove>[1]
-  | Parameters<typeof toggleVote>[1];
+  | Parameters<typeof vote>[1];
 
 const reducer = (state: BoardState, action: Action) => {
   console.log(action);
+
   switch (action.type) {
     case "load":
       return load(state, action);
@@ -101,8 +102,8 @@ const reducer = (state: BoardState, action: Action) => {
       return push(state, action);
     case "remove":
       return remove(state, action);
-    case "toggleVote":
-      return toggleVote(state, action);
+    case "vote":
+      return vote(state, action);
     default:
       console.warn("Unknwon action", action);
       return state;
@@ -110,6 +111,7 @@ const reducer = (state: BoardState, action: Action) => {
 };
 
 type BoardState = {
+  id: string;
   cards: {
     id: string;
     columnId: string;
@@ -123,60 +125,35 @@ type BoardState = {
   }[];
 };
 
-const initialState: BoardState = {
-  columns: [
-    { id: nanoid(), title: "What went well?", color: "green" },
-    { id: nanoid(), title: "What could be improved?", color: "yellow" },
-    { id: nanoid(), title: "What should be done?", color: "blue" },
-  ],
-  cards: [],
+export const getInitialState = (id: string = ""): BoardState => {
+  return {
+    id,
+    columns: [
+      { id: nanoid(), title: "What went well?", color: "green" },
+      { id: nanoid(), title: "What could be improved?", color: "yellow" },
+      { id: nanoid(), title: "What should be done?", color: "blue" },
+    ],
+    cards: [],
+  };
 };
 
-type BoardContext = {
-  id: string;
-  setId: Dispatch<SetStateAction<string>>;
-  state: BoardState;
-  dispatch: Dispatch<Action>;
-};
+type BoardContext = [BoardState, Dispatch<Action>];
 
-const Context = createContext<BoardContext>({
-  id: "",
-  setId: () => undefined,
-  state: initialState,
-  dispatch: () => undefined,
-});
+const Context = createContext<BoardContext>([
+  getInitialState(),
+  () => undefined,
+]);
 
 type Props = {
   children: ReactNode;
 };
 
 export const Provider = ({ children }: Props) => {
-  const [id, setId] = useState("");
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const value = useReducer(reducer, getInitialState());
 
-  useEffect(() => {
-    if (!id) {
-      return;
-    }
+  console.debug("BoardProvider rendered");
 
-    const item = localStorage.getItem(id);
-
-    dispatch({ type: "load", state: item ? JSON.parse(item) : initialState });
-  }, [id]);
-
-  useEffect(() => {
-    if (!id) {
-      return;
-    }
-
-    localStorage.setItem(id, JSON.stringify(state));
-  }, [id, state]);
-
-  return (
-    <Context.Provider value={{ id, setId, state, dispatch }}>
-      {children}
-    </Context.Provider>
-  );
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
 export const useBoard = () => {

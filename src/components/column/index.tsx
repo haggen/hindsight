@@ -2,7 +2,7 @@ import { FormEvent, KeyboardEvent } from "react";
 
 import { Card } from "src/components/card";
 import { Splash } from "src/components/splash";
-import { useBoard } from "src/lib/board";
+import { useBoard } from "src/components/board/state";
 
 import style from "./style.module.css";
 
@@ -11,7 +11,7 @@ type ColumnProps = {
 };
 
 export const Column = ({ id }: ColumnProps) => {
-  const { state, dispatch } = useBoard();
+  const [state, dispatch] = useBoard();
 
   const { cards, column } = {
     column: state.columns.find((column) => column.id === id),
