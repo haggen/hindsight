@@ -1,4 +1,4 @@
-import { combineReducers, createStore } from "redux";
+import { applyMiddleware, combineReducers, createStore } from "redux";
 import {
   TypedUseSelectorHook,
   useDispatch as _useDispatch,
@@ -9,6 +9,7 @@ import { profile } from "src/store/reducers/profile";
 import { board } from "src/store/reducers/board";
 import { cards } from "src/store/reducers/cards";
 import { columns } from "src/store/reducers/columns";
+import { storage } from "src/store/middlewares/storage";
 
 const reducer = combineReducers({
   profile,
@@ -17,13 +18,11 @@ const reducer = combineReducers({
   columns,
 });
 
-export const store = createStore(
-  reducer,
-  (window as any)["__REDUX_DEVTOOLS_EXTENSION__"]?.()
-);
+export const store = createStore(reducer, applyMiddleware(storage));
 
-export type State = ReturnType<typeof store.getState>;
-export type Dispatch = typeof store.dispatch;
+export type Store = typeof store;
+export type State = ReturnType<Store["getState"]>;
+export type Dispatch = Store["dispatch"];
 
 export const useDispatch = () => _useDispatch<Dispatch>();
 export const useSelector: TypedUseSelectorHook<State> = _useSelector;
