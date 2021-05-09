@@ -1,54 +1,51 @@
 import c from "classnames";
 
-import { useBoard } from "src/components/board/state";
 import { confirm } from "src/lib/confirm";
-import { useProfile } from "src/components/profile";
 import { Button } from "src/components/button";
+import { useCard, useProfile, useDispatch } from "src/store";
 
 import style from "./style.module.css";
 
 type CardProps = {
   id: string;
-  color: string;
 };
 
-export const Card = ({ id, color }: CardProps) => {
-  const { id: currentUserId } = useProfile();
-  const [{ cards }, dispatch] = useBoard();
-
-  const card = cards.find((card) => card.id === id);
+export const Card = ({ id }: CardProps) => {
+  const { id: profileId } = useProfile();
+  const card = useCard(id);
+  const dispatch = useDispatch();
 
   if (!card) {
-    return <>Card "${id}" not found</>;
+    throw new Error(`Card '${id}' not found`);
   }
 
-  const isVoted = card.voters.includes(currentUserId);
+  const isVoted = card.voterIds.includes(profileId);
 
-  const onToggleVote = () => {
-    dispatch({ type: "vote", cardId: id, author: currentUserId });
+  const onVote = () => {
+    dispatch({ type: "cards/vote", payload: { id, voterId: profileId } });
   };
 
-  const onRemove = () => {
+  const onDelete = () => {
     if (confirm("Are you sure?")) {
-      dispatch({ type: "remove", cardId: id });
+      dispatch({ type: "cards/delete", payload: { id } });
     }
   };
 
   return (
-    <div className={c(style.card, style[color])}>
-      <span className={style.content}>{card.content}</span>
+    <article className={c(style.card, style[card.color])}>
+      <span className={style.content}>{card.text}</span>
       <ul className={style.toolbar}>
         <li>
-          <Button tag="button" onClick={onToggleVote}>
-            {isVoted ? "Unvote" : "Vote"} ({card.voters.length})
+          <Button tag="button" onClick={onVote}>
+            {isVoted ? "Unvote" : "Vote"} ({card.voterIds.length})
           </Button>
         </li>
         <li>
-          <Button tag="button" onClick={onRemove}>
+          <Button tag="button" onClick={onDelete}>
             Delete
           </Button>
         </li>
       </ul>
-    </div>
+    </article>
   );
 };

@@ -2,12 +2,12 @@ import { useRef } from "react";
 import { Link } from "wouter";
 import copy from "copy-to-clipboard";
 
-import { useBoard } from "src/components/board/state";
 import { confirm } from "src/lib/confirm";
 import { useTooltip } from "src/components/tooltip";
 import { Button } from "src/components/button";
 
 import style from "./style.module.css";
+import { useDispatch } from "src/store";
 
 const { location } = window;
 
@@ -72,11 +72,11 @@ const Share = () => {
 };
 
 export const Header = () => {
-  const [,dispatch] = useBoard();
+  const dispatch = useDispatch();
 
   const onClear = () => {
     if (confirm("Are you sure?")) {
-      dispatch({ type: "clear" });
+      dispatch({ type: "board/clear" });
     }
   };
 

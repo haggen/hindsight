@@ -1,8 +1,9 @@
+import { nanoid } from "nanoid";
 import { FormEvent, KeyboardEvent } from "react";
 
 import { Card } from "src/components/card";
 import { Splash } from "src/components/splash";
-import { useBoard } from "src/components/board/state";
+import { useCards, useColumn, useDispatch } from "src/store";
 
 import style from "./style.module.css";
 
@@ -11,15 +12,12 @@ type ColumnProps = {
 };
 
 export const Column = ({ id }: ColumnProps) => {
-  const [state, dispatch] = useBoard();
-
-  const { cards, column } = {
-    column: state.columns.find((column) => column.id === id),
-    cards: state.cards.filter((card) => card.columnId === id),
-  };
+  const column = useColumn(id);
+  const cards = useCards(id);
+  const dispatch = useDispatch();
 
   if (!column) {
-    return null;
+    throw new Error(`Column '${id}' not found`);
   }
 
   const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -31,10 +29,16 @@ export const Column = ({ id }: ColumnProps) => {
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     dispatch({
-      type: "push",
-      columnId: id,
-      content: e.currentTarget.content.value,
+      type: "cards/push",
+      payload: {
+        id: nanoid(),
+        columnId: id,
+        text: String(e.currentTarget.content.value),
+        color: column.color,
+        voterIds: [],
+      },
     });
     e.currentTarget.reset();
   };
@@ -53,7 +57,7 @@ export const Column = ({ id }: ColumnProps) => {
         <ul className={style.list}>
           {cards.map(({ id }) => (
             <li key={id} className={style.item}>
-              <Card color={column.color} id={id} />
+              <Card id={id} />
             </li>
           ))}
         </ul>

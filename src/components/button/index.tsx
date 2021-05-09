@@ -1,9 +1,9 @@
 import { forwardRef } from "react";
 import style from "./style.module.css";
 
-type Props<T extends keyof JSX.IntrinsicElements> = {
+type Props<T extends keyof JSX.IntrinsicElements> = JSX.IntrinsicElements[T] & {
   tag: T;
-} & JSX.IntrinsicElements[T];
+};
 
 export const Button = forwardRef<HTMLElement, any>(
   ({ tag: Tag, ...props }, ref) => {

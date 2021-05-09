@@ -1,33 +1,22 @@
 import { useCallback, useEffect, useRef } from "react";
 
-const getStatus = (readyState: number | undefined) => {
-  switch (readyState) {
-    default:
-      return "idle";
-    case WebSocket.OPEN:
-      return "open";
-    case WebSocket.CONNECTING:
-      return "connecting";
-    case WebSocket.CLOSED:
-      return "closed";
-    case WebSocket.CLOSING:
-      return "closing";
-  }
+type Options<T> = {
+  url: string;
+  onOpen?: () => void;
+  onMessage: (data: T) => void;
 };
 
-export const useWebSocket = <T = unknown>(
-  url: string,
-  onMessage: (data: T) => void,
-  onOpen?: () => void
-) => {
+export const useWebSocket = <T = unknown>({
+  url,
+  onOpen,
+  onMessage,
+}: Options<T>) => {
   const webSocketRef = useRef<WebSocket>();
-  const statusRef = useRef<ReturnType<typeof getStatus>>("idle");
 
   useEffect(() => {
     if (url) {
       webSocketRef.current = new WebSocket(url);
     }
-
     return () => {
       webSocketRef.current?.close();
     };
@@ -46,13 +35,9 @@ export const useWebSocket = <T = unknown>(
     };
   }, [onOpen, onMessage]);
 
-  statusRef.current = getStatus(webSocketRef.current?.readyState);
-
-  const send = useCallback((data: T) => {
-    if (statusRef.current === "open") {
-      webSocketRef.current?.send(JSON.stringify(data));
-    }
+  const dispatch = useCallback((data: T) => {
+    webSocketRef.current?.send(JSON.stringify(data));
   }, []);
 
-  return { status: statusRef.current, send };
+  return [webSocketRef.current?.readyState, dispatch] as const;
 };
