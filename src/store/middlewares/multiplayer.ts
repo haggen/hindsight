@@ -22,7 +22,7 @@ export const multiplayer: Middleware =
       }
 
       webSocket = new WebSocket(
-        `ws://web-ostrich.localhost/hindsight/b/${action.payload.boardId}`
+        `${process.env.REACT_APP_WS_URL}/hindsight/b/${action.payload.boardId}`
       );
 
       webSocket.addEventListener("message", ({ data }) => {
