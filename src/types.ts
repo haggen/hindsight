@@ -1,6 +1,6 @@
 export type Profile = { id: string; name: string };
 
-export type Board = { id: string };
+export type Board = { id: string; cards?: Card[]; columns?: Column[] };
 
 export type Card = {
   id: string;
@@ -16,13 +16,24 @@ export type Column = {
   color: string;
 };
 
-export type Action =
-  | { type: "cards/push"; payload: Card }
-  | { type: "cards/delete"; payload: { id: string } }
-  | { type: "cards/vote"; payload: { id: string; voterId: string } }
-  | {
-      type: "board/load";
-      payload: { id: string; cards?: Card[]; columns?: Column[] };
+type ActionTemplate<T extends string, P = undefined> = P extends undefined
+  ? {
+      type: T;
+      meta?: Record<string, unknown>;
     }
-  | { type: "board/clear" }
-  | { type: "profile/update"; payload: Partial<Profile> };
+  : {
+      type: T;
+      meta?: Record<string, unknown>;
+      payload: P;
+    };
+
+export type Action =
+  | ActionTemplate<"profile/update", Partial<Profile>>
+  | ActionTemplate<"cards/create", Card>
+  | ActionTemplate<"cards/vote", { cardId: string; voterId: string }>
+  | ActionTemplate<"cards/delete", { cardId: string }>
+  | ActionTemplate<"board/load", Board>
+  | ActionTemplate<"board/clear">
+  | ActionTemplate<"ostrich/connect", { boardId: string }>
+  | ActionTemplate<"ostrich/sync/reply", Board>
+  | ActionTemplate<"ostrich/sync/request">;

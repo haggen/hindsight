@@ -31,7 +31,7 @@ export const Column = ({ id }: ColumnProps) => {
     e.preventDefault();
 
     dispatch({
-      type: "cards/push",
+      type: "cards/create",
       payload: {
         id: nanoid(),
         columnId: id,

@@ -22,12 +22,15 @@ export const Card = ({ id }: CardProps) => {
   const isVoted = card.voterIds.includes(profileId);
 
   const onVote = () => {
-    dispatch({ type: "cards/vote", payload: { id, voterId: profileId } });
+    dispatch({
+      type: "cards/vote",
+      payload: { cardId: id, voterId: profileId },
+    });
   };
 
   const onDelete = () => {
     if (confirm("Are you sure?")) {
-      dispatch({ type: "cards/delete", payload: { id } });
+      dispatch({ type: "cards/delete", payload: { cardId: id } });
     }
   };
 
