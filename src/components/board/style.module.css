@@ -1,6 +1,6 @@
 .board {
   background-color: #fff;
-  border-radius: 18px;
+  border-radius: 22px;
   box-shadow: 0 4px 8px hsla(0, 0%, 0%, 0.05);
   display: grid;
   gap: 1.5rem;
