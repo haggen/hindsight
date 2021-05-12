@@ -17,6 +17,10 @@ export const Board = ({ id }: Props) => {
     dispatch({ type: "board/load", payload: { id } });
   }, [dispatch, id]);
 
+  useEffect(() => {
+    dispatch({ type: "ostrich/connect", payload: { boardId: id } });
+  }, [dispatch, id]);
+
   return (
     <div className={style.board}>
       {columns.map(({ id }) => (

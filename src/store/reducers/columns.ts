@@ -15,6 +15,7 @@ export const columns = (
 ) => {
   switch (action.type) {
     case "board/load":
+    case "ostrich/sync/reply":
       return action.payload.columns ?? initialValue;
     default:
       return columns;

@@ -5,12 +5,12 @@ import * as types from "src/types";
 const toggle =
   <T>(value: T) =>
   (array: T[]) => {
-  const index = array.indexOf(value);
-  if (index > -1) {
-    return array.slice(0, index).concat(array.slice(index + 1));
-  }
-  return array.concat(value);
-};
+    const index = array.indexOf(value);
+    if (index > -1) {
+      return array.slice(0, index).concat(array.slice(index + 1));
+    }
+    return array.concat(value);
+  };
 
 export const cards = (cards: types.Card[] = [], action: types.Action) => {
   switch (action.type) {
@@ -28,6 +28,7 @@ export const cards = (cards: types.Card[] = [], action: types.Action) => {
         },
       });
     case "board/load":
+    case "ostrich/sync/reply":
       return action.payload.cards ?? [];
     case "board/clear":
       return [];

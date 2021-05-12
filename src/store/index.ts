@@ -1,4 +1,4 @@
-import { applyMiddleware, combineReducers, createStore } from "redux";
+import { applyMiddleware, combineReducers, createStore, compose } from "redux";
 import {
   TypedUseSelectorHook,
   useDispatch as _useDispatch,
@@ -9,7 +9,9 @@ import { profile } from "src/store/reducers/profile";
 import { board } from "src/store/reducers/board";
 import { cards } from "src/store/reducers/cards";
 import { columns } from "src/store/reducers/columns";
-import { storage } from "src/store/middlewares/storage";
+import { persistence } from "src/store/middlewares/persistence";
+import { multiplayer } from "src/store/middlewares/multiplayer";
+import { logger } from "src/store/middlewares/logger";
 
 const reducer = combineReducers({
   profile,
@@ -18,7 +20,12 @@ const reducer = combineReducers({
   columns,
 });
 
-export const store = createStore(reducer, applyMiddleware(storage));
+export const store = createStore(
+  reducer,
+  ((window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?? compose)(
+    applyMiddleware(persistence, multiplayer, logger)
+  )
+);
 
 export type Store = typeof store;
 export type State = ReturnType<Store["getState"]>;
