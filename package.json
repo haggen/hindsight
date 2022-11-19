@@ -1,0 +1,26 @@
+{
+  "name": "hindsight",
+  "version": "1.0.0",
+  "author": "Arthur <arthur@corenzan.com>",
+  "license": "ISC",
+  "source": "src/index.html",
+  "browserslist": "> 1%, last 2 versions, not dead",
+  "scripts": {
+    "lint": "rome check . && rome format --write .",
+    "start": "parcel",
+    "build": "parcel build"
+  },
+  "dependencies": {
+    "parcel": "^2.8.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "resetize": "^30.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.9",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.9",
+    "process": "^0.11.10",
+    "rome": "^10.0.1"
+  }
+}

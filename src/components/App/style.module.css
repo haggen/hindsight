@@ -1,0 +1,19 @@
+.layout {
+  margin: 0 auto;
+  width: min(100%, 1024px);
+}
+
+.menu {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding-block: 1.5rem;
+}
+
+.main {
+}
+
+.footer {
+  padding-block: 1.5rem;
+  text-align: center;
+}
