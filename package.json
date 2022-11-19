@@ -6,15 +6,19 @@
   "source": "src/index.html",
   "browserslist": "> 1%, last 2 versions, not dead",
   "scripts": {
-    "lint": "rome check . && rome format --write .",
+    "lint": "rome check --apply src; rome format --write src",
     "start": "parcel",
     "build": "parcel build"
   },
   "dependencies": {
+    "@liveblocks/client": "^0.19.1",
+    "@liveblocks/react": "^0.19.1",
+    "nanoid": "^4.0.0",
     "parcel": "^2.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "resetize": "^30.0.1"
+    "resetize": "^30.0.1",
+    "wouter": "^2.9.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.9",
