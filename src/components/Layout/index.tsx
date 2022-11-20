@@ -1,4 +1,5 @@
 import { useOthers } from "~/src/lib/liveblocks";
+import { Timer } from "~/src/components/Timer";
 
 import * as style from "./style.module.css";
 
@@ -7,20 +8,22 @@ export function Layout({ children }) {
 
   return (
     <div className={style.layout}>
-      <nav className={style.menu}>
+      <header className={style.menu}>
         <h1>
           <a href="/">Hindsight</a>
         </h1>
 
-        <p>00:00</p>
+        <Timer />
 
         <ul>
           {others.map((other) => (
             <li key={other.id}>👤</li>
           ))}
         </ul>
-      </nav>
+      </header>
+
       <main className={style.main}>{children}</main>
+
       <footer className={style.footer}>
         <p>©️ 2022 Hindsight</p>
       </footer>

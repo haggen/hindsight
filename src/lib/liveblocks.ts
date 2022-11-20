@@ -6,5 +6,11 @@ const client = createClient({
 });
 
 export const {
-  suspense: { RoomProvider, useOthers, useUpdateMyPresence },
+  // suspense: {
+  RoomProvider,
+  useOthers,
+  useUpdateMyPresence,
+  useMutation,
+  useStorage,
+  // },
 } = createRoomContext(client);
