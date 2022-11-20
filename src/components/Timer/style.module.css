@@ -1,0 +1,19 @@
+.timer {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.timer output {
+  background-color: whitesmoke;
+  border-radius: 1rem;
+  border: 1px solid silver;
+  font-family: monospace;
+  padding: 0.25rem 0.75rem;
+}
+
+.timer button {
+  cursor: pointer;
+  font-weight: bolder;
+  font-size: 0.875rem;
+}
