@@ -6,7 +6,7 @@
   "source": "src/index.html",
   "browserslist": "> 1%, last 2 versions, not dead",
   "scripts": {
-    "lint": "rome check --apply src; rome format --write src",
+    "lint": "rome check --apply-suggested src; rome format --write src",
     "start": "parcel",
     "build": "parcel build"
   },
