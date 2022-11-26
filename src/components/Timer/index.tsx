@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+
 import { useMutation, useStorage } from "~/src/lib/liveblocks";
+import { Button } from "~/src/components/Button";
 
 import * as style from "./style.module.css";
 
@@ -14,7 +16,7 @@ function Display({ target }: { target: number }) {
       setText(
         elapsed < 0
           ? "00:00"
-          : `${minutes.padStart(2, "0")}:${seconds.padStart(2, "0")}`
+          : `${minutes.padStart(2, "0")}:${seconds.padStart(2, "0")}`,
       );
     }, 100);
     return () => {
@@ -26,25 +28,31 @@ function Display({ target }: { target: number }) {
 }
 
 export function Timer() {
-  const setTarget = useMutation(({ storage }, value: number) => {
-    storage.set("timerTarget", value);
+  const setValue = useMutation(({ storage }, value: number) => {
+    storage.set("timer", value);
   }, []);
 
-  const target = useStorage(({ timerTarget }) => timerTarget as number);
+  const value = useStorage(({ timer }) => timer);
 
-  const handleAddFiveClick = () => {
-    setTarget(Math.max(target, Date.now()) + 1000 * 60 * 5);
+  const handleAddFive = () => {
+    setValue(Math.max(value, Date.now()) + 1000 * 60 * 5);
   };
 
-  const handleResetClick = () => {
-    setTarget(Date.now());
+  const handleReset = () => {
+    setValue(Date.now());
   };
 
   return (
     <aside className={style.timer}>
-      <Display target={target} />
-      <button onClick={handleAddFiveClick}>+5</button>
-      <button onClick={handleResetClick}>Reset</button>
+      <Display target={value} />
+      <menu>
+        <li>
+          <Button onClick={handleAddFive}>+5</Button>
+        </li>
+        <li>
+          <Button onClick={handleReset}>Reset</Button>
+        </li>
+      </menu>
     </aside>
   );
 }

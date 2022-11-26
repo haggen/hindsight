@@ -1,0 +1,17 @@
+.loading {
+  background-color: whitesmoke;
+  border-radius: 0.5rem;
+  font-size: 1.5em;
+  margin: 10% auto;
+  padding: 1.5em;
+  text-align: center;
+  width: min(100%, 20em);
+}
+
+.loading h1 {
+  font-size: 1.5em;
+}
+
+.loading p {
+  font-weight: 900;
+}
