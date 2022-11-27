@@ -68,7 +68,24 @@ function Form({ card, onFinish }: FormProps) {
   };
 
   const handleCancel = () => {
-    onFinish();
+    onFinish?.();
+  };
+
+  const handleKeyDown = (e) => {
+    switch (e.key) {
+      case "Escape": {
+        handleCancel();
+        break;
+      }
+      case "Enter": {
+        e.target.form.requestSubmit();
+        break;
+      }
+      default:
+        return;
+    }
+
+    e.preventDefault();
   };
 
   if ("id" in card) {
@@ -79,6 +96,7 @@ function Form({ card, onFinish }: FormProps) {
             className={style.description}
             name="description"
             placeholder="Type something…"
+            onKeyDown={handleKeyDown}
             defaultValue={card.description}
             rows={3}
           />
@@ -109,6 +127,7 @@ function Form({ card, onFinish }: FormProps) {
           className={style.description}
           name="description"
           placeholder="Type something…"
+          onKeyDown={handleKeyDown}
           rows={3}
         />
         <menu className={style.menu}>

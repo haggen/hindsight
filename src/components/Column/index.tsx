@@ -28,7 +28,7 @@ function Form({ column, onFinish }: FormProps) {
         storage.get("columns").set(column.id, { ...column, title });
       }
     },
-    [column]
+    [column],
   );
 
   const deleteColumn = useMutation(
@@ -37,7 +37,7 @@ function Form({ column, onFinish }: FormProps) {
         storage.get("columns").delete(column.id);
       }
     },
-    [column]
+    [column],
   );
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
