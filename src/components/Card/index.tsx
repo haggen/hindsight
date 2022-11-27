@@ -93,7 +93,6 @@ function Form({ card, onFinish }: FormProps) {
       <div className={style.card}>
         <form className={style.form} onSubmit={handleSubmit}>
           <textarea
-            className={style.description}
             name="description"
             placeholder="Type something…"
             onKeyDown={handleKeyDown}
@@ -124,7 +123,6 @@ function Form({ card, onFinish }: FormProps) {
     <div className={style.placeholder}>
       <form className={style.form} onSubmit={handleSubmit}>
         <textarea
-          className={style.description}
           name="description"
           placeholder="Type something…"
           onKeyDown={handleKeyDown}
@@ -171,17 +169,14 @@ export function Card({ card }: CardProps) {
 
   return (
     <article className={style.card}>
-      <p className={style.description}>{card.description}</p>
+      <p>{card.description}</p>
 
       <menu className={style.menu}>
         <li>
           <ul className={style.reactions}>
             {availableReactions.map((reaction) => (
               <li key={reaction}>
-                <button
-                  className={style.reaction}
-                  onClick={() => addReaction(reaction)}
-                >
+                <button onClick={() => addReaction(reaction)}>
                   <Emoji emoji={reaction} />
                   <small>×{card.reactions[reaction] ?? 0}</small>
                 </button>

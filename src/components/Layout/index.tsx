@@ -13,7 +13,7 @@ export function Layout({ children }) {
         <Timer />
       </header>
 
-      <main className={style.main}>{children}</main>
+      <main>{children}</main>
 
       <footer className={style.footer}>
         <p>©️ 2022 Hindsight</p>
