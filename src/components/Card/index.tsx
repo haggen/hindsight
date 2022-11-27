@@ -29,7 +29,7 @@ function Form({ card, onFinish }: FormProps) {
         reactionCount: 1,
       });
     },
-    [card.columnId]
+    [card.columnId],
   );
 
   const patchCard = useMutation(
@@ -40,7 +40,7 @@ function Form({ card, onFinish }: FormProps) {
           .set(card.id, { ...card, description: description });
       }
     },
-    [card]
+    [card],
   );
 
   const deleteCard = useMutation(
@@ -49,7 +49,7 @@ function Form({ card, onFinish }: FormProps) {
         storage.get("cards").delete(card.id);
       }
     },
-    [card]
+    [card],
   );
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -156,7 +156,7 @@ export function Card({ card }: CardProps) {
         .get("cards")
         .set(card.id, { ...card, reactions, reactionCount: reactionCount + 1 });
     },
-    [card]
+    [card],
   );
 
   const handleEdit = () => {

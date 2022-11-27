@@ -16,7 +16,7 @@ function Display({ target }: { target: number }) {
       setText(
         elapsed < 0
           ? "00:00"
-          : `${minutes.padStart(2, "0")}:${seconds.padStart(2, "0")}`,
+          : `${minutes.padStart(2, "0")}:${seconds.padStart(2, "0")}`
       );
     }, 100);
     return () => {
@@ -44,15 +44,15 @@ export function Timer() {
 
   return (
     <aside className={style.timer}>
-      <Display target={value} />
       <menu>
-        <li>
-          <Button onClick={handleAddFive}>+5</Button>
-        </li>
         <li>
           <Button onClick={handleReset}>Reset</Button>
         </li>
+        <li>
+          <Button onClick={handleAddFive}>+5 min.</Button>
+        </li>
       </menu>
+      <Display target={value} />
     </aside>
   );
 }
