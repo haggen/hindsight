@@ -1,11 +1,11 @@
-import { StrictMode, Suspense } from "react";
+import { Suspense } from "react";
 import { useLocation, useRoute } from "wouter";
 
 import { RoomProvider } from "~/src/lib/liveblocks";
 import { Layout } from "~/src/components/Layout";
 import { Board } from "~/src/components/Board";
 import { createId, initialPresence, initialStorage } from "~/src/lib/data";
-import { Loading } from "../Loading";
+import { Loading } from "~/src/components/Loading";
 
 type Params = {
   boardId: string;

@@ -1,6 +1,32 @@
 .button {
+  align-items: center;
   cursor: pointer;
+  display: inline flex;
   font-size: 0.875rem;
   font-weight: bolder;
-  padding: 0.375rem;
+  height: 2.25em;
+  justify-content: center;
+  padding-inline: 0.375rem;
+}
+
+.button[disabled] {
+  color: gray !important;
+}
+
+.active {
+  color: #9747ff;
+}
+
+.negative {
+  color: #dd0e0e;
+}
+
+.positive {
+  color: #188b4b;
+}
+
+.bordered {
+  border: 1px solid;
+  border-radius: 1.125em;
+  padding-inline: 0.75rem;
 }

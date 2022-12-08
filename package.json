@@ -11,8 +11,8 @@
     "build": "parcel build"
   },
   "dependencies": {
-    "@liveblocks/client": "^0.19.1",
-    "@liveblocks/react": "^0.19.1",
+    "@liveblocks/client": "^0.19.2",
+    "@liveblocks/react": "^0.19.2",
     "nanoid": "^4.0.0",
     "parcel": "^2.8.0",
     "react": "^18.2.0",
@@ -21,8 +21,8 @@
     "wouter": "^2.9.0"
   },
   "devDependencies": {
-    "@types/node": "^18.11.9",
-    "@types/react": "^18.0.25",
+    "@types/node": "^18.11.10",
+    "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.9",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "eslint": "^8.29.0",
@@ -33,6 +33,7 @@
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-react": "^7.31.11",
     "prettier": "^2.8.0",
-    "process": "^0.11.10"
+    "typescript": "^4.9.3",
+    "typescript-plugin-css-modules": "^3.4.0"
   }
 }

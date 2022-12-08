@@ -1,9 +1,9 @@
 import { FormEvent, useState } from "react";
 
-import { useMutation, useMyPresence, useSelf } from "~/src/lib/liveblocks";
+import { useMutation, useMyPresence } from "~/src/lib/liveblocks";
 import { Button } from "~/src/components/Button";
-import { Emoji } from "~/src/components/Emoji";
-import { TCard, createId } from "~/src/lib/data";
+import { TCard, createId, useCards } from "~/src/lib/data";
+import { Reaction } from "~/src/components/Reaction";
 
 import * as style from "./style.module.css";
 
@@ -29,18 +29,16 @@ function Form({ card, onFinish }: FormProps) {
         reactionCount: 1,
       });
     },
-    [card.columnId],
+    [card.columnId]
   );
 
   const patchCard = useMutation(
     ({ storage }, description: string) => {
       if ("id" in card) {
-        storage
-          .get("cards")
-          .set(card.id, { ...card, description: description });
+        storage.get("cards").set(card.id, { ...card, description });
       }
     },
-    [card],
+    [card]
   );
 
   const deleteCard = useMutation(
@@ -49,17 +47,24 @@ function Form({ card, onFinish }: FormProps) {
         storage.get("cards").delete(card.id);
       }
     },
-    [card],
+    [card]
   );
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const inputs = e.currentTarget.elements as unknown as {
+      description: HTMLTextAreaElement;
+    };
+
     if ("id" in card) {
-      patchCard(e.currentTarget.elements["description"].value);
+      patchCard(inputs.description.value);
     } else {
-      createCard(e.currentTarget.elements["description"].value);
+      createCard(inputs.description.value);
     }
+
     e.currentTarget.reset();
+
     onFinish?.();
   };
 
@@ -144,23 +149,15 @@ type CardProps = {
 
 export function Card({ card }: CardProps) {
   const [isEditing, setEditing] = useState(false);
-
   const [presence] = useMyPresence();
-
-  const addReaction = useMutation(
-    ({ storage }, reaction: string) => {
-      const { reactions, reactionCount } = card;
-      reactions[reaction] = (reactions[reaction] ?? 0) + 1;
-
-      storage
-        .get("cards")
-        .set(card.id, { ...card, reactions, reactionCount: reactionCount + 1 });
-    },
-    [card],
-  );
+  const [, { react }] = useCards();
 
   const handleEdit = () => {
     setEditing(true);
+  };
+
+  const handleReaction = (reaction: string) => {
+    react({ id: card.id, reaction });
   };
 
   if (isEditing) {
@@ -176,10 +173,11 @@ export function Card({ card }: CardProps) {
           <ul className={style.reactions}>
             {availableReactions.map((reaction) => (
               <li key={reaction}>
-                <button onClick={() => addReaction(reaction)}>
-                  <Emoji emoji={reaction} />
-                  <small>×{card.reactions[reaction] ?? 0}</small>
-                </button>
+                <Reaction
+                  reaction={reaction}
+                  count={card.reactions[reaction]}
+                  onClick={handleReaction}
+                />
               </li>
             ))}
           </ul>
@@ -194,5 +192,3 @@ export function Card({ card }: CardProps) {
     </article>
   );
 }
-
-Card.Form = Form;

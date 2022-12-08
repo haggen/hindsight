@@ -1,8 +1,13 @@
+import { ReactNode } from "react";
 import { Timer } from "~/src/components/Timer";
 
 import * as style from "./style.module.css";
 
-export function Layout({ children }) {
+type Props = {
+  children: ReactNode;
+};
+
+export function Layout({ children }: Props) {
   return (
     <div className={style.layout}>
       <header className={style.topbar}>

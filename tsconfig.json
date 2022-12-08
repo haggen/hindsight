@@ -2,11 +2,13 @@
   "compilerOptions": {
     "target": "esnext",
     "moduleResolution": "node",
+    "strictNullChecks": true,
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
       "~/*": ["./*"]
-    }
+    },
+    "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },
   "exclude": ["node_modules"]
 }
