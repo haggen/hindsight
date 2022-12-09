@@ -1,9 +1,11 @@
 import { useState } from "react";
 
-import { Card } from "~/src/components/Card";
 import { TColumn, useCards } from "~/src/lib/data";
+import { Card } from "~/src/components/Card";
 import { Button } from "~/src/components/Button";
-import { Form } from "./Form";
+
+import { New } from "./New";
+import { Edit } from "./Edit";
 
 import * as style from "./style.module.css";
 
@@ -19,10 +21,14 @@ export function Column({ column }: Props) {
     setEditing(true);
   };
 
+  const handleFinish = () => {
+    setEditing(false);
+  };
+
   return (
     <section className={style.column}>
       {isEditing ? (
-        <Form column={column} onFinish={() => setEditing(false)} />
+        <Edit column={column} onFinish={handleFinish} />
       ) : (
         <header className={style.header}>
           <h1 className={style.title}>{column.title}</h1>
@@ -42,11 +48,11 @@ export function Column({ column }: Props) {
           </li>
         ))}
         <li>
-          <Card.Form card={{ columnId: column.id }} />
+          <Card.New defaults={{ columnId: column.id }} />
         </li>
       </ul>
     </section>
   );
 }
 
-Column.Form = Form;
+Column.New = New;

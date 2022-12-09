@@ -1,20 +1,17 @@
 import { FormEvent, KeyboardEvent } from "react";
 
-import { useMyPresence } from "~/src/lib/liveblocks";
 import { Button } from "~/src/components/Button";
 import { TCard, useCards } from "~/src/lib/data";
 
 import * as style from "./style.module.css";
 
 type Props = {
-  columnId: string;
-  card?: TCard;
+  card: TCard;
   onFinish?: () => void;
 };
 
-export function Form({ card, columnId, onFinish }: Props) {
-  const [, { patch, create, remove }] = useCards({ columnId });
-  const [{ id: authorId }] = useMyPresence();
+export function Edit({ card, onFinish }: Props) {
+  const [, { patch, remove }] = useCards();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -23,11 +20,7 @@ export function Form({ card, columnId, onFinish }: Props) {
       description: HTMLTextAreaElement;
     };
 
-    if (card) {
-      patch({ id: card.id, description: inputs.description.value });
-    } else {
-      create({ columnId, authorId, description: inputs.description.value });
-    }
+    patch({ id: card.id, description: inputs.description.value });
 
     e.currentTarget.reset();
 
@@ -35,9 +28,7 @@ export function Form({ card, columnId, onFinish }: Props) {
   };
 
   const handleDelete = () => {
-    if (card) {
-      remove(card.id);
-    }
+    remove(card.id);
   };
 
   const handleCancel = () => {
@@ -61,34 +52,6 @@ export function Form({ card, columnId, onFinish }: Props) {
     e.preventDefault();
   };
 
-  const menu = card ? (
-    <menu className={style.menu}>
-      <li>
-        <Button onClick={handleDelete} color="negative">
-          Delete
-        </Button>
-      </li>
-      <li>
-        <ul>
-          <li>
-            <Button type="submit" color="positive">
-              Save
-            </Button>
-          </li>
-          <li>
-            <Button onClick={handleCancel}>Cancel</Button>
-          </li>
-        </ul>
-      </li>
-    </menu>
-  ) : (
-    <menu className={style.menu}>
-      <li>
-        <Button type="submit">Create new card</Button>
-      </li>
-    </menu>
-  );
-
   return (
     <form className={style.form} onSubmit={handleSubmit}>
       <textarea
@@ -99,7 +62,25 @@ export function Form({ card, columnId, onFinish }: Props) {
         autoFocus
         defaultValue={card?.description}
       />
-      {menu}
+      <menu className={style.menu}>
+        <li>
+          <Button onClick={handleDelete} color="negative">
+            Delete
+          </Button>
+        </li>
+        <li>
+          <ul>
+            <li>
+              <Button type="submit" color="positive">
+                Save
+              </Button>
+            </li>
+            <li>
+              <Button onClick={handleCancel}>Cancel</Button>
+            </li>
+          </ul>
+        </li>
+      </menu>
     </form>
   );
 }

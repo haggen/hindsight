@@ -38,12 +38,5 @@
 .menu ul {
   align-items: center;
   display: flex;
-}
-
-.reactions {
   gap: 0.5rem;
-}
-
-.reactions button {
-  cursor: pointer;
 }
