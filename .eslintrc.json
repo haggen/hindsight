@@ -28,6 +28,9 @@
   },
   "plugins": ["@typescript-eslint", "react", "import", "promise"],
   "rules": {
+    // Warn about console leftovers.
+    "no-console": "warn",
+
     // If enabled it whines about CSS module imported classes.
     "@typescript-eslint/no-unsafe-assignment": "off",
 
