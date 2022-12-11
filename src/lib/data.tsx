@@ -75,6 +75,11 @@ export function createColumn(data: Pick<TColumn, "title">): TColumn {
 
 const doc = new Y.Doc();
 
+// doc.on("update", () => {
+//   console.log("Columns", doc.getMap("columns").toJSON());
+//   console.log("Card", doc.getMap("cards").toJSON());
+// });
+
 export const Context = createContext<{
   ref: {
     current: Value;
@@ -118,6 +123,13 @@ export function Provider({ roomId, children }: Props) {
   return <Context.Provider value={{ ref }}>{children}</Context.Provider>;
 }
 
+function getSnapshot<T extends object>(
+  map: Y.Map<T[keyof T]>,
+  initialValue: T = {} as T
+) {
+  return map.size === 0 ? initialValue : (map.toJSON() as T);
+}
+
 /**
  * Get snapshot and mutate function to a named Y.Map.
  */
@@ -131,17 +143,23 @@ export function useSharedMap<T extends object>(
     },
   } = useContext(Context);
 
-  const [snapshot, setSnapshot] = useState<T>(initialValue);
   const map = doc.getMap<T[keyof T]>(name);
+  const [snapshot, setSnapshot] = useState<T>(
+    getSnapshot<T>(map, initialValue)
+  );
+
+  // console.log("useSharedMap", name, map, snapshot);
 
   useEffect(() => {
     const onChange = () => {
-      setSnapshot(map.toJSON() as T);
+      const value = getSnapshot<T>(map);
+      // console.log("observe", name, value);
+      setSnapshot(value);
     };
-    map.observeDeep(onChange);
+    map.observe(onChange);
 
     return () => {
-      map.unobserveDeep(onChange);
+      map.unobserve(onChange);
     };
   }, []);
 
@@ -152,26 +170,16 @@ export function useSharedMap<T extends object>(
   return [snapshot, mutate] as const;
 }
 
-export function useProvider() {
-  const {
-    ref: {
-      current: { provider },
-    },
-  } = useContext(Context);
-
-  return provider;
-}
-
 /**
  * Get snapshot and mutate functions for cards.
  */
-export function useCards({ columnId = undefined } = {}) {
+export function useCards({ columnId }: { columnId?: string } = {}) {
   const [snapshot, mutate] = useSharedMap<Record<string, TCard>>("cards", {});
 
   const cards = useMemo(
     () =>
-      Object.values(snapshot).filter((card) =>
-        columnId ? card.columnId === columnId : true
+      Object.values(snapshot).filter(
+        (card) => !columnId || card.columnId === columnId
       ),
     [snapshot, columnId]
   );

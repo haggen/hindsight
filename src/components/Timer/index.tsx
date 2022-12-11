@@ -3,21 +3,26 @@ import { useEffect, useState } from "react";
 import * as style from "./style.module.css";
 
 import { Button } from "~/src/components/Button";
-import { useSharedState } from "~/src/lib/data";
+import { useSharedMap } from "~/src/lib/data";
+
+function format(target: number) {
+  const elapsed = target - Date.now();
+  const minutes = Math.floor(elapsed / 60000).toString();
+  const seconds = Math.floor((elapsed % 60000) / 1000).toString();
+
+  if (elapsed < 0) {
+    return "00:00";
+  }
+
+  return `${minutes.padStart(2, "0")}:${seconds.padStart(2, "0")}`;
+}
 
 function Display({ target }: { target: number }) {
   const [text, setText] = useState("00:00");
 
   useEffect(() => {
     const id = setInterval(() => {
-      const elapsed = target - Date.now();
-      const minutes = Math.floor(elapsed / 60_000).toString();
-      const seconds = Math.floor((elapsed % 60_000) / 1000).toString();
-      setText(
-        elapsed < 0
-          ? "00:00"
-          : `${minutes.padStart(2, "0")}:${seconds.padStart(2, "0")}`
-      );
+      setText(format(target - Date.now()));
     }, 100);
     return () => {
       clearInterval(id);
@@ -28,23 +33,19 @@ function Display({ target }: { target: number }) {
 }
 
 export function Timer() {
-  const [state, mutate] = useSharedState();
+  const [snapshot, mutate] = useSharedMap("timer", { target: 0 });
 
-  const value = state.timer;
+  const target = snapshot.target;
 
-  const setValue = (value: number) => {
-    mutate((state) => {
-      state.set("timer", value);
+  const handleAddFive = () =>
+    mutate((map) => {
+      map.set("target", Math.max(target, Date.now()) + 1000 * 60 * 5);
     });
-  };
 
-  const handleAddFive = () => {
-    setValue(Math.max(value, Date.now()) + 1000 * 60 * 5);
-  };
-
-  const handleReset = () => {
-    setValue(Date.now());
-  };
+  const handleReset = () =>
+    mutate((map) => {
+      map.set("target", Date.now());
+    });
 
   return (
     <aside className={style.timer}>
@@ -56,7 +57,7 @@ export function Timer() {
           <Button onClick={handleAddFive}>+5 min.</Button>
         </li>
       </menu>
-      <Display target={value} />
+      <Display target={target} />
     </aside>
   );
 }
