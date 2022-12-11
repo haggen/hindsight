@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -73,7 +74,6 @@ export function createColumn(data: Pick<TColumn, "title">): TColumn {
 // ---
 
 const doc = new Y.Doc();
-const topLevelState = doc.getMap("state");
 
 export const Context = createContext<{
   ref: {
@@ -93,6 +93,9 @@ type Props = {
   children: ReactNode;
 };
 
+/**
+ * Provider for Y's document and synchronization provider.
+ */
 export function Provider({ roomId, children }: Props) {
   const ref = useRef<Value>({
     doc,
@@ -100,7 +103,7 @@ export function Provider({ roomId, children }: Props) {
   });
 
   useEffect(() => {
-    if (!roomId || ref.current.provider) {
+    if (!roomId) {
       return;
     }
 
@@ -115,33 +118,38 @@ export function Provider({ roomId, children }: Props) {
   return <Context.Provider value={{ ref }}>{children}</Context.Provider>;
 }
 
-export function useSharedState() {
+/**
+ * Get snapshot and mutate function to a named Y.Map.
+ */
+export function useSharedMap<T extends object>(
+  name: string,
+  initialValue: T = {} as T
+) {
   const {
     ref: {
       current: { doc },
     },
   } = useContext(Context);
 
-  const [state, setState] = useState<State>(topLevelState.toJSON() as any);
+  const [snapshot, setSnapshot] = useState<T>(initialValue);
+  const map = doc.getMap<T[keyof T]>(name);
 
   useEffect(() => {
     const onChange = () => {
-      setState(topLevelState.toJSON() as any);
+      setSnapshot(map.toJSON() as T);
     };
-    topLevelState.observeDeep(onChange);
+    map.observeDeep(onChange);
 
     return () => {
-      topLevelState.unobserveDeep(onChange);
+      map.unobserveDeep(onChange);
     };
   }, []);
 
-  const update = useCallback((updator: (state: Y.Map<any>) => void) => {
-    doc.transact(() => {
-      updator(topLevelState);
-    });
+  const mutate = useCallback((updator: (map: Y.Map<T[keyof T]>) => void) => {
+    doc.transact(() => updator(map));
   }, []);
 
-  return [state, update] as const;
+  return [snapshot, mutate] as const;
 }
 
 export function useProvider() {
@@ -154,42 +162,75 @@ export function useProvider() {
   return provider;
 }
 
+/**
+ * Get snapshot and mutate functions for cards.
+ */
 export function useCards({ columnId = undefined } = {}) {
-  const [state, mutate] = useSharedState();
+  const [snapshot, mutate] = useSharedMap<Record<string, TCard>>("cards", {});
 
-  const cards = Object.values(state.cards).filter((card) =>
-    columnId ? card.columnId === columnId : true
+  const cards = useMemo(
+    () =>
+      Object.values(snapshot).filter((card) =>
+        columnId ? card.columnId === columnId : true
+      ),
+    [snapshot, columnId]
   );
 
   const create = (
     defaults: Pick<TCard, "columnId" | "authorId" | "description">
   ) =>
-    mutate((state) => {
+    mutate((map) => {
       const card = createCard(defaults);
-      state.get("cards").set(card.id, card);
+      map.set(card.id, card);
     });
 
-  const update = (data: Semipartial<TCard, "id">) => undefined;
+  const update = (data: Semipartial<TCard, "id">) =>
+    mutate((map) => {
+      const card = map.get(data.id);
+      if (!card) {
+        throw new Error(`Card "${data.id}" not found`);
+      }
+      map.set(data.id, { ...card, ...data });
+    });
 
-  const destroy = (id: Id) => undefined;
+  const destroy = (id: Id) =>
+    mutate((map) => {
+      map.delete(id);
+    });
 
   return [cards, { create, update, destroy }] as const;
 }
 
+/**
+ * Get snapshot and mutate functions for columns.
+ */
 export function useColumns() {
-  const [state, mutate] = useSharedState();
+  const [snapshot, mutate] = useSharedMap<Record<string, TColumn>>(
+    "columns",
+    {}
+  );
 
-  const columns = Object.values(state.columns);
+  const columns = useMemo(() => Object.values(snapshot), [snapshot]);
 
   const create = (defaults: Pick<TColumn, "title">) =>
-    mutate((state) => {
+    mutate((map) => {
       const column = createColumn(defaults);
-      state.get("columns").set(column.id, column);
+      map.set(column.id, column);
     });
 
-  const update = (data: Semipartial<TColumn, "id">) => undefined;
+  const update = (data: Semipartial<TColumn, "id">) =>
+    mutate((map) => {
+      const column = map.get(data.id);
+      if (!column) {
+        throw new Error(`Column "${data.id}" not found`);
+      }
+      map.set(data.id, { ...column, ...data });
+    });
 
-  const destroy = (id: Id) => undefined;
+  const destroy = (id: Id) =>
+    mutate((map) => {
+      map.delete(id);
+    });
 
   return [columns, { create, update, destroy }] as const;
 }
