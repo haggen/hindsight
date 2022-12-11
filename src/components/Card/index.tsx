@@ -1,14 +1,12 @@
 import { useState } from "react";
 
-import { useMyPresence } from "~/src/lib/liveblocks";
+import { Edit } from "./Edit";
+import { New } from "./New";
+import * as style from "./style.module.css";
+
 import { Button } from "~/src/components/Button";
 import { TCard, useCards } from "~/src/lib/data";
 import { Reaction } from "~/src/components/Reaction";
-
-import { Edit } from "./Edit";
-import { New } from "./New";
-
-import * as style from "./style.module.css";
 
 const availableReactions = ["👍", "🎉", "😍", "🤔"];
 
@@ -18,8 +16,8 @@ type Props = {
 
 export function Card({ card }: Props) {
   const [isEditing, setEditing] = useState(false);
-  const [presence] = useMyPresence();
-  const [, { react }] = useCards();
+  const presence = { id: "123" };
+  const [, { update }] = useCards();
 
   if (isEditing) {
     return (
@@ -35,7 +33,14 @@ export function Card({ card }: Props) {
 
   const handleReaction = (reaction: string) => {
     if ("id" in card) {
-      react({ id: card.id, reaction });
+      update({
+        id: card.id,
+        reactions: {
+          ...card.reactions,
+          [reaction]: (card.reactions[reaction] ?? 0) + 1,
+        },
+        reactionCount: card.reactionCount + 1,
+      });
     }
   };
 

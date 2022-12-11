@@ -1,6 +1,6 @@
-import { Emoji } from "~/src/components/Emoji";
-
 import * as style from "./style.module.css";
+
+import { Emoji } from "~/src/components/Emoji";
 
 export function Loading() {
   return (

@@ -1,7 +1,7 @@
+import * as style from "./style.module.css";
+
 import { Column } from "~/src/components/Column";
 import { useColumns } from "~/src/lib/data";
-
-import * as style from "./style.module.css";
 
 export function Board() {
   const [columns] = useColumns();

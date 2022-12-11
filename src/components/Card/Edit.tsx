@@ -1,9 +1,9 @@
 import { FormEvent, KeyboardEvent } from "react";
 
+import * as style from "./style.module.css";
+
 import { Button } from "~/src/components/Button";
 import { TCard, useCards } from "~/src/lib/data";
-
-import * as style from "./style.module.css";
 
 type Props = {
   card: TCard;
@@ -11,7 +11,7 @@ type Props = {
 };
 
 export function Edit({ card, onFinish }: Props) {
-  const [, { patch, remove }] = useCards();
+  const [, { update, destroy }] = useCards();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -20,7 +20,7 @@ export function Edit({ card, onFinish }: Props) {
       description: HTMLTextAreaElement;
     };
 
-    patch({ id: card.id, description: inputs.description.value });
+    update({ id: card.id, description: inputs.description.value });
 
     e.currentTarget.reset();
 
@@ -28,7 +28,7 @@ export function Edit({ card, onFinish }: Props) {
   };
 
   const handleDelete = () => {
-    remove(card.id);
+    destroy(card.id);
   };
 
   const handleCancel = () => {

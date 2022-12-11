@@ -1,13 +1,12 @@
 import { useState } from "react";
 
+import { New } from "./New";
+import { Edit } from "./Edit";
+import * as style from "./style.module.css";
+
 import { TColumn, useCards } from "~/src/lib/data";
 import { Card } from "~/src/components/Card";
 import { Button } from "~/src/components/Button";
-
-import { New } from "./New";
-import { Edit } from "./Edit";
-
-import * as style from "./style.module.css";
 
 type Props = {
   column: TColumn;

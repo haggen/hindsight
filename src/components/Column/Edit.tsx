@@ -1,9 +1,9 @@
 import { FormEvent } from "react";
 
+import * as style from "./style.module.css";
+
 import { TColumn, useColumns } from "~/src/lib/data";
 import { Button } from "~/src/components/Button";
-
-import * as style from "./style.module.css";
 
 type Props = {
   column: TColumn;
@@ -11,7 +11,7 @@ type Props = {
 };
 
 export function Edit({ column, onFinish }: Props) {
-  const [, { patch, remove }] = useColumns();
+  const [, { update, destroy }] = useColumns();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -20,7 +20,7 @@ export function Edit({ column, onFinish }: Props) {
       title: HTMLInputElement;
     };
 
-    patch({ ...column, title: inputs.title.value });
+    update({ ...column, title: inputs.title.value });
 
     e.currentTarget.reset();
 
@@ -28,7 +28,7 @@ export function Edit({ column, onFinish }: Props) {
   };
 
   const handleDelete = () => {
-    remove(column.id);
+    destroy(column.id);
   };
 
   const handleCancel = () => {

@@ -1,11 +1,8 @@
-import { Suspense } from "react";
 import { useLocation, useRoute } from "wouter";
 
-import { RoomProvider } from "~/src/lib/liveblocks";
 import { Layout } from "~/src/components/Layout";
 import { Board } from "~/src/components/Board";
-import { createId, initialPresence, initialStorage } from "~/src/lib/data";
-import { Loading } from "~/src/components/Loading";
+import { createId, Provider } from "~/src/lib/data";
 
 type Params = {
   boardId: string;
@@ -24,16 +21,10 @@ export function App() {
   }
 
   return (
-    <RoomProvider
-      id={params.boardId}
-      initialPresence={initialPresence}
-      initialStorage={initialStorage}
-    >
-      <Suspense fallback={<Loading />}>
-        <Layout>
-          <Board />
-        </Layout>
-      </Suspense>
-    </RoomProvider>
+    <Provider roomId={params.boardId}>
+      <Layout>
+        <Board />
+      </Layout>
+    </Provider>
   );
 }

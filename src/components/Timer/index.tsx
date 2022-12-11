@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
-import { useMutation, useStorage } from "~/src/lib/liveblocks";
-import { Button } from "~/src/components/Button";
-
 import * as style from "./style.module.css";
+
+import { Button } from "~/src/components/Button";
+import { useSharedState } from "~/src/lib/data";
 
 function Display({ target }: { target: number }) {
   const [text, setText] = useState("00:00");
@@ -28,11 +28,15 @@ function Display({ target }: { target: number }) {
 }
 
 export function Timer() {
-  const setValue = useMutation(({ storage }, value: number) => {
-    storage.set("timer", value);
-  }, []);
+  const [state, mutate] = useSharedState();
 
-  const value = useStorage(({ timer }) => timer);
+  const value = state.timer;
+
+  const setValue = (value: number) => {
+    mutate((state) => {
+      state.set("timer", value);
+    });
+  };
 
   const handleAddFive = () => {
     setValue(Math.max(value, Date.now()) + 1000 * 60 * 5);

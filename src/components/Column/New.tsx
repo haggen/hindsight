@@ -1,9 +1,9 @@
 import { FormEvent } from "react";
 
+import * as style from "./style.module.css";
+
 import { TColumn, useColumns } from "~/src/lib/data";
 import { Button } from "~/src/components/Button";
-
-import * as style from "./style.module.css";
 
 type Props = {
   defaults?: Partial<Pick<TColumn, "title">>;

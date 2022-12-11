@@ -5,6 +5,7 @@
   },
   "extends": [
     "standard-with-typescript",
+    "plugin:import/recommended",
     "plugin:react/recommended",
     "plugin:react/jsx-runtime",
     "prettier"
@@ -21,12 +22,27 @@
   "settings": {
     "react": {
       "version": "detect"
+    },
+    "import/resolver": {
+      "typescript": {}
     }
   },
-  "plugins": ["react"],
+  "plugins": ["react", "import"],
   "rules": {
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/strict-boolean-expressions": "off",
-    "@typescript-eslint/consistent-type-definitions": ["error", "type"]
+    "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+    "import/order": [
+      "error",
+      {
+        "newlines-between": "always",
+        "pathGroups": [
+          {
+            "pattern": "~/**",
+            "group": "internal"
+          }
+        ]
+      }
+    ]
   }
 }

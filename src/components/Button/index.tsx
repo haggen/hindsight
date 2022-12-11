@@ -1,7 +1,8 @@
 import { ComponentPropsWithoutRef } from "react";
-import { ClassList } from "~/src/lib/classList";
 
 import * as style from "./style.module.css";
+
+import { ClassList } from "~/src/lib/classList";
 
 type Props = ComponentPropsWithoutRef<"button"> & {
   color?: "active" | "negative" | "positive";

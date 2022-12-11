@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
-import { Timer } from "~/src/components/Timer";
 
 import * as style from "./style.module.css";
+
+import { Timer } from "~/src/components/Timer";
 
 type Props = {
   children: ReactNode;

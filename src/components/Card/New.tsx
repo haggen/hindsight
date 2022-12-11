@@ -1,10 +1,9 @@
 import { FormEvent, KeyboardEvent } from "react";
 
-import { useMyPresence } from "~/src/lib/liveblocks";
+import * as style from "./style.module.css";
+
 import { Button } from "~/src/components/Button";
 import { TCard, useCards } from "~/src/lib/data";
-
-import * as style from "./style.module.css";
 
 type Props = {
   defaults: Omit<Semipartial<TCard, "columnId">, "id">;
@@ -13,7 +12,7 @@ type Props = {
 
 export function New({ defaults, onFinish }: Props) {
   const [, { create }] = useCards();
-  const [{ id: authorId }] = useMyPresence();
+  const authorId = "123";
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
