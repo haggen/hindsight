@@ -1,9 +1,9 @@
-// declare module "*.module.css" {
-//   type Stylesheet = {
-//     [className: string]: any;
-//   };
-//   export default Stylesheet;
-// }
+declare module "*.module.css" {
+  type Stylesheet = {
+    [key: string]: string;
+  };
+  export default Stylesheet;
+}
 
 /**
  * Make all properties of T optional, except those in U. If exempt keys were already optional they'll stay optional.

@@ -7,6 +7,7 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:promise/recommended",
     "plugin:import/recommended",
     "plugin:react/recommended",
@@ -14,6 +15,9 @@
     "prettier"
   ],
   "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
   "settings": {
     "react": {
       "version": "detect"
@@ -24,6 +28,9 @@
   },
   "plugins": ["@typescript-eslint", "react", "import", "promise"],
   "rules": {
+    // If enabled it whines about CSS module imported classes.
+    "@typescript-eslint/no-unsafe-assignment": "off",
+
     // Allow implicit return types.
     "@typescript-eslint/explicit-function-return-type": "off",
 
