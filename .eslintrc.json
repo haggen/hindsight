@@ -1,24 +1,19 @@
 {
+  "root": true,
   "env": {
     "browser": true,
     "es2021": true
   },
   "extends": [
-    "standard-with-typescript",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:promise/recommended",
     "plugin:import/recommended",
     "plugin:react/recommended",
     "plugin:react/jsx-runtime",
     "prettier"
   ],
-  "overrides": [],
-  "parserOptions": {
-    "ecmaVersion": "latest",
-    "sourceType": "module",
-    "ecmaFeatures": {
-      "jsx": true
-    },
-    "project": "./tsconfig.json"
-  },
+  "parser": "@typescript-eslint/parser",
   "settings": {
     "react": {
       "version": "detect"
@@ -27,11 +22,18 @@
       "typescript": {}
     }
   },
-  "plugins": ["react", "import"],
+  "plugins": ["@typescript-eslint", "react", "import", "promise"],
   "rules": {
+    // Allow implicit return types.
     "@typescript-eslint/explicit-function-return-type": "off",
+
+    // Allow if(<not a boolean>).
     "@typescript-eslint/strict-boolean-expressions": "off",
+
+    // Prefer `type` over `interface`.
     "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+
+    // Insert blank lines between import groups and categorize ~/* paths.
     "import/order": [
       "error",
       {
