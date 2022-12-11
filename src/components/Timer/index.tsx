@@ -13,7 +13,6 @@ function format(target: number) {
   if (elapsed < 0) {
     return "00:00";
   }
-
   return `${minutes.padStart(2, "0")}:${seconds.padStart(2, "0")}`;
 }
 
@@ -22,7 +21,7 @@ function Display({ target }: { target: number }) {
 
   useEffect(() => {
     const id = setInterval(() => {
-      setText(format(target - Date.now()));
+      setText(format(target));
     }, 100);
     return () => {
       clearInterval(id);
@@ -33,9 +32,9 @@ function Display({ target }: { target: number }) {
 }
 
 export function Timer() {
-  const [snapshot, mutate] = useSharedMap("timer", { target: 0 });
+  const [{ target }, mutate] = useSharedMap("timer", { target: 0 });
 
-  const target = snapshot.target;
+  const enabled = target > Date.now();
 
   const handleAddFive = () =>
     mutate((map) => {
@@ -51,7 +50,9 @@ export function Timer() {
     <aside className={style.timer}>
       <menu>
         <li>
-          <Button onClick={handleReset}>Reset</Button>
+          <Button onClick={handleReset} color="negative" disabled={!enabled}>
+            Reset
+          </Button>
         </li>
         <li>
           <Button onClick={handleAddFive}>+5 min.</Button>
