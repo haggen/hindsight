@@ -4,6 +4,7 @@ import * as style from "./style.module.css";
 
 import { Button } from "~/src/components/Button";
 import { useSharedMap } from "~/src/lib/data";
+import { ClassList } from "~/src/lib/classList";
 
 function format(target: number) {
   const elapsed = target - Date.now();
@@ -46,8 +47,14 @@ export function Timer() {
       map.set("target", Date.now());
     });
 
+  const classList = new ClassList();
+  classList.add(style.timer);
+  if (enabled) {
+    classList.add(style.active);
+  }
+
   return (
-    <aside className={style.timer}>
+    <aside className={classList.toString()}>
       <menu>
         <li>
           <Button onClick={handleReset} color="negative" disabled={!enabled}>

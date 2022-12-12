@@ -14,15 +14,15 @@
 }
 
 .active {
-  color: #9747ff;
+  color: var(--active-hue);
 }
 
 .negative {
-  color: #dd0e0e;
+  color: var(--negative-hue);
 }
 
 .positive {
-  color: #188b4b;
+  color: var(--positive-hue);
 }
 
 .bordered {

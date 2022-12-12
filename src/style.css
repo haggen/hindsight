@@ -2,4 +2,8 @@
 
 html {
   scrollbar-gutter: stable;
+
+  --negative-hue: #dd0e0e;
+  --active-hue: #9747ff;
+  --positive-hue: #188b4b;
 }
