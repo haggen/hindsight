@@ -6,11 +6,11 @@
 
 .timer output {
   background-color: black;
-  border-radius: 1.5rem;
+  border-radius: 0.25rem;
   color: white;
   font-family: monospace;
   line-height: 1;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem;
 }
 
 .timer.active output {

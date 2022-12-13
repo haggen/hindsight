@@ -58,7 +58,7 @@ export function Timer() {
       <menu>
         <li>
           <Button onClick={handleReset} color="negative" disabled={!enabled}>
-            Reset
+            Clear
           </Button>
         </li>
         <li>
