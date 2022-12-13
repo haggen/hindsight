@@ -63,6 +63,7 @@ export function New({ defaults, onFinish }: Props) {
           onKeyDown={handleKeyDown}
           defaultValue={defaults.description}
           autoFocus
+          required
         />
         <menu className={style.menu}>
           <li>

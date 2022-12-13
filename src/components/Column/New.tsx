@@ -34,6 +34,7 @@ export function New({ defaults }: Props) {
           placeholder="Type something…"
           defaultValue={defaults?.title}
           autoFocus
+          required
         />
         <menu className={style.menu}>
           <li>

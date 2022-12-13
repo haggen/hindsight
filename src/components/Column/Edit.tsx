@@ -44,6 +44,7 @@ export function Edit({ column, onFinish }: Props) {
         placeholder="Type something…"
         className={style.title}
         autoFocus
+        required
       />
 
       <menu className={style.menu}>

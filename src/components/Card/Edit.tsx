@@ -61,6 +61,7 @@ export function Edit({ card, onFinish }: Props) {
         rows={3}
         autoFocus
         defaultValue={card?.description}
+        required
       />
       <menu className={style.menu}>
         <li>
