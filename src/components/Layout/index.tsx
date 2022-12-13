@@ -2,18 +2,16 @@ import { ReactNode } from "react";
 
 import * as style from "./style.module.css";
 
+import { Reaction } from "~/src/components/Reaction";
 import { Timer } from "~/src/components/Timer";
 import { Button } from "~/src/components/Button";
 import { Flex } from "~/src/components/Flex";
-import { useCards } from "~/src/lib/data";
 
 type Props = {
   children: ReactNode;
 };
 
 export function Layout({ children }: Props) {
-  const [cards] = useCards();
-
   return (
     <div className={style.layout}>
       <header className={style.topbar}>
@@ -22,6 +20,7 @@ export function Layout({ children }: Props) {
         </h1>
 
         <Flex gap="1.5rem">
+          <Reaction reaction="👤" count={1} />
           <Timer />
           <Flex>
             <Button disabled>Play</Button>
@@ -29,7 +28,9 @@ export function Layout({ children }: Props) {
           </Flex>
         </Flex>
 
-        <Button disabled={cards.length === 0}>Discuss →</Button>
+        <Button bordered disabled>
+          Discuss →
+        </Button>
       </header>
 
       <main>{children}</main>
