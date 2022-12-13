@@ -11,6 +11,7 @@ import {
 } from "react";
 import { WebrtcProvider } from "y-webrtc";
 import * as Y from "yjs";
+import { Awareness } from "y-protocols/awareness";
 
 export type Id = string;
 
@@ -36,14 +37,17 @@ export type State = {
   timer: number;
 };
 
-export type Value = {
-  doc: Y.Doc;
-  provider: WebrtcProvider | null;
-};
+// ---
+// ---
+// ---
 
-// ---
-// ---
-// ---
+/**
+ * Force component update.
+ */
+function useForceUpdate() {
+  const [, update] = useState({});
+  return useCallback(() => update({}), []);
+}
 
 export function createId() {
   return nanoid(6);
@@ -79,19 +83,16 @@ export function createColumn(data: Pick<TColumn, "title">): TColumn {
 // ---
 // ---
 
+export type Value = {
+  doc: Y.Doc;
+  provider: WebrtcProvider | null;
+};
+
 const doc = new Y.Doc();
 
-export const Context = createContext<{
-  ref: {
-    current: Value;
-  };
-}>({
-  ref: {
-    current: {
-      doc,
-      provider: null,
-    },
-  },
+export const Context = createContext<Value>({
+  doc,
+  provider: null,
 });
 
 type Props = {
@@ -103,25 +104,28 @@ type Props = {
  * Provider for Y's document and synchronization provider.
  */
 export function Provider({ roomId, children }: Props) {
-  const ref = useRef<Value>({
-    doc,
-    provider: null,
-  });
+  const forceUpdate = useForceUpdate();
+  const providerRef = useRef<WebrtcProvider | null>(null);
 
   useEffect(() => {
     if (!roomId) {
       return;
     }
 
-    ref.current.provider = new WebrtcProvider(roomId, ref.current.doc);
+    providerRef.current = new WebrtcProvider(roomId, doc);
+    forceUpdate();
 
     return () => {
-      ref.current.provider?.destroy();
-      ref.current.provider = null;
+      providerRef.current?.destroy();
+      providerRef.current = null;
     };
   }, [roomId]);
 
-  return <Context.Provider value={{ ref }}>{children}</Context.Provider>;
+  return (
+    <Context.Provider value={{ doc, provider: providerRef.current }}>
+      {children}
+    </Context.Provider>
+  );
 }
 
 function getSnapshot<T extends object>(
@@ -138,23 +142,16 @@ export function useSharedMap<T extends object>(
   name: string,
   initialValue: T = {} as T
 ) {
-  const {
-    ref: {
-      current: { doc },
-    },
-  } = useContext(Context);
+  const { doc } = useContext(Context);
 
   const map = doc.getMap<T[keyof T]>(name);
   const [snapshot, setSnapshot] = useState<T>(
     getSnapshot<T>(map, initialValue)
   );
 
-  // console.log("useSharedMap", name, map, snapshot);
-
   useEffect(() => {
     const onChange = () => {
       const value = getSnapshot<T>(map);
-      // console.log("observe", name, value);
       setSnapshot(value);
     };
     map.observe(onChange);
@@ -245,4 +242,46 @@ export function useColumns() {
     });
 
   return [columns, { create, update, destroy }] as const;
+}
+
+function getAwarenessStateSnapshot<T extends object>(awareness: Awareness) {
+  const states = Object.fromEntries(
+    (awareness.getStates() as Map<number, T>).entries()
+  );
+  return states;
+}
+
+/**
+ * Get and subscribe to awareness state.
+ */
+export function useAwareness<T extends object>() {
+  const { provider } = useContext(Context);
+
+  const forceUpdate = useForceUpdate();
+
+  useEffect(() => {
+    if (!provider) {
+      return;
+    }
+
+    const onChange = () => {
+      forceUpdate();
+    };
+    provider.awareness.on("change", onChange);
+    return () => {
+      provider.awareness.off("change", onChange);
+    };
+  }, [provider]);
+
+  const states = provider?.awareness
+    ? getAwarenessStateSnapshot<T>(provider.awareness)
+    : {};
+
+  return {
+    id: provider?.awareness.clientID,
+    states,
+    setLocalState: (state: T) => {
+      provider?.awareness.setLocalState(state);
+    },
+  };
 }
