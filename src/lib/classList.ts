@@ -3,10 +3,6 @@
  */
 export class ClassList extends Set {
   toString() {
-    return Array.from(this).join(" ");
-  }
-
-  valueOf() {
-    return this.toString();
+    return Array.from(this).filter(Boolean).join(" ");
   }
 }

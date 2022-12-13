@@ -16,14 +16,15 @@ export type Id = string;
 
 export type TColumn = {
   id: Id;
+  createdAt: number;
   title: string;
 };
 
 export type TCard = {
   id: Id;
-  createdAt: number;
   authorId: Id;
   columnId: Id;
+  createdAt: number;
   description: string;
   reactions: Record<string, number>;
   reactionCount: number;
@@ -48,6 +49,10 @@ export function createId() {
   return nanoid(6);
 }
 
+function compareCreatedAt<T extends { createdAt: number }>(a: T, b: T) {
+  return a.createdAt - b.createdAt;
+}
+
 export function createCard(
   data: Pick<TCard, "authorId" | "columnId" | "description">
 ): TCard {
@@ -65,6 +70,7 @@ export function createCard(
 export function createColumn(data: Pick<TColumn, "title">): TColumn {
   return {
     id: createId(),
+    createdAt: Date.now(),
     title: data.title,
   };
 }
@@ -74,11 +80,6 @@ export function createColumn(data: Pick<TColumn, "title">): TColumn {
 // ---
 
 const doc = new Y.Doc();
-
-// doc.on("update", () => {
-//   console.log("Columns", doc.getMap("columns").toJSON());
-//   console.log("Card", doc.getMap("cards").toJSON());
-// });
 
 export const Context = createContext<{
   ref: {
@@ -178,9 +179,9 @@ export function useCards({ columnId }: { columnId?: string } = {}) {
 
   const cards = useMemo(
     () =>
-      Object.values(snapshot).filter(
-        (card) => !columnId || card.columnId === columnId
-      ),
+      Object.values(snapshot)
+        .filter((card) => !columnId || card.columnId === columnId)
+        .sort(compareCreatedAt),
     [snapshot, columnId]
   );
 
@@ -218,7 +219,10 @@ export function useColumns() {
     {}
   );
 
-  const columns = useMemo(() => Object.values(snapshot), [snapshot]);
+  const columns = useMemo(
+    () => Object.values(snapshot).sort(compareCreatedAt),
+    [snapshot]
+  );
 
   const create = (defaults: Pick<TColumn, "title">) =>
     mutate((map) => {
