@@ -5,18 +5,19 @@ import { Edit } from "./Edit";
 import * as style from "./style.module.css";
 
 import { Flex } from "~/src/components/Flex";
-import { TColumn, useCards } from "~/src/lib/data";
+import { TColumn, useCards, usePagination } from "~/src/lib/data";
 import { Card } from "~/src/components/Card";
 import { Button } from "~/src/components/Button";
+import { ClassList } from "~/src/lib/classList";
 
 type Props = {
   column: TColumn;
-  paginated?: boolean;
 };
 
-export function Column({ column, paginated = false }: Props) {
+export function Column({ column }: Props) {
   const [isEditing, setEditing] = useState(false);
   const cards = useCards({ columnId: column.id });
+  const pagination = usePagination();
 
   const handleEdit = () => {
     setEditing(true);
@@ -26,15 +27,29 @@ export function Column({ column, paginated = false }: Props) {
     setEditing(false);
   };
 
+  const handlePrevious = () => {
+    pagination.prev();
+  };
+
+  const handleNext = () => {
+    pagination.next();
+  };
+
+  const classList = new ClassList();
+  classList.add(style.column);
+  if (pagination.active) {
+    classList.add(style.single);
+  }
+
   return (
-    <section className={style.column}>
+    <section className={classList.toString()}>
       {isEditing ? (
         <Edit column={column} onFinish={handleFinish} />
       ) : (
         <header className={style.header}>
           <h1 className={style.title}>{column.title}</h1>
 
-          {paginated ? null : (
+          {pagination.active ? null : (
             <menu>
               <li className={style.contextual}>
                 <Button onClick={handleEdit}>Edit</Button>
@@ -45,23 +60,36 @@ export function Column({ column, paginated = false }: Props) {
       )}
 
       <ul className={style.cards}>
-        {cards.list.map((card) => (
-          <li key={card.id}>
-            <Card card={card} />
-          </li>
-        ))}
-        <li>
-          <Card.New defaults={{ columnId: column.id }} />
-        </li>
+        {pagination.active ? (
+          <Card card={pagination.card} />
+        ) : (
+          <>
+            {cards.list.map((card) => (
+              <li key={card.id}>
+                <Card card={card} />
+              </li>
+            ))}
+            <li>
+              <Card.New defaults={{ columnId: column.id }} />
+            </li>
+          </>
+        )}
       </ul>
 
-      {paginated ? (
-        <Flex as="ul">
+      {pagination.active ? (
+        <Flex as="ul" justify="space-between">
           <li>
-            <Button>← Previous</Button>
+            <Button onClick={handlePrevious} disabled={!pagination.hasPrev}>
+              ← Previous
+            </Button>
           </li>
           <li>
-            <Button>Next →</Button>
+            {pagination.index + 1} of {pagination.length}
+          </li>
+          <li>
+            <Button onClick={handleNext} disabled={!pagination.hasNext}>
+              Next →
+            </Button>
           </li>
         </Flex>
       ) : null}

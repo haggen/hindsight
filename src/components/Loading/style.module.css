@@ -1,5 +1,5 @@
 .loading {
-  background-color: whitesmoke;
+  background-color: var(--shade-hue);
   border-radius: 0.5rem;
   font-size: 1.5em;
   margin: 10% auto;

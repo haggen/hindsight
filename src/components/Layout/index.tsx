@@ -17,10 +17,16 @@ export function Layout({ children }: Props) {
   const { states: awareness } = useAwareness();
   const pagination = usePagination();
 
+  console.log("pagination", pagination);
+
   const count = Object.keys(awareness).length;
 
   const handleDiscuss = () => {
     pagination.next();
+  };
+
+  const handleBack = () => {
+    pagination.clear();
   };
 
   return (
@@ -49,9 +55,19 @@ export function Layout({ children }: Props) {
           </Flex>
         </Flex>
 
-        <Button onClick={handleDiscuss} bordered disabled={!pagination.hasNext}>
-          Discuss →
-        </Button>
+        {pagination.active ? (
+          <Button onClick={handleBack} bordered>
+            Board
+          </Button>
+        ) : (
+          <Button
+            onClick={handleDiscuss}
+            bordered
+            disabled={!pagination.hasNext}
+          >
+            Present
+          </Button>
+        )}
       </header>
 
       <main>{children}</main>

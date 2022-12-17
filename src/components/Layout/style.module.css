@@ -1,6 +1,7 @@
 .layout {
   margin: 0 auto;
-  width: min(100%, 1024px);
+  padding-inline: 3rem;
+  width: min(100%, 80rem);
 }
 
 .topbar {

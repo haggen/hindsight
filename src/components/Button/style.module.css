@@ -10,7 +10,7 @@
 }
 
 .button[disabled] {
-  color: gray !important;
+  color: var(--disabled-hue) !important;
 }
 
 .active {
@@ -26,7 +26,7 @@
 }
 
 .bordered {
-  border: 1px solid;
+  box-shadow: 0 0 0 1px currentColor;
   border-radius: 1.125em;
   padding-inline: 0.75rem;
 }

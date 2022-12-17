@@ -8,7 +8,7 @@ import { Button } from "~/src/components/Button";
 import { TCard, useCards } from "~/src/lib/data";
 import { Reaction } from "~/src/components/Reaction";
 
-const availableReactions = ["👍", "🎉", "😍", "😂", "😔", "🤔"];
+const availableReactions = ["👍"];
 
 type Props = {
   card: TCard;

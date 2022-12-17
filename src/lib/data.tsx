@@ -184,6 +184,58 @@ export enum SharedState {
 }
 
 /**
+ * Get and update pagination state.
+ */
+export function usePagination() {
+  const [{ index = -1 }, mutate] = useSharedMap<{
+    index: number;
+  }>(SharedState.Pagination);
+  const [cards] = useSharedMap<Record<string, TCard>>(SharedState.Cards);
+  const [columns] = useSharedMap<Record<string, TColumn>>(SharedState.Columns);
+
+  const list = Object.values(cards).sort(compareCard);
+  const active = index > -1;
+  const card = list[index];
+  const column = columns[card?.columnId];
+  const hasNext = list.length > 0 && index < list.length - 1;
+  const hasPrev = index > 0;
+  const length = list.length;
+
+  const next = () => {
+    mutate((map) => {
+      map.set("index", index + 1);
+    });
+  };
+
+  const prev = () => {
+    mutate((map) => {
+      map.set("index", index - 1);
+    });
+  };
+
+  const clear = () => {
+    mutate((map) => {
+      map.delete("index");
+    });
+  };
+
+  return active
+    ? ({
+        index,
+        length,
+        card,
+        column,
+        active,
+        hasNext,
+        hasPrev,
+        next,
+        prev,
+        clear,
+      } as const)
+    : ({ index, length, active, hasNext, hasPrev, next, prev, clear } as const);
+}
+
+/**
  * Get snapshot and mutate functions for cards.
  */
 export function useCards(filter: { columnId?: string } = {}) {
@@ -319,33 +371,4 @@ export function useAwareness<T extends object>() {
       provider?.awareness.setLocalState(state);
     },
   };
-}
-
-type Pagination = {
-  index: number;
-};
-
-/**
- * ...
- */
-export function usePagination() {
-  const [{ index = -1 }, mutate] = useSharedMap<Pagination>("pagination");
-  const { list } = useCards();
-  const card: TCard | undefined = list[index];
-  const hasNext = list.length > 0 && index < list.length;
-  const hasPrev = index > 0;
-
-  const next = () => {
-    mutate((map) => {
-      map.set("index", index + 1);
-    });
-  };
-
-  const prev = () => {
-    mutate((map) => {
-      map.set("index", index - 1);
-    });
-  };
-
-  return { index, card, hasNext, hasPrev, next, prev } as const;
 }
