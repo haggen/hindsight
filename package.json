@@ -6,7 +6,7 @@
   "source": "src/index.html",
   "browserslist": "> 1%, last 2 versions, not dead",
   "scripts": {
-    "lint": "eslint --fix src; prettier --write --loglevel silent .",
+    "lint": "eslint . && tsc --noemit && prettier --check .",
     "start": "parcel",
     "build": "parcel build"
   },
