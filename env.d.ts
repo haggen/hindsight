@@ -1,3 +1,6 @@
+/**
+ * Type CSS modules.
+ */
 declare module "*.module.css" {
   type Stylesheet = {
     [key: string]: string;
