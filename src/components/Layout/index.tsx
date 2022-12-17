@@ -6,7 +6,7 @@ import { Reaction } from "~/src/components/Reaction";
 import { Timer } from "~/src/components/Timer";
 import { Button } from "~/src/components/Button";
 import { Flex } from "~/src/components/Flex";
-import { useAwareness } from "~/src/lib/data";
+import { useAwareness, usePagination } from "~/src/lib/data";
 import { pluralize } from "~/src/lib/pluralize";
 
 type Props = {
@@ -14,9 +14,14 @@ type Props = {
 };
 
 export function Layout({ children }: Props) {
-  const { states } = useAwareness();
+  const { states: awareness } = useAwareness();
+  const pagination = usePagination();
 
-  const count = Object.keys(states).length;
+  const count = Object.keys(awareness).length;
+
+  const handleDiscuss = () => {
+    pagination.next();
+  };
 
   return (
     <div className={style.layout}>
@@ -30,7 +35,7 @@ export function Layout({ children }: Props) {
             title={pluralize(
               count,
               "There's only you.",
-              `There're another ${count - 1} people connected.`
+              `There are ${count} people connected.`
             )}
           >
             <Reaction reaction="👤" count={count} />
@@ -44,7 +49,7 @@ export function Layout({ children }: Props) {
           </Flex>
         </Flex>
 
-        <Button bordered disabled>
+        <Button onClick={handleDiscuss} bordered disabled={!pagination.hasNext}>
           Discuss →
         </Button>
       </header>

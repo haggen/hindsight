@@ -11,7 +11,7 @@ type Props = {
 };
 
 export function New({ defaults, onFinish }: Props) {
-  const [, { create }] = useCards();
+  const cards = useCards();
   const authorId = "123";
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -21,7 +21,7 @@ export function New({ defaults, onFinish }: Props) {
       description: HTMLTextAreaElement;
     };
 
-    create({
+    cards.create({
       columnId: defaults.columnId,
       authorId,
       description: inputs.description.value,

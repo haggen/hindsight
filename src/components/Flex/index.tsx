@@ -1,27 +1,27 @@
-import { ComponentPropsWithoutRef, CSSProperties } from "react";
+import { CSSProperties, ElementType } from "react";
 
 import * as style from "./style.module.css";
 
 import { ClassList } from "~/src/lib/classList";
+import { PolymorphicComponentProps } from "~/src/lib/shared";
 
-type AllowedTags = "div";
+type AcceptableElementType = "div" | "ul";
 
-type Props<E extends AllowedTags> = ComponentPropsWithoutRef<E> & {
-  as?: E;
+type Props = {
   align?: CSSProperties["alignItems"];
   justify?: CSSProperties["justifyContent"];
   gap?: CSSProperties["gap"];
 };
 
-export function Flex<E extends AllowedTags = "div">({
+export function Flex<E extends AcceptableElementType = "div">({
   as,
   children,
   align = "center",
   justify,
   gap,
   ...props
-}: Props<E>) {
-  const Component = as ?? "div";
+}: PolymorphicComponentProps<E, Props>) {
+  const Component = as ?? ("div" as ElementType);
 
   const classList = new ClassList();
   classList.add(style.flex);

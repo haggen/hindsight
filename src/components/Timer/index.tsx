@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import * as style from "./style.module.css";
 
 import { Button } from "~/src/components/Button";
-import { useSharedMap } from "~/src/lib/data";
+import { SharedState, useSharedMap } from "~/src/lib/data";
 import { ClassList } from "~/src/lib/classList";
 
 function format(target: number) {
@@ -32,8 +32,12 @@ function Display({ target }: { target: number }) {
   return <output>{text}</output>;
 }
 
+type Timer = {
+  target: number;
+};
+
 export function Timer() {
-  const [{ target }, mutate] = useSharedMap("timer", { target: 0 });
+  const [{ target = 0 }, mutate] = useSharedMap<Timer>(SharedState.Timer);
 
   const enabled = target > Date.now();
 

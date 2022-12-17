@@ -11,7 +11,7 @@ type Props = {
 };
 
 export function Edit({ card, onFinish }: Props) {
-  const [, { update, destroy }] = useCards();
+  const cards = useCards();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -20,7 +20,7 @@ export function Edit({ card, onFinish }: Props) {
       description: HTMLTextAreaElement;
     };
 
-    update({ id: card.id, description: inputs.description.value });
+    cards.update({ id: card.id, description: inputs.description.value });
 
     e.currentTarget.reset();
 
@@ -28,7 +28,7 @@ export function Edit({ card, onFinish }: Props) {
   };
 
   const handleDelete = () => {
-    destroy(card.id);
+    cards.destroy(card.id);
   };
 
   const handleCancel = () => {

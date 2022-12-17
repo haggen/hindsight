@@ -1,4 +1,3 @@
-import { nanoid } from "nanoid";
 import {
   createContext,
   ReactNode,
@@ -12,12 +11,12 @@ import {
 import { WebrtcProvider } from "y-webrtc";
 import * as Y from "yjs";
 import { Awareness } from "y-protocols/awareness";
+import { ulid } from "ulid";
 
 export type Id = string;
 
 export type TColumn = {
   id: Id;
-  createdAt: number;
   title: string;
 };
 
@@ -25,16 +24,8 @@ export type TCard = {
   id: Id;
   authorId: Id;
   columnId: Id;
-  createdAt: number;
   description: string;
-  reactions: Record<string, number>;
-  reactionCount: number;
-};
-
-export type State = {
-  columns: Record<Id, TColumn>;
-  cards: Record<Id, TCard>;
-  timer: number;
+  reactions: Record<string, number> & { total: number };
 };
 
 // ---
@@ -49,14 +40,30 @@ function useForceUpdate() {
   return useCallback(() => update({}), []);
 }
 
+/**
+ * Create unique URL-safe ID.
+ */
 export function createId() {
-  return nanoid(6);
+  return ulid();
 }
 
-function compareCreatedAt<T extends { createdAt: number }>(a: T, b: T) {
-  return a.createdAt - b.createdAt;
+/**
+ * Sort ID'ables.
+ */
+function compareId<T extends { id: Id }>(a: T, b: T) {
+  return a.id.localeCompare(b.id);
 }
 
+/**
+ * Sort cards.
+ */
+function compareCard(a: TCard, b: TCard) {
+  return a.columnId.localeCompare(b.columnId) || compareId(a, b);
+}
+
+/**
+ * Create new Card.
+ */
 export function createCard(
   data: Pick<TCard, "authorId" | "columnId" | "description">
 ): TCard {
@@ -64,17 +71,17 @@ export function createCard(
     id: createId(),
     authorId: data.authorId,
     columnId: data.columnId,
-    createdAt: Date.now(),
     description: data.description,
-    reactions: { "⬆️": 1 },
-    reactionCount: 1,
+    reactions: { "👍": 1, total: 1 },
   };
 }
 
+/**
+ * Create new Column.
+ */
 export function createColumn(data: Pick<TColumn, "title">): TColumn {
   return {
     id: createId(),
-    createdAt: Date.now(),
     title: data.title,
   };
 }
@@ -83,14 +90,14 @@ export function createColumn(data: Pick<TColumn, "title">): TColumn {
 // ---
 // ---
 
-export type Value = {
+export type ContextValue = {
   doc: Y.Doc;
   provider: WebrtcProvider | null;
 };
 
 const doc = new Y.Doc();
 
-export const Context = createContext<Value>({
+export const Context = createContext<ContextValue>({
   doc,
   provider: null,
 });
@@ -128,30 +135,27 @@ export function Provider({ roomId, children }: Props) {
   );
 }
 
-function getSnapshot<T extends object>(
-  map: Y.Map<T[keyof T]>,
-  initialValue: T = {} as T
+function getSharedMapSnapshot<T extends object>(
+  map: Y.Map<T[keyof T]>
+  // initialValue: T = {} as T
 ) {
-  return map.size === 0 ? initialValue : (map.toJSON() as T);
+  return map.toJSON() as T;
+  // return map.size === 0 ? initialValue : (map.toJSON() as T);
 }
 
 /**
  * Get snapshot and mutate function to a named Y.Map.
  */
-export function useSharedMap<T extends object>(
-  name: string,
-  initialValue: T = {} as T
-) {
+export function useSharedMap<T extends object>(name: string) {
   const { doc } = useContext(Context);
 
   const map = doc.getMap<T[keyof T]>(name);
-  const [snapshot, setSnapshot] = useState<T>(
-    getSnapshot<T>(map, initialValue)
-  );
+
+  const [snapshot, setSnapshot] = useState<T>(getSharedMapSnapshot<T>(map));
 
   useEffect(() => {
     const onChange = () => {
-      const value = getSnapshot<T>(map);
+      const value = getSharedMapSnapshot<T>(map);
       setSnapshot(value);
     };
     map.observe(onChange);
@@ -168,18 +172,34 @@ export function useSharedMap<T extends object>(
   return [snapshot, mutate] as const;
 }
 
+// ---
+// ---
+// ---
+
+export enum SharedState {
+  Cards = "cards",
+  Columns = "columns",
+  Timer = "timer",
+  Pagination = "pagination",
+}
+
 /**
  * Get snapshot and mutate functions for cards.
  */
-export function useCards({ columnId }: { columnId?: string } = {}) {
-  const [snapshot, mutate] = useSharedMap<Record<string, TCard>>("cards", {});
+export function useCards(filter: { columnId?: string } = {}) {
+  const [snapshot, mutate] = useSharedMap<Record<string, TCard>>(
+    SharedState.Cards
+  );
 
-  const cards = useMemo(
+  const list = useMemo(
     () =>
       Object.values(snapshot)
-        .filter((card) => !columnId || card.columnId === columnId)
-        .sort(compareCreatedAt),
-    [snapshot, columnId]
+        .filter(
+          ({ columnId }) =>
+            filter.columnId === undefined || filter.columnId === columnId
+        )
+        .sort(compareCard),
+    [snapshot, filter?.columnId]
   );
 
   const create = (
@@ -199,12 +219,28 @@ export function useCards({ columnId }: { columnId?: string } = {}) {
       map.set(data.id, { ...card, ...data });
     });
 
+  const react = (id: Id, reaction: string) =>
+    mutate((map) => {
+      const card = map.get(id);
+      if (!card) {
+        throw new Error(`Card "${id}" not found`);
+      }
+      map.set(id, {
+        ...card,
+        reactions: {
+          ...card.reactions,
+          [reaction]: (card.reactions[reaction] ?? 0) + 1,
+          total: card.reactions.total + 1,
+        },
+      });
+    });
+
   const destroy = (id: Id) =>
     mutate((map) => {
       map.delete(id);
     });
 
-  return [cards, { create, update, destroy }] as const;
+  return { list, map: snapshot, create, update, react, destroy } as const;
 }
 
 /**
@@ -212,12 +248,11 @@ export function useCards({ columnId }: { columnId?: string } = {}) {
  */
 export function useColumns() {
   const [snapshot, mutate] = useSharedMap<Record<string, TColumn>>(
-    "columns",
-    {}
+    SharedState.Columns
   );
 
   const columns = useMemo(
-    () => Object.values(snapshot).sort(compareCreatedAt),
+    () => Object.values(snapshot).sort(compareId),
     [snapshot]
   );
 
@@ -284,4 +319,33 @@ export function useAwareness<T extends object>() {
       provider?.awareness.setLocalState(state);
     },
   };
+}
+
+type Pagination = {
+  index: number;
+};
+
+/**
+ * ...
+ */
+export function usePagination() {
+  const [{ index = -1 }, mutate] = useSharedMap<Pagination>("pagination");
+  const { list } = useCards();
+  const card: TCard | undefined = list[index];
+  const hasNext = list.length > 0 && index < list.length;
+  const hasPrev = index > 0;
+
+  const next = () => {
+    mutate((map) => {
+      map.set("index", index + 1);
+    });
+  };
+
+  const prev = () => {
+    mutate((map) => {
+      map.set("index", index - 1);
+    });
+  };
+
+  return { index, card, hasNext, hasPrev, next, prev } as const;
 }

@@ -4,17 +4,19 @@ import { New } from "./New";
 import { Edit } from "./Edit";
 import * as style from "./style.module.css";
 
+import { Flex } from "~/src/components/Flex";
 import { TColumn, useCards } from "~/src/lib/data";
 import { Card } from "~/src/components/Card";
 import { Button } from "~/src/components/Button";
 
 type Props = {
   column: TColumn;
+  paginated?: boolean;
 };
 
-export function Column({ column }: Props) {
+export function Column({ column, paginated = false }: Props) {
   const [isEditing, setEditing] = useState(false);
-  const [cards] = useCards({ columnId: column.id });
+  const cards = useCards({ columnId: column.id });
 
   const handleEdit = () => {
     setEditing(true);
@@ -32,16 +34,18 @@ export function Column({ column }: Props) {
         <header className={style.header}>
           <h1 className={style.title}>{column.title}</h1>
 
-          <menu>
-            <li className={style.contextual}>
-              <Button onClick={handleEdit}>Edit</Button>
-            </li>
-          </menu>
+          {paginated ? null : (
+            <menu>
+              <li className={style.contextual}>
+                <Button onClick={handleEdit}>Edit</Button>
+              </li>
+            </menu>
+          )}
         </header>
       )}
 
       <ul className={style.cards}>
-        {cards.map((card) => (
+        {cards.list.map((card) => (
           <li key={card.id}>
             <Card card={card} />
           </li>
@@ -50,6 +54,17 @@ export function Column({ column }: Props) {
           <Card.New defaults={{ columnId: column.id }} />
         </li>
       </ul>
+
+      {paginated ? (
+        <Flex as="ul">
+          <li>
+            <Button>← Previous</Button>
+          </li>
+          <li>
+            <Button>Next →</Button>
+          </li>
+        </Flex>
+      ) : null}
     </section>
   );
 }
