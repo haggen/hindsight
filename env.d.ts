@@ -1,11 +1,11 @@
 /**
- * Type CSS modules.
+ * Stylesheet module.
  */
 declare module "*.module.css" {
-  type Stylesheet = {
+  const stylesheet: {
     [key: string]: string;
   };
-  export default Stylesheet;
+  export = stylesheet;
 }
 
 /**
