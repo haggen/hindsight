@@ -43,6 +43,9 @@
     // Prefer `type` over `interface`.
     "@typescript-eslint/consistent-type-definitions": ["error", "type"],
 
+    // No unused variables.
+    "@typescript-eslint/no-unused-vars": "error",
+
     // Insert blank lines between import groups and categorize ~/* paths.
     "import/order": [
       "error",
