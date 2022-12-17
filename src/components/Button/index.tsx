@@ -1,15 +1,22 @@
-import { ComponentPropsWithoutRef } from "react";
+import { ElementType } from "react";
 
 import * as style from "./style.module.css";
 
 import { ClassList } from "~/src/lib/classList";
+import { PolymorphicComponentProps } from "~/src/lib/shared";
 
-type Props = ComponentPropsWithoutRef<"button"> & {
+type Props = {
   color?: "active" | "negative" | "positive";
   bordered?: boolean;
 };
 
-export function Button({ color, bordered, ...props }: Props) {
+export function Button<E extends "button" | "a" = "button">({
+  as,
+  color,
+  bordered,
+  ...props
+}: PolymorphicComponentProps<E, Props>) {
+  const Component = as ?? ("button" as ElementType);
   const classList = new ClassList();
   classList.add(style.button);
   if (color) {
@@ -20,5 +27,5 @@ export function Button({ color, bordered, ...props }: Props) {
   }
   props.type ??= "button";
   props.className ??= classList.toString();
-  return <button {...props} />;
+  return <Component {...props} />;
 }
