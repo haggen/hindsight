@@ -56,7 +56,7 @@ export function Layout({ children }: Props) {
   return (
     <div className={style.layout}>
       <Flex as="header" className={style.topbar}>
-        <Flex justify="space-between" style={{ flex: "1 0 auto" }}>
+        <Flex justify="space-between" style={{ flex: "1 0 0" }}>
           <h1>
             <a href="/">Hindsight</a>
           </h1>
@@ -91,7 +91,7 @@ export function Layout({ children }: Props) {
 
         <Display target={timer.target} active={timer.active} />
 
-        <Flex justify="space-between" style={{ flex: "1 0 auto" }}>
+        <Flex justify="space-between" style={{ flex: "1 0 0" }}>
           <Flex as="menu" style={{ paddingInlineStart: "3.375rem" }}>
             <li>
               <Button disabled>Play</Button>

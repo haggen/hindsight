@@ -8,7 +8,7 @@
 }
 
 .topbar {
-  height: 6.5rem;
+  flex: 0 0 6.5rem;
 }
 
 .topbar h1 {
@@ -17,7 +17,12 @@
 }
 
 .main {
-  flex-grow: 1;
+  flex: 1 0 auto;
+  display: flex;
+}
+
+.main > * {
+  flex: 1 0 auto;
 }
 
 .footer {
