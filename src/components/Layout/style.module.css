@@ -1,14 +1,14 @@
 .layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vmin;
   margin: 0 auto;
   padding-inline: 3rem;
   width: min(100%, 80rem);
 }
 
 .topbar {
-  align-items: center;
-  display: flex;
-  height: 5rem;
-  justify-content: space-between;
+  height: 6.5rem;
 }
 
 .topbar h1 {
@@ -17,9 +17,16 @@
 }
 
 .main {
+  flex-grow: 1;
 }
 
 .footer {
+  font-size: 0.875rem;
   padding-block: 1.5rem;
   text-align: center;
+}
+
+.footer a {
+  color: var(--link-hue);
+  text-decoration: underline;
 }

@@ -126,7 +126,7 @@ export function Provider({ roomId, children }: Props) {
       providerRef.current?.destroy();
       providerRef.current = null;
     };
-  }, [roomId]);
+  }, [forceUpdate, roomId]);
 
   return (
     <Context.Provider value={{ doc, provider: providerRef.current }}>
@@ -163,11 +163,14 @@ export function useSharedMap<T extends object>(name: string) {
     return () => {
       map.unobserve(onChange);
     };
-  }, []);
+  }, [map]);
 
-  const mutate = useCallback((updator: (map: Y.Map<T[keyof T]>) => void) => {
-    doc.transact(() => updator(map));
-  }, []);
+  const mutate = useCallback(
+    (updator: (map: Y.Map<T[keyof T]>) => void) => {
+      doc.transact(() => updator(map));
+    },
+    [doc, map]
+  );
 
   return [snapshot, mutate] as const;
 }
@@ -358,7 +361,7 @@ export function useAwareness<T extends object>() {
     return () => {
       provider.awareness.off("change", onChange);
     };
-  }, [provider]);
+  }, [forceUpdate, provider]);
 
   const states = provider?.awareness
     ? getAwarenessStateSnapshot<T>(provider.awareness)

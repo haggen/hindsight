@@ -5,9 +5,10 @@ import * as style from "./style.module.css";
 import { ClassList } from "~/src/lib/classList";
 import { PolymorphicComponentProps } from "~/src/lib/shared";
 
-type AcceptableElementType = "div" | "ul";
+type AcceptableElementType = "div" | "ul" | "header" | "menu";
 
 type Props = {
+  direction?: CSSProperties["flexDirection"];
   align?: CSSProperties["alignItems"];
   justify?: CSSProperties["justifyContent"];
   gap?: CSSProperties["gap"];
@@ -16,6 +17,7 @@ type Props = {
 export function Flex<E extends AcceptableElementType = "div">({
   as,
   children,
+  direction,
   align = "center",
   justify,
   gap,
@@ -28,17 +30,15 @@ export function Flex<E extends AcceptableElementType = "div">({
   if (props.className) {
     classList.add(props.className);
   }
-  const className = classList.toString();
+  props.className = classList.toString();
 
-  props.style ??= {
+  props.style = {
+    flexDirection: direction,
     alignItems: align,
     justifyContent: justify,
     gap,
+    ...props.style,
   };
 
-  return (
-    <Component className={className} {...props}>
-      {children}
-    </Component>
-  );
+  return <Component {...props}>{children}</Component>;
 }

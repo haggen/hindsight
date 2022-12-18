@@ -1,5 +1,5 @@
 /**
- * Set of strings that can assigned to element's className.
+ * Build a set of CSS classes and assign it to element's className.
  */
 export class ClassList extends Set {
   toString() {
