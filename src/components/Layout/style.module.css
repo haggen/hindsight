@@ -16,6 +16,14 @@
   font-weight: 900;
 }
 
+.topbar h1 a {
+  border-radius: 0.1px;
+}
+
+.topbar h1 a:focus {
+  outline-offset: 0.25rem;
+}
+
 .main {
   flex: 1 0 auto;
   display: flex;

@@ -1,3 +1,5 @@
+import * as style from "./style.module.css";
+
 import { Emoji } from "~/src/components/Emoji";
 
 type Props<T extends string> = {
@@ -19,7 +21,7 @@ export function Reaction<T extends string>({
   };
 
   return (
-    <button onClick={handleClick}>
+    <button className={style.reaction} onClick={handleClick}>
       <Emoji emoji={reaction} />
       <small>×{count ?? 0}</small>
     </button>
