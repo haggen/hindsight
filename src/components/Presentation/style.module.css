@@ -1,0 +1,9 @@
+.finish {
+  padding-block: 6rem;
+  text-align: center;
+}
+
+.finish h1 {
+  font-size: 1.5rem;
+  font-weight: 900;
+}

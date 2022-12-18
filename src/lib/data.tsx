@@ -55,10 +55,20 @@ function compareId<T extends { id: Id }>(a: T, b: T) {
 }
 
 /**
- * Sort cards.
+ * Compare cards by ID.
  */
-function compareCard(a: TCard, b: TCard) {
+function compareCardsById(a: TCard, b: TCard) {
   return a.columnId.localeCompare(b.columnId) || compareId(a, b);
+}
+
+/**
+ * Compare cards by reactions.
+ */
+function compareCardsByReactions(a: TCard, b: TCard) {
+  return (
+    a.columnId.localeCompare(b.columnId) ||
+    a.reactions.total - b.reactions.total
+  );
 }
 
 /**
@@ -187,16 +197,16 @@ export enum SharedState {
 }
 
 /**
- * Get and update pagination state.
+ * Get and mutate presentation state.
  */
-export function usePagination() {
+export function usePresentation() {
   const [{ index = -1 }, mutate] = useSharedMap<{
     index: number;
   }>(SharedState.Pagination);
   const [cards] = useSharedMap<Record<string, TCard>>(SharedState.Cards);
   const [columns] = useSharedMap<Record<string, TColumn>>(SharedState.Columns);
 
-  const list = Object.values(cards).sort(compareCard);
+  const list = Object.values(cards).sort(compareCardsByReactions);
   const active = index > -1;
   const card = list[index];
   const column = columns[card?.columnId];
@@ -224,18 +234,27 @@ export function usePagination() {
 
   return active
     ? ({
+        active,
         index,
         length,
         card,
         column,
-        active,
         hasNext,
         hasPrev,
         next,
         prev,
         clear,
       } as const)
-    : ({ index, length, active, hasNext, hasPrev, next, prev, clear } as const);
+    : ({
+        active,
+        index,
+        length,
+        hasNext,
+        hasPrev,
+        next,
+        prev,
+        clear,
+      } as const);
 }
 
 /**
@@ -253,7 +272,7 @@ export function useCards(filter: { columnId?: string } = {}) {
           ({ columnId }) =>
             filter.columnId === undefined || filter.columnId === columnId
         )
-        .sort(compareCard),
+        .sort(compareCardsById),
     [snapshot, filter?.columnId]
   );
 

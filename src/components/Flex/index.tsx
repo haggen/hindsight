@@ -18,7 +18,7 @@ export function Flex<E extends AcceptableElementType = "div">({
   as,
   children,
   direction,
-  align = "center",
+  align = direction !== "column" ? "center" : undefined,
   justify,
   gap,
   ...props

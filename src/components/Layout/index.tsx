@@ -9,7 +9,7 @@ import { Flex } from "~/src/components/Flex";
 import {
   SharedState,
   useAwareness,
-  usePagination,
+  usePresentation,
   useSharedMap,
 } from "~/src/lib/data";
 import { pluralize } from "~/src/lib/pluralize";
@@ -40,7 +40,7 @@ type Props = {
 
 export function Layout({ children }: Props) {
   const { states: awareness } = useAwareness();
-  const pagination = usePagination();
+  const pagination = usePresentation();
   const timer = useTimer();
 
   const count = Object.keys(awareness).length;

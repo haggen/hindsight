@@ -1,8 +1,8 @@
 import { useLocation, useRoute } from "wouter";
 
 import { Layout } from "~/src/components/Layout";
-import { Board } from "~/src/components/Board";
 import { createId, Provider } from "~/src/lib/data";
+import { Router } from "~/src/components/Router";
 
 type Params = {
   boardId: string;
@@ -23,7 +23,7 @@ export function App() {
   return (
     <Provider roomId={params.boardId}>
       <Layout>
-        <Board />
+        <Router />
       </Layout>
     </Provider>
   );
