@@ -3,14 +3,14 @@
 html {
   scrollbar-gutter: stable;
 
-  --negative-hue: #dd0e0e;
-  --active-hue: #9747ff;
-  --positive-hue: #188b4b;
-  --outline-hue: #c0c0c0;
-  --shade-hue: #f5f5f5;
-  --disabled-hue: #999;
-  --placeholder-hue: #999;
-  --link-hue: #0e53dd;
+  --color-negative: #dd0e0e;
+  --color-active: #9747ff;
+  --color-positive: #188b4b;
+  --color-outline: #c0c0c0;
+  --color-shade: #f5f5f5;
+  --color-disabled: #999;
+  --color-placeholder: #999;
+  --color-link: #0e53dd;
 }
 
 @media screen and (width > 1920px) {
@@ -20,5 +20,5 @@ html {
 }
 
 ::placeholder {
-  color: var(--placeholder-hue);
+  color: var(--color-placeholder);
 }

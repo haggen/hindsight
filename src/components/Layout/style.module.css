@@ -32,6 +32,6 @@
 }
 
 .footer a {
-  color: var(--link-hue);
+  color: var(--color-link);
   text-decoration: underline;
 }

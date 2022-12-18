@@ -16,7 +16,7 @@
 }
 
 .placeholder {
-  border: 1px dashed var(--outline-hue);
+  border: 1px dashed var(--color-outline);
 }
 
 .form {

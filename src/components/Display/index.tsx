@@ -49,5 +49,12 @@ export function Display({ target, active = false }: Props) {
     classList.add(style.active);
   }
 
-  return <output ref={elementRef} className={classList.toString()} />;
+  return (
+    <output
+      ref={elementRef}
+      className={classList.toString()}
+      aria-label="Time left for timer to go off."
+      aria-live={active ? "polite" : "off"}
+    />
+  );
 }

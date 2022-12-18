@@ -128,13 +128,14 @@ export function Layout({ children }: Props) {
 
       <footer className={style.footer}>
         <p>
-          Apache-2.0 © 2022 Arthur Corenzan.{" "}
+          Made by <a href="https://twitter.com/haggen">me</a>. Source and
+          feedback on{" "}
           <a
             href="https://github.com/haggen/hindsight"
             target="_blank"
             rel="noreferrer"
           >
-            Source available on GitHub
+            GitHub
           </a>
           .
         </p>

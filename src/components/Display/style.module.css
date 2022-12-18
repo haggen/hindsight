@@ -2,11 +2,10 @@
   background-color: black;
   border-radius: 0.25rem;
   color: white;
-  font-family: monospace;
-  line-height: 1;
-  padding: 0.75rem;
+  font: 1rem/2.5 monospace;
+  padding-inline: 1rem;
 }
 
 .display.active {
-  background-color: var(--active-hue);
+  background-color: var(--color-active);
 }
