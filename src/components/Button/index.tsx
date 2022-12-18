@@ -1,6 +1,6 @@
 import { ElementType } from "react";
 
-import * as style from "./style.module.css";
+import * as classes from "./style.module.css";
 
 import { ClassList } from "~/src/lib/classList";
 import { PolymorphicComponentProps } from "~/src/lib/shared";
@@ -18,12 +18,12 @@ export function Button<E extends "button" | "a" = "button">({
 }: PolymorphicComponentProps<E, Props>) {
   const Component = as ?? ("button" as ElementType);
   const classList = new ClassList();
-  classList.add(style.button);
+  classList.add(classes.button);
   if (color) {
-    classList.add(style[color]);
+    classList.add(classes[color]);
   }
   if (bordered) {
-    classList.add(style.bordered);
+    classList.add(classes.bordered);
   }
   props.type ??= "button";
   props.className ??= classList.toString();

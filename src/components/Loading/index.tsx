@@ -1,10 +1,10 @@
-import * as style from "./style.module.css";
+import * as classes from "./style.module.css";
 
 import { Emoji } from "~/src/components/Emoji";
 
 export function Loading() {
   return (
-    <div className={style.loading} aria-live="polite">
+    <div className={classes.loading} aria-live="polite">
       <h1>
         <Emoji emoji="⌛" />
       </h1>

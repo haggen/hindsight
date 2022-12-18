@@ -1,6 +1,6 @@
 import { FormEvent } from "react";
 
-import * as style from "./style.module.css";
+import * as classes from "./style.module.css";
 
 import { TColumn, useColumns } from "~/src/lib/data";
 import { Button } from "~/src/components/Button";
@@ -36,18 +36,18 @@ export function Edit({ column, onFinish }: Props) {
   };
 
   return (
-    <form className={style.form} onSubmit={handleSubmit}>
+    <form className={classes.form} onSubmit={handleSubmit}>
       <input
         type="text"
         name="title"
         defaultValue={column.title}
         placeholder="Type something…"
-        className={style.title}
+        className={classes.title}
         autoFocus
         required
       />
 
-      <menu className={style.menu}>
+      <menu className={classes.menu}>
         <li>
           <Button onClick={handleDelete} color="negative">
             Delete

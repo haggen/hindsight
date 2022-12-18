@@ -1,6 +1,6 @@
 import { FormEvent } from "react";
 
-import * as style from "./style.module.css";
+import * as classes from "./style.module.css";
 
 import { TColumn, useColumns } from "~/src/lib/data";
 import { Button } from "~/src/components/Button";
@@ -25,18 +25,18 @@ export function New({ defaults }: Props) {
   };
 
   return (
-    <section className={style.column}>
-      <form className={style.form} onSubmit={handleSubmit}>
+    <section className={classes.column}>
+      <form className={classes.form} onSubmit={handleSubmit}>
         <input
           type="text"
-          className={style.title}
+          className={classes.title}
           name="title"
           placeholder="Type something…"
           defaultValue={defaults?.title}
           autoFocus
           required
         />
-        <menu className={style.menu}>
+        <menu className={classes.menu}>
           <li>
             <Button type="submit">Create new column</Button>
           </li>

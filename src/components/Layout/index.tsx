@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-import * as style from "./style.module.css";
+import * as classes from "./style.module.css";
 
 import { Reaction } from "~/src/components/Reaction";
 import { Display } from "~/src/components/Display";
@@ -54,8 +54,8 @@ export function Layout({ children }: Props) {
   };
 
   return (
-    <div className={style.layout}>
-      <Flex as="header" className={style.topbar}>
+    <div className={classes.layout}>
+      <Flex as="header" className={classes.topbar}>
         <Flex justify="space-between" style={{ flex: "1 0 0" }}>
           <h1>
             <a href="/">Hindsight</a>
@@ -124,9 +124,9 @@ export function Layout({ children }: Props) {
         </Flex>
       </Flex>
 
-      <main className={style.main}>{children}</main>
+      <main className={classes.main}>{children}</main>
 
-      <footer className={style.footer}>
+      <footer className={classes.footer}>
         <p>
           Made by <a href="https://twitter.com/haggen">me</a>. Source and
           feedback on{" "}

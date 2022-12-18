@@ -1,6 +1,6 @@
 import { CSSProperties, ElementType } from "react";
 
-import * as style from "./style.module.css";
+import * as classes from "./style.module.css";
 
 import { ClassList } from "~/src/lib/classList";
 import { PolymorphicComponentProps } from "~/src/lib/shared";
@@ -26,7 +26,7 @@ export function Flex<E extends AcceptableElementType = "div">({
   const Component = as ?? ("div" as ElementType);
 
   const classList = new ClassList();
-  classList.add(style.flex);
+  classList.add(classes.flex);
   if (props.className) {
     classList.add(props.className);
   }

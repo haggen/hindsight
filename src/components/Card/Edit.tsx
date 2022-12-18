@@ -1,6 +1,6 @@
 import { FormEvent, KeyboardEvent } from "react";
 
-import * as style from "./style.module.css";
+import * as classes from "./style.module.css";
 
 import { Button } from "~/src/components/Button";
 import { TCard, useCards } from "~/src/lib/data";
@@ -53,7 +53,7 @@ export function Edit({ card, onFinish }: Props) {
   };
 
   return (
-    <form className={style.form} onSubmit={handleSubmit}>
+    <form className={classes.form} onSubmit={handleSubmit}>
       <textarea
         name="description"
         placeholder="Type something…"
@@ -63,7 +63,7 @@ export function Edit({ card, onFinish }: Props) {
         defaultValue={card?.description}
         required
       />
-      <menu className={style.menu}>
+      <menu className={classes.menu}>
         <li>
           <Button onClick={handleDelete} color="negative">
             Delete

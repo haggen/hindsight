@@ -1,4 +1,4 @@
-import * as style from "./style.module.css";
+import * as classes from "./style.module.css";
 
 const labels = {
   "👍": "Thumbs up",
@@ -13,7 +13,7 @@ type Props = {
 
 export function Emoji({ emoji }: Props) {
   return (
-    <span className={style.emoji} role="img" aria-label={labels[emoji]}>
+    <span className={classes.emoji} role="img" aria-label={labels[emoji]}>
       {emoji}
     </span>
   );

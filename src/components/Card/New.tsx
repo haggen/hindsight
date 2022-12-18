@@ -1,6 +1,6 @@
 import { FormEvent, KeyboardEvent } from "react";
 
-import * as style from "./style.module.css";
+import * as classes from "./style.module.css";
 
 import { Button } from "~/src/components/Button";
 import { TCard, useCards } from "~/src/lib/data";
@@ -54,8 +54,8 @@ export function New({ defaults, onFinish }: Props) {
   };
 
   return (
-    <div className={style.placeholder}>
-      <form className={style.form} onSubmit={handleSubmit}>
+    <div className={classes.placeholder}>
+      <form className={classes.form} onSubmit={handleSubmit}>
         <textarea
           name="description"
           placeholder="Type something…"
@@ -65,7 +65,7 @@ export function New({ defaults, onFinish }: Props) {
           autoFocus
           required
         />
-        <menu className={style.menu}>
+        <menu className={classes.menu}>
           <li>
             <Button type="submit">Create new card</Button>
           </li>

@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Edit } from "./Edit";
 import { New } from "./New";
-import * as style from "./style.module.css";
+import * as classes from "./style.module.css";
 
 import { Button } from "~/src/components/Button";
 import { TCard, useCards } from "~/src/lib/data";
@@ -21,7 +21,7 @@ export function Card({ card }: Props) {
 
   if (isEditing) {
     return (
-      <article className={style.card}>
+      <article className={classes.card}>
         <Edit card={card} onFinish={() => setEditing(false)} />
       </article>
     );
@@ -38,10 +38,10 @@ export function Card({ card }: Props) {
   };
 
   return (
-    <article className={style.card}>
+    <article className={classes.card}>
       <p>{card.description}</p>
 
-      <menu className={style.menu}>
+      <menu className={classes.menu}>
         <li>
           <ul>
             {availableReactions.map((reaction) => (
@@ -56,7 +56,7 @@ export function Card({ card }: Props) {
           </ul>
         </li>
 
-        <li className={style.contextual}>
+        <li className={classes.contextual}>
           {card.authorId === presence.id ? (
             <Button onClick={handleEdit}>Edit</Button>
           ) : null}

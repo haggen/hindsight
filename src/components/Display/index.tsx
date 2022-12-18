@@ -1,6 +1,6 @@
 import { useCallback, useLayoutEffect, useRef } from "react";
 
-import * as style from "./style.module.css";
+import * as classes from "./style.module.css";
 
 import { ClassList } from "~/src/lib/classList";
 
@@ -44,9 +44,9 @@ export function Display({ target, active = false }: Props) {
   }, [update]);
 
   const classList = new ClassList();
-  classList.add(style.display);
+  classList.add(classes.display);
   if (active) {
-    classList.add(style.active);
+    classList.add(classes.active);
   }
 
   return (

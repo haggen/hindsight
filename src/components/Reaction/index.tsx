@@ -1,4 +1,4 @@
-import * as style from "./style.module.css";
+import * as classes from "./style.module.css";
 
 import { Emoji } from "~/src/components/Emoji";
 
@@ -21,7 +21,7 @@ export function Reaction<T extends string>({
   };
 
   return (
-    <button className={style.reaction} onClick={handleClick}>
+    <button className={classes.reaction} onClick={handleClick}>
       <Emoji emoji={reaction} />
       <small>×{count ?? 0}</small>
     </button>

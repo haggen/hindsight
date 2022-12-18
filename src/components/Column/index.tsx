@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { New } from "./New";
 import { Edit } from "./Edit";
-import * as style from "./style.module.css";
+import * as classes from "./style.module.css";
 
 import { Flex } from "~/src/components/Flex";
 import { TColumn, useCards, usePagination } from "~/src/lib/data";
@@ -36,9 +36,9 @@ export function Column({ column }: Props) {
   };
 
   const classList = new ClassList();
-  classList.add(style.column);
+  classList.add(classes.column);
   if (pagination.active) {
-    classList.add(style.single);
+    classList.add(classes.single);
   }
 
   return (
@@ -46,12 +46,12 @@ export function Column({ column }: Props) {
       {isEditing ? (
         <Edit column={column} onFinish={handleFinish} />
       ) : (
-        <header className={style.header}>
-          <h1 className={style.title}>{column.title}</h1>
+        <header className={classes.header}>
+          <h1 className={classes.title}>{column.title}</h1>
 
           {pagination.active ? null : (
             <menu>
-              <li className={style.contextual}>
+              <li className={classes.contextual}>
                 <Button onClick={handleEdit}>Edit</Button>
               </li>
             </menu>
@@ -59,7 +59,7 @@ export function Column({ column }: Props) {
         </header>
       )}
 
-      <ul className={style.cards}>
+      <ul className={classes.cards}>
         {pagination.active ? (
           <Card card={pagination.card} />
         ) : (
