@@ -12,6 +12,7 @@
     "plugin:import/recommended",
     "plugin:react/recommended",
     "plugin:react/jsx-runtime",
+    "plugin:react-hooks/recommended",
     "prettier"
   ],
   "parser": "@typescript-eslint/parser",
@@ -26,10 +27,13 @@
       "typescript": {}
     }
   },
-  "plugins": ["@typescript-eslint", "react", "import", "promise"],
+  "plugins": ["@typescript-eslint", "import"],
   "rules": {
     // Warn about console leftovers.
     "no-console": "warn",
+
+    // Wrong dependencies cause errors, so it should be an error.
+    "react-hooks/exhaustive-deps": "error",
 
     // If enabled it whines about CSS module imported classes.
     "@typescript-eslint/no-unsafe-assignment": "off",
