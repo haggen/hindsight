@@ -61,6 +61,7 @@ export function New({ defaults, onFinish }: Props) {
           placeholder="Type something…"
           rows={3}
           onKeyDown={handleKeyDown}
+          maxLength={112}
           defaultValue={defaults.description}
           autoFocus
           required

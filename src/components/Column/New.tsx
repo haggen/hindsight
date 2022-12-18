@@ -33,6 +33,7 @@ export function New({ defaults }: Props) {
           name="title"
           placeholder="Type something…"
           defaultValue={defaults?.title}
+          maxLength={26}
           autoFocus
           required
         />

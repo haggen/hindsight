@@ -60,6 +60,7 @@ export function Edit({ card, onFinish }: Props) {
         onKeyDown={handleKeyDown}
         rows={3}
         autoFocus
+        maxLength={112}
         defaultValue={card?.description}
         required
       />

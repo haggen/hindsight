@@ -43,6 +43,7 @@ export function Edit({ column, onFinish }: Props) {
         defaultValue={column.title}
         placeholder="Type something…"
         className={classes.title}
+        maxLength={26}
         autoFocus
         required
       />
