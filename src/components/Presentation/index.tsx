@@ -12,10 +12,6 @@ export function Presentation() {
   const presentation = usePresentation();
   const [finished, setFinished] = useState(false);
 
-  if (!presentation.active) {
-    return null;
-  }
-
   const handleBack = () => {
     if (finished) {
       setFinished(false);
@@ -32,6 +28,10 @@ export function Presentation() {
     }
   };
 
+  if (!presentation.active) {
+    return null;
+  }
+
   return (
     <div>
       <Column column={presentation.column} header={!finished}>
@@ -47,18 +47,15 @@ export function Presentation() {
         )}
 
         <Flex as="ul" justify="space-between">
-          <li>
-            <Button
-              onClick={handleBack}
-              disabled={!(presentation.hasPrev || finished)}
-            >
+          <li style={{ flex: "0 0 10rem" }}>
+            <Button onClick={handleBack} disabled={presentation.index === 0}>
               ← Back
             </Button>
           </li>
           <li>
             {presentation.index + 1} of {presentation.length}
           </li>
-          <li>
+          <li style={{ flex: "0 0 10rem", textAlign: "end" }}>
             <Button onClick={handleNext} disabled={finished}>
               {presentation.hasNext ? "Next" : "Finish"} →
             </Button>

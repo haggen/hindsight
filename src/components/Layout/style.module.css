@@ -3,8 +3,8 @@
   flex-direction: column;
   height: 100vmin;
   margin: 0 auto;
+  min-width: 64rem;
   padding-inline: 3rem;
-  width: min(100%, 80rem);
 }
 
 .topbar {
