@@ -1,9 +1,16 @@
 .finish {
-  padding-block: 6rem;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 15rem;
+  justify-content: center;
   text-align: center;
 }
 
 .finish h1 {
   font-size: 1.5rem;
   font-weight: 900;
+}
+
+.card {
+  flex: 0 0 calc(15rem - 2.5rem - 1rem); /* Header + gap offset. */
 }

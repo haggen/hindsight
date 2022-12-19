@@ -1,6 +1,5 @@
 .button {
   align-items: center;
-  border-radius: 0.25em;
   cursor: pointer;
   display: inline flex;
   font-size: 0.875rem;

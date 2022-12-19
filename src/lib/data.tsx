@@ -361,6 +361,29 @@ function getAwarenessStateSnapshot<T extends object>(awareness: Awareness) {
 }
 
 /**
+ * Time state.
+ */
+export function useTimer() {
+  const [{ target = 0 }, mutate] = useSharedMap<{
+    target: number;
+  }>(SharedState.Timer);
+
+  const active = target > Date.now();
+
+  const addFive = () =>
+    mutate((map) => {
+      map.set("target", Math.max(target, Date.now()) + 1000 * 60 * 5);
+    });
+
+  const clear = () =>
+    mutate((map) => {
+      map.set("target", Date.now());
+    });
+
+  return { active, target, addFive, clear } as const;
+}
+
+/**
  * Get and subscribe to awareness state.
  */
 export function useAwareness<T extends object>() {

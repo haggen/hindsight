@@ -19,7 +19,7 @@ export function Presentation() {
   const handleBack = () => {
     if (finished) {
       setFinished(false);
-    } else {
+    } else if (presentation.hasPrev) {
       presentation.prev();
     }
   };
@@ -38,21 +38,21 @@ export function Presentation() {
         {finished ? (
           <div className={classes.finish}>
             <h1>You’re all done.</h1>
-            <figure>
-              <blockquote>
-                <p>Be willing to be a beginner every single morning.</p>
-              </blockquote>
-              <figcaption>― Meister Eckhart</figcaption>
-            </figure>
+            <p>Congratulations on another finished sprint.</p>
           </div>
         ) : (
-          <Card card={presentation.card} />
+          <div className={classes.card}>
+            <Card card={presentation.card} />
+          </div>
         )}
 
         <Flex as="ul" justify="space-between">
           <li>
-            <Button onClick={handleBack} disabled={!presentation.hasPrev}>
-              ← Previous
+            <Button
+              onClick={handleBack}
+              disabled={!(presentation.hasPrev || finished)}
+            >
+              ← Back
             </Button>
           </li>
           <li>

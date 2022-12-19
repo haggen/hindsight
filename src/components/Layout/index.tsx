@@ -6,33 +6,8 @@ import { Reaction } from "~/src/components/Reaction";
 import { Display } from "~/src/components/Display";
 import { Button } from "~/src/components/Button";
 import { Flex } from "~/src/components/Flex";
-import {
-  SharedState,
-  useAwareness,
-  usePresentation,
-  useSharedMap,
-} from "~/src/lib/data";
+import { useAwareness, usePresentation, useTimer } from "~/src/lib/data";
 import { pluralize } from "~/src/lib/pluralize";
-
-function useTimer() {
-  const [{ target = 0 }, mutate] = useSharedMap<{
-    target: number;
-  }>(SharedState.Timer);
-
-  const active = target > Date.now();
-
-  const addFive = () =>
-    mutate((map) => {
-      map.set("target", Math.max(target, Date.now()) + 1000 * 60 * 5);
-    });
-
-  const clear = () =>
-    mutate((map) => {
-      map.set("target", Date.now());
-    });
-
-  return { active, target, addFive, clear } as const;
-}
 
 type Props = {
   children: ReactNode;
