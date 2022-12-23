@@ -7,10 +7,6 @@
   padding: 1.5rem;
 }
 
-.column.single {
-  flex-grow: 1;
-}
-
 .header {
   align-items: center;
   display: flex;

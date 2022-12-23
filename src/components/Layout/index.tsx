@@ -33,7 +33,9 @@ export function Layout({ children }: Props) {
       <Flex as="header" className={classes.topbar}>
         <Flex justify="space-between" style={{ flex: "1 0 0" }}>
           <h1>
-            <a href="/">Hindsight</a>
+            <a href="/" target="_blank">
+              Hindsight
+            </a>
           </h1>
 
           <Flex gap="3rem">

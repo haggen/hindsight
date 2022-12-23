@@ -1,22 +1,23 @@
 import * as classes from "./style.module.css";
 
 import { Column } from "~/src/components/Column";
-import { Id, useCards, useColumns } from "~/src/lib/data";
+import { Id, useAwareness, useCards, useColumns } from "~/src/lib/data";
 import { Card } from "~/src/components/Card";
 import { Flex } from "~/src/components/Flex";
 
 function List({ columnId }: { columnId: Id }) {
   const cards = useCards({ columnId });
+  const { clientId } = useAwareness();
 
   return (
-    <Flex as="ul" direction="column" gap="1.5rem">
+    <Flex as="ul" direction="column" gap="1rem">
       {cards.list.map((card) => (
         <li key={card.id}>
           <Card card={card} />
         </li>
       ))}
       <li>
-        <Card.New defaults={{ columnId }} />
+        <Card.New defaults={{ authorId: clientId, columnId }} />
       </li>
     </Flex>
   );

@@ -5,10 +5,7 @@ import { New } from "./New";
 import * as classes from "./style.module.css";
 
 import { Button } from "~/src/components/Button";
-import { TCard, useCards } from "~/src/lib/data";
-import { Reaction } from "~/src/components/Reaction";
-
-const availableReactions = ["👍"];
+import { TCard, useAwareness, useCards } from "~/src/lib/data";
 
 type Props = {
   card: TCard;
@@ -16,8 +13,9 @@ type Props = {
 
 export function Card({ card }: Props) {
   const [isEditing, setEditing] = useState(false);
-  const presence = { id: "123" };
+  const { clientId } = useAwareness();
   const cards = useCards();
+  const voted = card.votes.includes(clientId);
 
   if (isEditing) {
     return (
@@ -31,9 +29,11 @@ export function Card({ card }: Props) {
     setEditing(true);
   };
 
-  const handleReaction = (reaction: string) => {
-    if ("id" in card) {
-      cards.react(card.id, reaction);
+  const handleToggleVote = () => {
+    if (voted) {
+      cards.unvote({ id: card.id, clientId });
+    } else {
+      cards.vote({ id: card.id, clientId });
     }
   };
 
@@ -43,23 +43,16 @@ export function Card({ card }: Props) {
 
       <menu className={classes.menu}>
         <li>
-          <ul>
-            {availableReactions.map((reaction) => (
-              <li key={reaction}>
-                <Reaction
-                  reaction={reaction}
-                  count={card.reactions[reaction]}
-                  onClick={handleReaction}
-                />
-              </li>
-            ))}
-          </ul>
+          <Button
+            onClick={handleToggleVote}
+            color={voted ? "active" : undefined}
+          >
+            {voted ? "Unvote" : "Vote"} ({card.votes.length})
+          </Button>
         </li>
 
         <li className={classes.contextual}>
-          {card.authorId === presence.id ? (
-            <Button onClick={handleEdit}>Edit</Button>
-          ) : null}
+          <Button onClick={handleEdit}>Edit</Button>
         </li>
       </menu>
     </article>

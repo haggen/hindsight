@@ -1,16 +1,46 @@
+.column {
+  background-color: var(--color-shade);
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 1.5rem;
+  width: 100%;
+}
+
+.title {
+  align-items: center;
+  display: flex;
+  font-weight: 900;
+  height: 2.5rem;
+}
+
+.card {
+  background-color: white;
+  border-radius: 0.25rem;
+  box-shadow: 0.125rem 0.125rem gainsboro;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.card p {
+  font-size: 1.5rem;
+}
+
 .finish {
   display: flex;
   flex-direction: column;
-  flex: 0 0 15rem;
   justify-content: center;
+  align-items: center;
+  flex: 1 0 auto;
   text-align: center;
 }
 
 .finish h1 {
   font-size: 1.5rem;
   font-weight: 900;
-}
-
-.card {
-  flex: 0 0 calc(15rem - 2.5rem - 1rem); /* Header + gap offset. */
 }

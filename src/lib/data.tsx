@@ -13,6 +13,8 @@ import * as Y from "yjs";
 import { Awareness } from "y-protocols/awareness";
 import { ulid } from "ulid";
 
+import { useForceUpdate } from "~/src/hooks/useForceUpdate";
+
 export type Id = string;
 
 export type TColumn = {
@@ -25,7 +27,7 @@ export type TCard = {
   authorId: Id;
   columnId: Id;
   description: string;
-  reactions: Record<string, number> & { total: number };
+  votes: string[];
 };
 
 // ---
@@ -33,18 +35,10 @@ export type TCard = {
 // ---
 
 /**
- * Force component update.
- */
-function useForceUpdate() {
-  const [, update] = useState({});
-  return useCallback(() => update({}), []);
-}
-
-/**
  * Create unique URL-safe ID.
  */
 export function createId() {
-  return ulid();
+  return ulid().toLocaleLowerCase();
 }
 
 /**
@@ -62,12 +56,11 @@ function compareCardsById(a: TCard, b: TCard) {
 }
 
 /**
- * Compare cards by reactions.
+ * Compare cards by votes.
  */
 function compareCardsByReactions(a: TCard, b: TCard) {
   return (
-    a.columnId.localeCompare(b.columnId) ||
-    a.reactions.total - b.reactions.total
+    a.columnId.localeCompare(b.columnId) || a.votes.length - b.votes.length
   );
 }
 
@@ -82,7 +75,7 @@ export function createCard(
     authorId: data.authorId,
     columnId: data.columnId,
     description: data.description,
-    reactions: { "👍": 1, total: 1 },
+    votes: [data.authorId],
   };
 }
 
@@ -293,20 +286,29 @@ export function useCards(filter: { columnId?: string } = {}) {
       map.set(data.id, { ...card, ...data });
     });
 
-  const react = (id: Id, reaction: string) =>
+  const vote = ({ id, clientId }: { id: Id; clientId: Id }) =>
     mutate((map) => {
       const card = map.get(id);
       if (!card) {
         throw new Error(`Card "${id}" not found`);
       }
-      map.set(id, {
-        ...card,
-        reactions: {
-          ...card.reactions,
-          [reaction]: (card.reactions[reaction] ?? 0) + 1,
-          total: card.reactions.total + 1,
-        },
-      });
+      if (!card.votes.includes(clientId)) {
+        map.set(id, { ...card, votes: [...card.votes, clientId] });
+      }
+    });
+
+  const unvote = ({ id, clientId }: { id: Id; clientId: Id }) =>
+    mutate((map) => {
+      const card = map.get(id);
+      if (!card) {
+        throw new Error(`Card "${id}" not found`);
+      }
+      if (card.votes.includes(clientId)) {
+        map.set(id, {
+          ...card,
+          votes: card.votes.filter((id) => id !== clientId),
+        });
+      }
     });
 
   const destroy = (id: Id) =>
@@ -314,7 +316,15 @@ export function useCards(filter: { columnId?: string } = {}) {
       map.delete(id);
     });
 
-  return { list, map: snapshot, create, update, react, destroy } as const;
+  return {
+    list,
+    map: snapshot,
+    create,
+    update,
+    vote,
+    unvote,
+    destroy,
+  } as const;
 }
 
 /**
@@ -388,7 +398,6 @@ export function useTimer() {
  */
 export function useAwareness<T extends object>() {
   const { provider } = useContext(Context);
-
   const forceUpdate = useForceUpdate();
 
   useEffect(() => {
@@ -405,15 +414,20 @@ export function useAwareness<T extends object>() {
     };
   }, [forceUpdate, provider]);
 
-  const states = provider?.awareness
+  const states = provider
     ? getAwarenessStateSnapshot<T>(provider.awareness)
     : {};
 
-  return {
-    id: provider?.awareness.clientID,
-    states,
-    setLocalState: (state: T) => {
+  const setLocalState = useCallback(
+    (state: T) => {
       provider?.awareness.setLocalState(state);
     },
-  };
+    [provider]
+  );
+
+  return {
+    clientId: provider ? String(provider.awareness.clientID) : "",
+    states,
+    setLocalState,
+  } as const;
 }

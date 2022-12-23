@@ -1,9 +1,11 @@
 .board {
   align-items: start;
   display: flex;
+  flex: 1 0 auto;
   gap: 0.75rem;
   overflow-x: scroll;
   padding-block-end: 1rem;
+  width: 100%;
 }
 
 .board > * {

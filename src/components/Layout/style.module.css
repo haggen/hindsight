@@ -21,11 +21,6 @@
   display: flex;
 }
 
-.main > * {
-  flex: 1 0 auto;
-  max-width: 100%;
-}
-
 .footer {
   font-size: 0.875rem;
   padding-block: 1.5rem;

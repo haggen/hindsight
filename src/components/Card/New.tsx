@@ -6,13 +6,12 @@ import { Button } from "~/src/components/Button";
 import { TCard, useCards } from "~/src/lib/data";
 
 type Props = {
-  defaults: Omit<Semipartial<TCard, "columnId">, "id">;
+  defaults: Omit<Semipartial<TCard, "columnId" | "authorId">, "id">;
   onFinish?: () => void;
 };
 
 export function New({ defaults, onFinish }: Props) {
   const cards = useCards();
-  const authorId = "123";
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -23,7 +22,7 @@ export function New({ defaults, onFinish }: Props) {
 
     cards.create({
       columnId: defaults.columnId,
-      authorId,
+      authorId: defaults.authorId,
       description: inputs.description.value,
     });
 

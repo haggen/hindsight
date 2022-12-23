@@ -9,13 +9,12 @@ import { Button } from "~/src/components/Button";
 import { ClassList } from "~/src/lib/classList";
 
 type Props = {
+  className?: string;
   column: TColumn;
   children: ReactNode;
-  header?: boolean;
-  className?: string;
 };
 
-export function Column({ column, header = true, className, children }: Props) {
+export function Column({ className, column, children }: Props) {
   const [isEditing, setEditing] = useState(false);
 
   const handleEdit = () => {
@@ -34,21 +33,19 @@ export function Column({ column, header = true, className, children }: Props) {
 
   return (
     <section className={classList.toString()}>
-      {header ? (
-        isEditing ? (
-          <Edit column={column} onFinish={handleFinishEditing} />
-        ) : (
-          <header className={classes.header}>
-            <h1 className={classes.title}>{column.title}</h1>
+      {isEditing ? (
+        <Edit column={column} onFinish={handleFinishEditing} />
+      ) : (
+        <header className={classes.header}>
+          <h1 className={classes.title}>{column.title}</h1>
 
-            <menu>
-              <li className={classes.contextual}>
-                <Button onClick={handleEdit}>Edit</Button>
-              </li>
-            </menu>
-          </header>
-        )
-      ) : null}
+          <menu>
+            <li className={classes.contextual}>
+              <Button onClick={handleEdit}>Edit</Button>
+            </li>
+          </menu>
+        </header>
+      )}
 
       {children}
     </section>
