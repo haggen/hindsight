@@ -17,11 +17,7 @@ function Pagination() {
   };
 
   const handleBack = () => {
-    if (presentation.hasPrev) {
-      presentation.prev();
-    } else {
-      presentation.clear();
-    }
+    presentation.prev();
   };
 
   if (!presentation.active) {
@@ -37,22 +33,16 @@ function Pagination() {
   }
 
   return (
-    <>
-      <div>
-        {presentation.index + 1} of {presentation.length}
-      </div>
-
-      <Flex as="menu">
-        <li>
-          <Button onClick={handleBack}>← Back</Button>
-        </li>
-        <li>
-          <Button onClick={handleNext} disabled={presentation.finished}>
-            Next →
-          </Button>
-        </li>
-      </Flex>
-    </>
+    <Flex as="menu">
+      <li>
+        <Button onClick={handleBack}>← Back</Button>
+      </li>
+      <li>
+        <Button onClick={handleNext} disabled={presentation.finished}>
+          Next →
+        </Button>
+      </li>
+    </Flex>
   );
 }
 

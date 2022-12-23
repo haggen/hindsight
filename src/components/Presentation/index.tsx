@@ -29,6 +29,10 @@ export function Presentation() {
           <p>{presentation.card.description}</p>
         </article>
       </Flex>
+
+      <p style={{ textAlign: "center" }}>
+        {presentation.index + 1} of {presentation.length}
+      </p>
     </section>
   );
 }

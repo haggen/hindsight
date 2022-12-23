@@ -225,14 +225,10 @@ export function usePresentation() {
         map.set("finished", false);
       } else if (hasPrev) {
         map.set("index", index - 1);
+      } else {
+        map.set("index", -1);
+        map.set("finished", false);
       }
-    });
-  };
-
-  const clear = () => {
-    mutate((map) => {
-      map.set("index", -1);
-      map.set("finished", false);
     });
   };
 
@@ -248,7 +244,6 @@ export function usePresentation() {
         hasPrev,
         next,
         prev,
-        clear,
       } as const)
     : ({
         active,
@@ -259,7 +254,6 @@ export function usePresentation() {
         hasPrev,
         next,
         prev,
-        clear,
       } as const);
 }
 
