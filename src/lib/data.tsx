@@ -49,19 +49,17 @@ function compareId<T extends { id: Id }>(a: T, b: T) {
 }
 
 /**
- * Compare cards by ID.
+ * Compare cards by column.
  */
-function compareCardsById(a: TCard, b: TCard) {
-  return a.columnId.localeCompare(b.columnId) || compareId(a, b);
+function compareCardsByColumn(a: TCard, b: TCard) {
+  return a.columnId.localeCompare(b.columnId);
 }
 
 /**
- * Compare cards by votes.
+ * Compare cards by votes, higher first.
  */
-function compareCardsByReactions(a: TCard, b: TCard) {
-  return (
-    a.columnId.localeCompare(b.columnId) || a.votes.length - b.votes.length
-  );
+function compareCardsByVotes(a: TCard, b: TCard) {
+  return b.votes.length - a.votes.length;
 }
 
 /**
@@ -193,13 +191,17 @@ export enum SharedState {
  * Get and mutate presentation state.
  */
 export function usePresentation() {
-  const [{ index = -1 }, mutate] = useSharedMap<{
+  const [{ index = -1, finished = false }, mutate] = useSharedMap<{
     index: number;
+    finished: boolean;
   }>(SharedState.Pagination);
   const [cards] = useSharedMap<Record<string, TCard>>(SharedState.Cards);
   const [columns] = useSharedMap<Record<string, TColumn>>(SharedState.Columns);
 
-  const list = Object.values(cards).sort(compareCardsByReactions);
+  const list = Object.values(cards).sort(
+    (a, b) =>
+      compareCardsByColumn(a, b) || compareCardsByVotes(a, b) || compareId(a, b)
+  );
   const active = index > -1;
   const card = list[index];
   const column = columns[card?.columnId];
@@ -209,25 +211,35 @@ export function usePresentation() {
 
   const next = () => {
     mutate((map) => {
-      map.set("index", index + 1);
+      if (hasNext) {
+        map.set("index", index + 1);
+      } else {
+        map.set("finished", true);
+      }
     });
   };
 
   const prev = () => {
     mutate((map) => {
-      map.set("index", index - 1);
+      if (finished) {
+        map.set("finished", false);
+      } else if (hasPrev) {
+        map.set("index", index - 1);
+      }
     });
   };
 
   const clear = () => {
     mutate((map) => {
-      map.delete("index");
+      map.set("index", -1);
+      map.set("finished", false);
     });
   };
 
   return active
     ? ({
         active,
+        finished,
         index,
         length,
         card,
@@ -240,6 +252,7 @@ export function usePresentation() {
       } as const)
     : ({
         active,
+        finished,
         index,
         length,
         hasNext,
@@ -265,7 +278,7 @@ export function useCards(filter: { columnId?: string } = {}) {
           ({ columnId }) =>
             filter.columnId === undefined || filter.columnId === columnId
         )
-        .sort(compareCardsById),
+        .sort(compareId),
     [snapshot, filter?.columnId]
   );
 
