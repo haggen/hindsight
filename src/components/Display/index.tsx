@@ -7,11 +7,11 @@ import { useMount } from "~/src/hooks/useMount";
 import { useRaf } from "~/src/hooks/useRaf";
 
 function format(target: number) {
-  const elapsed = target - Date.now();
-  const minutes = Math.floor(elapsed / 60000).toString();
-  const seconds = Math.ceil((elapsed % 60000) / 1000).toString();
+  const missing = Math.ceil((target - Date.now()) / 1000);
+  const minutes = Math.floor(missing / 60).toString();
+  const seconds = Math.floor(missing % 60).toString();
 
-  if (elapsed < 0) {
+  if (missing < 0) {
     return "00:00";
   }
   return `${minutes.padStart(2, "0")}:${seconds.padStart(2, "0")}`;
