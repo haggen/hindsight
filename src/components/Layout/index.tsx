@@ -9,24 +9,62 @@ import { Flex } from "~/src/components/Flex";
 import { useAwareness, usePresentation, useTimer } from "~/src/lib/data";
 import { pluralize } from "~/src/lib/pluralize";
 
+function Pagination() {
+  const presentation = usePresentation();
+
+  const handleNext = () => {
+    presentation.next();
+  };
+
+  const handleBack = () => {
+    if (presentation.hasPrev) {
+      presentation.prev();
+    } else {
+      presentation.clear();
+    }
+  };
+
+  if (!presentation.active) {
+    return (
+      <menu>
+        <li>
+          <Button onClick={handleNext} disabled={!presentation.hasNext}>
+            Next →
+          </Button>
+        </li>
+      </menu>
+    );
+  }
+
+  return (
+    <>
+      <div>
+        {presentation.index + 1} of {presentation.length}
+      </div>
+
+      <Flex as="menu">
+        <li>
+          <Button onClick={handleBack}>← Back</Button>
+        </li>
+        <li>
+          <Button onClick={handleNext} disabled={presentation.finished}>
+            Next →
+          </Button>
+        </li>
+      </Flex>
+    </>
+  );
+}
+
 type Props = {
   children: ReactNode;
 };
 
 export function Layout({ children }: Props) {
   const { states: awareness } = useAwareness();
-  const pagination = usePresentation();
   const timer = useTimer();
 
   const count = Object.keys(awareness).length;
-
-  const handlePresent = () => {
-    pagination.next();
-  };
-
-  const handleBack = () => {
-    pagination.clear();
-  };
 
   return (
     <div className={classes.layout}>
@@ -69,7 +107,7 @@ export function Layout({ children }: Props) {
         <Display target={timer.target} active={timer.active} />
 
         <Flex justify="space-between" style={{ flex: "1 0 0" }}>
-          <Flex as="menu" style={{ paddingInlineStart: "3.375rem" }}>
+          <Flex as="menu" style={{ paddingInlineStart: "3rem" }}>
             <li>
               <Button disabled>Play</Button>
             </li>
@@ -81,23 +119,7 @@ export function Layout({ children }: Props) {
             </li>
           </Flex>
 
-          <Flex as="menu" justify="end" style={{ flex: "1 0 auto" }}>
-            <li>
-              {pagination.active ? (
-                <Button onClick={handleBack} bordered>
-                  Back to the board
-                </Button>
-              ) : (
-                <Button
-                  onClick={handlePresent}
-                  bordered
-                  disabled={!pagination.hasNext}
-                >
-                  Present →
-                </Button>
-              )}
-            </li>
-          </Flex>
+          <Pagination />
         </Flex>
       </Flex>
 
