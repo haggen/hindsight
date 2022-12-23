@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
 
 /**
- * Reference to the given value from the previous render.
+ * Reference to the value given in a previous render.
  */
 export function usePrevious<T>(value: T) {
   const ref = useRef<T>();

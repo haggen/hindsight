@@ -1,13 +1,15 @@
-import { useCallback, useLayoutEffect, useRef } from "react";
+import { useRef } from "react";
 
 import * as classes from "./style.module.css";
 
 import { ClassList } from "~/src/lib/classList";
+import { useMount } from "~/src/hooks/useMount";
+import { useRaf } from "~/src/hooks/useRaf";
 
 function format(target: number) {
   const elapsed = target - Date.now();
   const minutes = Math.floor(elapsed / 60000).toString();
-  const seconds = Math.floor((elapsed % 60000) / 1000).toString();
+  const seconds = Math.ceil((elapsed % 60000) / 1000).toString();
 
   if (elapsed < 0) {
     return "00:00";
@@ -17,31 +19,18 @@ function format(target: number) {
 
 type Props = {
   target: number;
-  active?: boolean;
+  active: boolean;
 };
 
-export function Display({ target, active = false }: Props) {
+export function Display({ target, active }: Props) {
   const elementRef = useRef<HTMLOutputElement>(null);
-  const mountRef = useRef(false);
-  const rafRef = useRef(0);
+  const mounted = useMount();
 
-  const update = useCallback(() => {
-    if (elementRef.current) {
+  useRaf(() => {
+    if (elementRef.current && mounted) {
       elementRef.current.textContent = format(target);
     }
-    if (mountRef.current) {
-      rafRef.current = requestAnimationFrame(update);
-    }
-  }, [target]);
-
-  useLayoutEffect(() => {
-    mountRef.current = true;
-    rafRef.current = requestAnimationFrame(update);
-    return () => {
-      mountRef.current = false;
-      cancelAnimationFrame(rafRef.current);
-    };
-  }, [update]);
+  });
 
   const classList = new ClassList();
   classList.add(classes.display);

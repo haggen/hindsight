@@ -14,6 +14,7 @@ import { Awareness } from "y-protocols/awareness";
 import { ulid } from "ulid";
 
 import { useForceUpdate } from "~/src/hooks/useForceUpdate";
+import { useInterval } from "~/src/hooks/useInterval";
 
 export type Id = string;
 
@@ -377,27 +378,40 @@ function getAwarenessStateSnapshot<T extends object>(awareness: Awareness) {
   return states;
 }
 
+type Timer = {
+  target: number;
+};
+
 /**
- * Time state.
+ * Timer state.
  */
 export function useTimer() {
-  const [{ target = 0 }, mutate] = useSharedMap<{
-    target: number;
-  }>(SharedState.Timer);
+  const [{ target = 0 }, mutate] = useSharedMap<Timer>(SharedState.Timer);
+  const [active, setActive] = useState(false);
 
-  const active = target > Date.now();
+  useInterval(() => {
+    if (target > Date.now()) {
+      setActive(true);
+    } else if (target > 0) {
+      setActive(false);
+    }
+  }, 10);
 
-  const addFive = () =>
+  const add = (seconds: number) => {
     mutate((map) => {
-      map.set("target", Math.max(target, Date.now()) + 1000 * 60 * 5);
+      map.set("target", Math.max(target, Date.now()) + 1000 * seconds);
     });
+    setActive(true);
+  };
 
-  const clear = () =>
+  const clear = () => {
     mutate((map) => {
       map.set("target", Date.now());
     });
+    setActive(false);
+  };
 
-  return { active, target, addFive, clear } as const;
+  return { active, target, add, clear } as const;
 }
 
 /**
@@ -434,6 +448,7 @@ export function useAwareness<T extends object>() {
 
   return {
     clientId: provider ? String(provider.awareness.clientID) : "",
+    count: Object.keys(states).length,
     states,
     setLocalState,
   } as const;

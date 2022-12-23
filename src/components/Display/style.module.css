@@ -9,3 +9,20 @@
 .display.active {
   background-color: var(--color-active);
 }
+
+@keyframes flash {
+  from,
+  50%,
+  to {
+    opacity: 1;
+  }
+
+  25%,
+  75% {
+    opacity: 0;
+  }
+}
+
+.display.dinged {
+  animation: flash 0.5s ease-in-out 2 forwards;
+}

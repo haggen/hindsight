@@ -2,12 +2,28 @@ import { ReactNode } from "react";
 
 import * as classes from "./style.module.css";
 
-import { Reaction } from "~/src/components/Reaction";
-import { Display } from "~/src/components/Display";
 import { Button } from "~/src/components/Button";
 import { Flex } from "~/src/components/Flex";
 import { useAwareness, usePresentation, useTimer } from "~/src/lib/data";
 import { pluralize } from "~/src/lib/pluralize";
+import { Display } from "~/src/components/Display";
+
+function People() {
+  const { count } = useAwareness();
+
+  const title = pluralize(
+    count,
+    "There's only you.",
+    `There are ${count} people connected.`
+  );
+
+  return (
+    <div title={title} aria-label={title}>
+      👤
+      <small>×{count}</small>
+    </div>
+  );
+}
 
 function Pagination() {
   const presentation = usePresentation();
@@ -51,10 +67,7 @@ type Props = {
 };
 
 export function Layout({ children }: Props) {
-  const { states: awareness } = useAwareness();
   const timer = useTimer();
-
-  const count = Object.keys(awareness).length;
 
   return (
     <div className={classes.layout}>
@@ -67,15 +80,7 @@ export function Layout({ children }: Props) {
           </h1>
 
           <Flex gap="3rem">
-            <div
-              title={pluralize(
-                count,
-                "There's only you.",
-                `There are ${count} people connected.`
-              )}
-            >
-              <Reaction reaction="👤" count={count} />
-            </div>
+            <People />
 
             <Flex as="menu" style={{ paddingInlineEnd: ".375rem" }}>
               <li>
@@ -88,7 +93,7 @@ export function Layout({ children }: Props) {
                 </Button>
               </li>
               <li>
-                <Button onClick={() => timer.addFive()}>+5 min.</Button>
+                <Button onClick={() => timer.add(5 * 60)}>+5 min.</Button>
               </li>
             </Flex>
           </Flex>
