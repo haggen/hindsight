@@ -1,5 +1,5 @@
 .column {
-  background-color: var(--color-shade);
+  background-color: var(--color-background-shade);
   border-radius: 0.5rem;
   display: flex;
   flex-direction: column;

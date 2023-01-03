@@ -1,0 +1,100 @@
+.queue {
+  background-color: white;
+  border-radius: 0.25rem;
+  border: 1px solid currentColor;
+  padding: 0.75rem;
+  position: absolute;
+  width: 20rem;
+  margin-inline-start: 50%;
+  transform: translateX(-50%);
+}
+
+.queue:not(.open) {
+  display: none;
+}
+
+.queue form {
+  align-items: center;
+  display: flex;
+  flex: 1 0 auto;
+}
+
+.queue input {
+  flex-grow: 1;
+  font-size: 0.875rem;
+}
+
+.queue ol {
+  counter-reset: list-item;
+}
+
+.queue li {
+  align-items: center;
+  counter-increment: list-item;
+  display: flex;
+}
+
+.queue li.active {
+  color: var(--color-active);
+}
+
+.queue li::before {
+  content: counter(list-item) ".";
+  flex: 0 0 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding-inline-end: 0.25rem;
+  text-align: right;
+}
+
+/* Truncate with ellipsis */
+.queue li span {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+.volume {
+  align-items: center;
+  display: inline-flex;
+  height: 1.5rem;
+  overflow: visible;
+  vertical-align: middle;
+  width: 3rem;
+}
+
+.volume::-moz-range-track {
+  background-color: var(--color-outline);
+  border-radius: 0.125rem;
+  display: block;
+  height: 0.25rem;
+  width: 100%;
+}
+
+.volume::-webkit-slider-runnable-track {
+  background-color: var(--color-outline);
+  border-radius: 0.125rem;
+  display: block;
+  height: 0.25rem;
+  width: 100%;
+}
+
+.volume::-moz-range-thumb {
+  background-color: currentColor;
+  border-radius: 0.375rem;
+  display: block;
+  height: 0.75rem;
+  margin-block-start: -0.25rem;
+  width: 0.75rem;
+}
+
+.volume::-webkit-slider-thumb {
+  background-color: currentColor;
+  border-radius: 0.375rem;
+  display: block;
+  height: 0.75rem;
+  margin-block-start: -0.25rem;
+  width: 0.75rem;
+}

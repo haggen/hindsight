@@ -7,6 +7,7 @@ import { Flex } from "~/src/components/Flex";
 import { useAwareness, usePresentation, useTimer } from "~/src/lib/data";
 import { pluralize } from "~/src/lib/pluralize";
 import { Display } from "~/src/components/Display";
+import { Player } from "~/src/components/Player";
 
 function People() {
   const { count } = useAwareness();
@@ -102,17 +103,7 @@ export function Layout({ children }: Props) {
         <Display target={timer.target} active={timer.active} />
 
         <Flex justify="space-between" style={{ flex: "1 0 0" }}>
-          <Flex as="menu" style={{ paddingInlineStart: "3rem" }}>
-            <li>
-              <Button disabled>Play</Button>
-            </li>
-            <li>
-              <Button disabled>Queue ⏑</Button>
-            </li>
-            <li>
-              <Button disabled>Vol. ---*---</Button>
-            </li>
-          </Flex>
+          <Player />
 
           <Pagination />
         </Flex>

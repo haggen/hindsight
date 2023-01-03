@@ -3,7 +3,7 @@ import { CSSProperties, ElementType } from "react";
 import * as classes from "./style.module.css";
 
 import { ClassList } from "~/src/lib/classList";
-import { PolymorphicComponentProps } from "~/src/lib/shared";
+import { PolymorphicPropsWithoutRef } from "~/src/lib/shared";
 
 type AcceptableElementType = "div" | "ul" | "header" | "menu";
 
@@ -22,7 +22,7 @@ export function Flex<E extends AcceptableElementType = "div">({
   justify,
   gap,
   ...props
-}: PolymorphicComponentProps<E, Props>) {
+}: PolymorphicPropsWithoutRef<E, Props>) {
   const Component = as ?? ("div" as ElementType);
 
   const classList = new ClassList();

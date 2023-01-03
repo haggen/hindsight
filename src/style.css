@@ -7,10 +7,12 @@ html {
   --color-positive: #007c06;
   --color-active: #8344f0;
   --color-link: #0068e0;
-  --color-shade: #f5f5f5;
-  --color-outline: #c0c0c0;
+  --color-foreground: #000;
   --color-disabled: #999;
   --color-placeholder: #999;
+  --color-outline: #c0c0c0;
+  --color-background-shade: #f5f5f5;
+  --color-background: #fff;
 }
 
 @media screen and (width > 1920px) {

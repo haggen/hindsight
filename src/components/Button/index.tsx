@@ -1,21 +1,19 @@
-import { ElementType } from "react";
+import { ElementType, forwardRef } from "react";
 
 import * as classes from "./style.module.css";
 
 import { ClassList } from "~/src/lib/classList";
-import { PolymorphicComponentProps } from "~/src/lib/shared";
+import { PolymorphicPropsWithRef, PolymorphicRef } from "~/src/lib/shared";
 
 type Props = {
   color?: "active" | "negative" | "positive";
   bordered?: boolean;
 };
 
-export function Button<E extends "button" | "a" = "button">({
-  as,
-  color,
-  bordered,
-  ...props
-}: PolymorphicComponentProps<E, Props>) {
+function Button<E extends "button" | "a" = "button">(
+  { as, color, bordered, ...props }: PolymorphicPropsWithRef<E, Props>,
+  ref: PolymorphicRef<E>
+) {
   const Component = as ?? ("button" as ElementType);
   const classList = new ClassList();
   classList.add(classes.button);
@@ -27,5 +25,9 @@ export function Button<E extends "button" | "a" = "button">({
   }
   props.type ??= "button";
   props.className ??= classList.toString();
-  return <Component {...props} />;
+  return <Component ref={ref} {...props} />;
 }
+
+// Fix the type of the forwarded component.
+const forwardRefButton = forwardRef(Button) as typeof Button;
+export { forwardRefButton as Button };

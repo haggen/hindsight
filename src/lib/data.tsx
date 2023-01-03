@@ -12,6 +12,7 @@ import { WebrtcProvider } from "y-webrtc";
 import * as Y from "yjs";
 import { Awareness } from "y-protocols/awareness";
 import { ulid } from "ulid";
+import YouTubePlayer, { YouTubePlayerProps } from "react-player/youtube";
 
 import { useForceUpdate } from "~/src/hooks/useForceUpdate";
 import { useInterval } from "~/src/hooks/useInterval";
@@ -185,7 +186,8 @@ export enum SharedState {
   Cards = "cards",
   Columns = "columns",
   Timer = "timer",
-  Pagination = "pagination",
+  Presentation = "presentation",
+  Player = "player",
 }
 
 /**
@@ -195,7 +197,7 @@ export function usePresentation() {
   const [{ index = -1, finished = false }, mutate] = useSharedMap<{
     index: number;
     finished: boolean;
-  }>(SharedState.Pagination);
+  }>(SharedState.Presentation);
   const [cards] = useSharedMap<Record<string, TCard>>(SharedState.Cards);
   const [columns] = useSharedMap<Record<string, TColumn>>(SharedState.Columns);
 
@@ -451,5 +453,127 @@ export function useAwareness<T extends object>() {
     count: Object.keys(states).length,
     states,
     setLocalState,
+  } as const;
+}
+
+type Player = {
+  playing: boolean;
+  played: number;
+  state: string;
+  url: string;
+  queue: string[];
+};
+
+/**
+ * Music player state.
+ */
+export function usePlayer() {
+  const [{ playing = false, played = 0, url = "", queue = [] }, mutate] =
+    useSharedMap<Player>(SharedState.Player);
+  const [volume, setVolume] = useState(0.5);
+  const [muted, setMuted] = useState(true);
+  const [ended, setEnded] = useState(false);
+  const ref = useRef<YouTubePlayer>(null);
+
+  useEffect(() => {
+    const now = ref.current?.getCurrentTime();
+    if (now === undefined) {
+      return;
+    }
+    const diff = Math.abs(played - now);
+    if (diff > 3) {
+      ref.current?.seekTo(played, "seconds");
+    }
+  }, [played]);
+
+  const handleProgress: YouTubePlayerProps["onProgress"] = (progress) => {
+    if (progress.playedSeconds > played) {
+      mutate((map) => {
+        map.set("played", progress.playedSeconds);
+      });
+    }
+  };
+
+  const handleEnded = () => {
+    // People are (hopefully) 2 seconds off at most, so we wait 1 second before	starting the next song.
+    setTimeout(() => next(), 1000);
+  };
+
+  const play = (newUrl?: string) => {
+    setEnded(false);
+
+    mutate((map) => {
+      map.set("playing", true);
+
+      if (newUrl === url) {
+        map.set("played", 0);
+      } else if (newUrl) {
+        map.set("url", newUrl);
+      }
+    });
+  };
+
+  const next = () => {
+    const index = queue.indexOf(url);
+    const nextUrl = queue[index + 1];
+    if (nextUrl) {
+      play(nextUrl);
+    } else {
+      pause();
+    }
+  };
+
+  const pause = () => {
+    mutate((map) => {
+      map.set("playing", false);
+    });
+  };
+
+  const add = (url: string) => {
+    mutate((map) => {
+      map.set("queue", [...queue, url]);
+    });
+  };
+
+  const remove = (target: string) => {
+    mutate((map) => {
+      map.set(
+        "queue",
+        queue.filter((url) => url !== target)
+      );
+      if (target === url) {
+        map.set("url", "");
+        map.set("playing", false);
+      }
+    });
+  };
+
+  const mute = () => {
+    setMuted(true);
+  };
+
+  const unmute = () => {
+    setMuted(false);
+  };
+
+  return {
+    ref,
+    playing: playing && !ended,
+    url,
+    volume,
+    muted,
+    next,
+    play,
+    pause,
+    setVolume,
+    mute,
+    unmute,
+    played,
+    handleProgress,
+    ended,
+    handleEnded,
+    queue,
+    add,
+    remove,
   } as const;
 }
