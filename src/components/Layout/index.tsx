@@ -42,7 +42,7 @@ function Pagination() {
       <menu>
         <li>
           <Button onClick={handleNext} disabled={!presentation.hasNext}>
-            Next →
+            Start →
           </Button>
         </li>
       </menu>
