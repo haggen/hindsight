@@ -496,7 +496,8 @@ export function usePlayer() {
 
   const handleEnded = () => {
     // People are (hopefully) 2 seconds off at most, so we wait 1 second before	starting the next song.
-    setTimeout(() => next(), 1000);
+    // setTimeout(() => next(), 1000);
+    next();
   };
 
   const play = (newUrl?: string) => {
