@@ -188,9 +188,8 @@ export function Player() {
         <Button
           color={player.muted ? "active" : undefined}
           onClick={handleMute}
-          style={player.muted ? { textDecoration: "line-through" } : undefined}
         >
-          Vol.
+          {player.muted ? "Unmute" : "Mute"}
         </Button>
         <input
           type="range"
