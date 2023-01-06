@@ -1,5 +1,12 @@
 import YouTube, { YouTubePlayerProps } from "react-player/youtube";
-import { ChangeEvent, FormEvent, useEffect, useReducer, useRef } from "react";
+import {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 
 import * as classes from "./style.module.css";
 
@@ -17,6 +24,18 @@ const getLogScaleValue = (value: number) => {
   }
   return 0;
 };
+
+function YouTubeVideoTitle({ url }: { url: string }) {
+  const [title, setTitle] = useState<string>();
+  useEffect(() => {
+    fetch(`https://www.youtube.com/oembed?url=${url}&format=json`)
+      .then((response) => response.json())
+      .then((data: { title: string }) => setTitle(data.title))
+      // eslint-disable-next-line no-console
+      .catch(console.error);
+  }, [url]);
+  return <span>{title ?? url}</span>;
+}
 
 export function Player() {
   const player = usePlayer();
@@ -192,7 +211,7 @@ export function Player() {
                   key={url}
                   className={player.url === url ? classes.active : undefined}
                 >
-                  <span>{url}</span>
+                  <YouTubeVideoTitle url={url} />
                   <Button onClick={() => player.play(url)}>
                     {player.url === url ? "Rewind" : "Play"}
                   </Button>
