@@ -22,6 +22,7 @@ export function Player() {
     false
   );
   const queueRef = useRef<HTMLDivElement>(null);
+  const volumeRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
@@ -53,6 +54,23 @@ export function Player() {
     };
   }, []);
 
+  useEffect(() => {
+    const input = volumeRef.current;
+    const handleWheel = (e: WheelEvent) => {
+      if (e.deltaY > 0) {
+        input?.stepDown();
+      } else {
+        input?.stepUp();
+      }
+      input?.dispatchEvent(new Event("change", { bubbles: true }));
+      e.preventDefault();
+    };
+    input?.addEventListener("wheel", handleWheel);
+    return () => {
+      input?.removeEventListener("wheel", handleWheel);
+    };
+  }, []);
+
   const handlePlay = () => {
     if (!player.url) {
       player.next();
@@ -73,25 +91,6 @@ export function Player() {
     } else {
       player.mute();
     }
-  };
-
-  const queueClassList = new ClassList();
-  queueClassList.add(classes.queue);
-  if (isQueueOpen) {
-    queueClassList.add(classes.open);
-  }
-
-  const props: YouTubePlayerProps = {
-    width: "0",
-    height: "0",
-    ref: player.ref,
-    url: player.url,
-    playing: player.playing,
-    muted: player.muted,
-    volume: scale(player.volume),
-    progressInterval: 1000,
-    onProgress: player.handleProgress,
-    onEnded: player.handleEnded,
   };
 
   const handleAdd = (e: FormEvent<HTMLFormElement>) => {
@@ -125,6 +124,25 @@ export function Player() {
     } finally {
       e.currentTarget.reportValidity();
     }
+  };
+
+  const queueClassList = new ClassList();
+  queueClassList.add(classes.queue);
+  if (isQueueOpen) {
+    queueClassList.add(classes.open);
+  }
+
+  const props: YouTubePlayerProps = {
+    width: "0",
+    height: "0",
+    ref: player.ref,
+    url: player.url,
+    playing: player.playing,
+    muted: player.muted,
+    volume: scale(player.volume),
+    progressInterval: 1000,
+    onProgress: player.handleProgress,
+    onEnded: player.handleEnded,
   };
 
   return (
@@ -192,6 +210,7 @@ export function Player() {
           {player.muted ? "Unmute" : "Mute"}
         </Button>
         <input
+          ref={volumeRef}
           type="range"
           className={classes.volume}
           min="0"
