@@ -18,7 +18,7 @@
   bottom: 100%;
   left: 50%;
   transform: translate(-50%, 0);
-  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='8' viewBox='0 0 16 8'><path fill='white' d='M8,0L0,8h16z'/><path fill='none' stroke='%23c0c0c0' stroke-width='0.8' stroke-linecap='round' stroke-linejoin='round' d='M0,8L8,0L16,8'/></svg>");
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='8' viewBox='0 0 16 8'><path fill='white' d='M8,0L0,8h16z'/><path fill='none' stroke='%23c0c0c0' stroke-width='0.85' stroke-linecap='round' stroke-linejoin='round' d='M0,8L8,0L16,8'/></svg>");
 }
 
 .queue:not(.open) {
