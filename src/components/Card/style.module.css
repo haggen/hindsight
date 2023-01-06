@@ -8,7 +8,7 @@
 }
 
 .card {
-  box-shadow: 0.125rem 0.125rem gainsboro;
+  box-shadow: 0.125rem 0.125rem var(--color-outline-highlight);
 }
 
 .card:not(:hover, :focus-within) .contextual {

@@ -8,7 +8,10 @@ import { Flex } from "~/src/components/Flex";
 import { usePlayer } from "~/src/lib/data";
 import { ClassList } from "~/src/lib/classList";
 
-const scale = (value: number) => {
+/**
+ * Convert a value between 0 and 1 from a linear scale to a logarithmic scale.
+ */
+const getLogScaleValue = (value: number) => {
   if (value > 0) {
     return (Math.pow(10, value) - 1) / 9;
   }
@@ -21,6 +24,7 @@ export function Player() {
     (prev: boolean, next: boolean | undefined) => next ?? !prev,
     false
   );
+  const containerRef = useRef<HTMLDivElement>(null);
   const queueRef = useRef<HTMLDivElement>(null);
   const volumeRef = useRef<HTMLInputElement>(null);
 
@@ -36,21 +40,23 @@ export function Player() {
       e.preventDefault();
     };
 
-    const handlePointerDown = (e: PointerEvent) => {
+    const handleFocus = (e: PointerEvent) => {
       if (!e.target) {
         return;
       }
-      if (queueRef.current?.parentElement?.contains(e.target as Node)) {
+      if (containerRef.current?.contains(e.target as Node)) {
         return;
       }
       setQueueOpen(false);
     };
 
     document.addEventListener("keydown", handleKeydown);
-    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("focusin", handleFocus);
+    document.addEventListener("click", handleFocus);
     return () => {
       document.removeEventListener("keydown", handleKeydown);
-      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("focusin", handleFocus);
+      document.removeEventListener("click", handleFocus);
     };
   }, []);
 
@@ -139,14 +145,14 @@ export function Player() {
     url: player.url,
     playing: player.playing,
     muted: player.muted,
-    volume: scale(player.volume),
+    volume: getLogScaleValue(player.volume),
     progressInterval: 1000,
     onProgress: player.handleProgress,
     onEnded: player.handleEnded,
   };
 
   return (
-    <Flex as="menu" style={{ paddingInlineStart: "3rem" }}>
+    <Flex ref={containerRef} as="menu" style={{ paddingInlineStart: "3rem" }}>
       <li aria-hidden>
         <YouTube {...props} />
       </li>
@@ -164,7 +170,19 @@ export function Player() {
           onClick={() => setQueueOpen(undefined)}
           color={isQueueOpen ? "active" : undefined}
         >
-          Queue ⏑
+          Queue
+          <svg
+            width="6"
+            height="6"
+            viewBox="0 0 6 6"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M5.53636 3H0.462309C0.0509 3 -0.154805 3.45535 0.13661 3.72228L2.35651 5.75564C2.7122 6.08145 3.29075 6.08145 3.64645 5.75564L4.49069 4.98234L5.86634 3.72228C6.15347 3.45535 5.94777 3 5.53636 3Z"
+              fill="currentColor"
+            />
+          </svg>
         </Button>
         {isQueueOpen ? (
           <div ref={queueRef} className={queueClassList.toString()}>
@@ -178,7 +196,9 @@ export function Player() {
                   <Button onClick={() => player.play(url)}>
                     {player.url === url ? "Rewind" : "Play"}
                   </Button>
-                  <Button onClick={() => player.remove(url)}>Del.</Button>
+                  <Button onClick={() => player.remove(url)} color="negative">
+                    Remove
+                  </Button>
                 </li>
               ))}
               <li>
@@ -193,9 +213,7 @@ export function Player() {
                     autoComplete="off"
                     onChange={handleUrlChange}
                   />
-                  <Button type="submit" aria-label="Add song to queue">
-                    Add
-                  </Button>
+                  <Button type="submit">Add to queue</Button>
                 </form>
               </li>
             </ol>

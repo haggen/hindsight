@@ -10,6 +10,7 @@ html {
   --color-foreground: #000;
   --color-disabled: #999;
   --color-placeholder: #999;
+  --color-outline-highlight: #dcdcdc;
   --color-outline: #c0c0c0;
   --color-background-shade: #f5f5f5;
   --color-background: #fff;
