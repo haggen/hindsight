@@ -1,9 +1,9 @@
-import { CSSProperties, ElementType } from "react";
+import { CSSProperties, ElementType, forwardRef } from "react";
 
 import * as classes from "./style.module.css";
 
 import { ClassList } from "~/src/lib/classList";
-import { PolymorphicPropsWithoutRef } from "~/src/lib/shared";
+import { PolymorphicPropsWithRef, PolymorphicRef } from "~/src/lib/shared";
 
 type AcceptableElementType = "div" | "ul" | "header" | "menu";
 
@@ -14,15 +14,18 @@ type Props = {
   gap?: CSSProperties["gap"];
 };
 
-export function Flex<E extends AcceptableElementType = "div">({
-  as,
-  children,
-  direction,
-  align = direction !== "column" ? "center" : undefined,
-  justify,
-  gap,
-  ...props
-}: PolymorphicPropsWithoutRef<E, Props>) {
+function Flex<E extends AcceptableElementType = "div">(
+  {
+    as,
+    children,
+    direction,
+    align = direction !== "column" ? "center" : undefined,
+    justify,
+    gap,
+    ...props
+  }: PolymorphicPropsWithRef<E, Props>,
+  ref: PolymorphicRef<E>
+) {
   const Component = as ?? ("div" as ElementType);
 
   const classList = new ClassList();
@@ -40,5 +43,13 @@ export function Flex<E extends AcceptableElementType = "div">({
     ...props.style,
   };
 
-  return <Component {...props}>{children}</Component>;
+  return (
+    <Component ref={ref} {...props}>
+      {children}
+    </Component>
+  );
 }
+
+// Fix the type of the forwarded component.
+const forwardRefFlex = forwardRef(Flex) as typeof Flex;
+export { forwardRefFlex as Flex };
