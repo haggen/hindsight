@@ -8,6 +8,13 @@ import { Flex } from "~/src/components/Flex";
 import { usePlayer } from "~/src/lib/data";
 import { ClassList } from "~/src/lib/classList";
 
+const scale = (value: number) => {
+  if (value > 0) {
+    return (Math.pow(10, value) - 1) / 9;
+  }
+  return 0;
+};
+
 export function Player() {
   const player = usePlayer();
   const [isQueueOpen, setQueueOpen] = useReducer(
@@ -81,7 +88,7 @@ export function Player() {
     url: player.url,
     playing: player.playing,
     muted: player.muted,
-    volume: player.volume,
+    volume: scale(player.volume),
     progressInterval: 1000,
     onProgress: player.handleProgress,
     onEnded: player.handleEnded,
