@@ -6,8 +6,10 @@
 
 - 👉 Free, open-source and hosted on the edge.
 - 🖼️ Clean and focused design (you can check it out on [Figma](https://www.figma.com/file/6SbO2KH3lDlHjgg8RZcwPA/Hindsight?node-id=1%3A144&t=Np6HYeUHQLPBjCTE-4)).
-- 🔒 No back-end. Data is encrypted and shared directly to other connected browsers.
-- ⏰ Timer and 🎵 Music player built-in.
+- 🔒 No back-end. Data is encrypted and shared directly between connected browsers.
+- ⏰ Built-in Timer and 🎵 Music player.
+
+![Screenshot of Hindsight](screenshot.webp)
 
 ## Development
 
