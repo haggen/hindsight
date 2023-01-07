@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 
 import * as classes from "./style.module.css";
 
@@ -8,6 +8,7 @@ import { useAwareness, usePresentation, useTimer } from "~/src/lib/data";
 import { pluralize } from "~/src/lib/pluralize";
 import { Display } from "~/src/components/Display";
 import { Player } from "~/src/components/Player";
+import { useMount } from "~/src/hooks/useMount";
 
 function People() {
   const { count } = useAwareness();
@@ -85,6 +86,20 @@ type Props = {
 
 export function Layout({ children }: Props) {
   const timer = useTimer();
+  const mounted = useMount();
+
+  useEffect(() => {
+    void Notification.requestPermission();
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) {
+      return;
+    }
+    if (!timer.active && timer.target > 0) {
+      new Notification("Time's up!");
+    }
+  }, [mounted, timer.active, timer.target]);
 
   return (
     <div className={classes.layout}>
@@ -110,7 +125,7 @@ export function Layout({ children }: Props) {
                 </Button>
               </li>
               <li>
-                <Button onClick={() => timer.add(5 * 60)}>+5 min.</Button>
+                <Button onClick={() => timer.add(1)}>+5 min.</Button>
               </li>
             </Flex>
           </Flex>

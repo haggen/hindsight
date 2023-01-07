@@ -389,28 +389,25 @@ type Timer = {
  */
 export function useTimer() {
   const [{ target = 0 }, mutate] = useSharedMap<Timer>(SharedState.Timer);
-  const [active, setActive] = useState(false);
+  const forceUpdate = useForceUpdate();
+  const active = target > Date.now();
 
   useInterval(() => {
-    if (target > Date.now()) {
-      setActive(true);
-    } else if (target > 0) {
-      setActive(false);
+    if (target > 0 && target < Date.now()) {
+      forceUpdate();
     }
-  }, 500);
+  }, 100);
 
   const add = (seconds: number) => {
     mutate((map) => {
       map.set("target", Math.max(target, Date.now()) + 1000 * seconds);
     });
-    setActive(true);
   };
 
   const clear = () => {
     mutate((map) => {
       map.set("target", 0);
     });
-    setActive(false);
   };
 
   return { active, target, add, clear } as const;
