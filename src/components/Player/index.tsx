@@ -14,6 +14,7 @@ import { Button } from "~/src/components/Button";
 import { Flex } from "~/src/components/Flex";
 import { usePlayer } from "~/src/lib/data";
 import { ClassList } from "~/src/lib/classList";
+import { throttled } from "~/src/lib/throttled";
 
 /**
  * Convert a value between 0 and 1 from a linear scale to a logarithmic scale.
@@ -81,7 +82,7 @@ export function Player() {
 
   useEffect(() => {
     const input = volumeRef.current;
-    const handleWheel = (e: WheelEvent) => {
+    const handleWheel = throttled((e: WheelEvent) => {
       if (e.deltaY > 0) {
         input?.stepDown();
       } else {
@@ -89,7 +90,7 @@ export function Player() {
       }
       input?.dispatchEvent(new Event("change", { bubbles: true }));
       e.preventDefault();
-    };
+    }, 50);
     input?.addEventListener("wheel", handleWheel);
     return () => {
       input?.removeEventListener("wheel", handleWheel);
