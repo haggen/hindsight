@@ -75,6 +75,7 @@
   overflow: visible;
   vertical-align: middle;
   width: 3rem;
+  margin-inline: 0.375rem;
 }
 
 .volume::-moz-range-track {

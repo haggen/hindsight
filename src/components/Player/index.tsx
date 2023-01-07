@@ -246,6 +246,8 @@ export function Player() {
         >
           {player.muted ? "Unmute" : "Mute"}
         </Button>
+      </li>
+      <li>
         <input
           ref={volumeRef}
           type="range"
