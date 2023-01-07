@@ -397,7 +397,7 @@ export function useTimer() {
     } else if (target > 0) {
       setActive(false);
     }
-  }, 10);
+  }, 500);
 
   const add = (seconds: number) => {
     mutate((map) => {
@@ -408,7 +408,7 @@ export function useTimer() {
 
   const clear = () => {
     mutate((map) => {
-      map.set("target", Date.now());
+      map.set("target", 0);
     });
     setActive(false);
   };
