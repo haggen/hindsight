@@ -497,6 +497,18 @@ export function usePlayer() {
     next();
   };
 
+  const handlePlay = () => {
+    if (!playing) {
+      play();
+    }
+  };
+
+  const handlePause = () => {
+    if (playing) {
+      pause();
+    }
+  };
+
   const play = (newUrl?: string) => {
     setEnded(false);
 
@@ -517,7 +529,10 @@ export function usePlayer() {
     if (nextUrl) {
       play(nextUrl);
     } else {
-      pause();
+      mutate((map) => {
+        map.set("playing", false);
+        map.set("played", 0);
+      });
     }
   };
 
@@ -563,6 +578,8 @@ export function usePlayer() {
     next,
     play,
     pause,
+    handlePlay,
+    handlePause,
     setVolume,
     mute,
     unmute,

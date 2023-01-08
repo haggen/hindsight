@@ -169,6 +169,8 @@ export function Player() {
     progressInterval: 1000,
     onProgress: player.handleProgress,
     onEnded: player.handleEnded,
+    onPlay: player.handlePlay,
+    onPause: player.handlePause,
   };
 
   return (
