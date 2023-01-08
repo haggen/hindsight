@@ -3,7 +3,7 @@
   border-radius: 1.25rem;
   box-shadow: 0 0 0 1px black;
   color: white;
-  font: 1rem/2.5 monospace;
+  font: 1rem/2.5 Monaco, monospace;
   padding-inline: 1rem;
 }
 
