@@ -125,7 +125,7 @@ export function Layout({ children }: Props) {
                 </Button>
               </li>
               <li>
-                <Button onClick={() => timer.add(1)}>+5 min.</Button>
+                <Button onClick={() => timer.add(5 * 60)}>+5 min.</Button>
               </li>
             </Flex>
           </Flex>
