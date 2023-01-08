@@ -14,7 +14,6 @@ import { Button } from "~/src/components/Button";
 import { Flex } from "~/src/components/Flex";
 import { usePlayer } from "~/src/lib/data";
 import { ClassList } from "~/src/lib/classList";
-import { throttled } from "~/src/lib/throttled";
 
 /**
  * Convert a value between 0 and 1 from a linear scale to a logarithmic scale.
@@ -81,19 +80,32 @@ export function Player() {
   }, []);
 
   useEffect(() => {
-    const input = volumeRef.current;
-    const handleWheel = throttled((e: WheelEvent) => {
-      if (e.deltaY > 0) {
-        input?.stepDown();
+    let threshold = 0;
+    const update = (direction: number) => {
+      if (direction > 0) {
+        volumeRef.current?.stepDown();
       } else {
-        input?.stepUp();
+        volumeRef.current?.stepUp();
       }
-      input?.dispatchEvent(new Event("change", { bubbles: true }));
+      volumeRef.current?.dispatchEvent(new Event("change", { bubbles: true }));
+    };
+    const handleWheel = (e: WheelEvent) => {
+      const target = e.target as Node;
+      if (!target.contains(volumeRef.current)) {
+        return;
+      }
       e.preventDefault();
-    }, 50);
-    input?.addEventListener("wheel", handleWheel);
+      if (threshold === 0) {
+        update(e.deltaY);
+      }
+      threshold += e.deltaY;
+      if (Math.abs(threshold) > 50) {
+        threshold = 0;
+      }
+    };
+    document.addEventListener("wheel", handleWheel, { passive: false });
     return () => {
-      input?.removeEventListener("wheel", handleWheel);
+      document.removeEventListener("wheel", handleWheel);
     };
   }, []);
 
