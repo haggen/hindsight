@@ -461,6 +461,13 @@ type Player = {
   queue: string[];
 };
 
+function sanitizeVideoUrl(raw: string) {
+  const url = new URL(raw);
+  url.searchParams.delete("index");
+  url.searchParams.delete("list");
+  return url.toString();
+}
+
 /**
  * Music player state.
  */
@@ -518,7 +525,7 @@ export function usePlayer() {
       if (newUrl === url) {
         map.set("played", 0);
       } else if (newUrl) {
-        map.set("url", newUrl);
+        map.set("url", sanitizeVideoUrl(newUrl));
       }
     });
   };
