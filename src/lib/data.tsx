@@ -122,7 +122,9 @@ export function Provider({ roomId, children }: Props) {
       return;
     }
 
-    providerRef.current = new WebrtcProvider(roomId, doc);
+    providerRef.current = new WebrtcProvider(roomId, doc, {
+      signaling: ["wss://signaling.crz.li"],
+    });
     forceUpdate();
 
     return () => {
