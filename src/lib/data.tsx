@@ -115,27 +115,30 @@ type Props = {
  * Provider for Y's document and synchronization provider.
  */
 export function Provider({ roomId, children }: Props) {
-	const forceUpdate = useForceUpdate();
-	const providerRef = useRef<WebrtcProvider | null>(null);
+	const [provider, setProvider] = useState<WebrtcProvider | null>(null);
 
 	useEffect(() => {
 		if (!roomId) {
 			return;
 		}
 
-		providerRef.current = new WebrtcProvider(roomId, doc, {
+		const provider = new WebrtcProvider(roomId, doc, {
 			signaling: ["wss://signaling.crz.li"],
 		});
-		forceUpdate();
+		setProvider(provider);
 
 		return () => {
-			providerRef.current?.destroy();
-			providerRef.current = null;
+			provider.destroy();
+			setProvider(null);
 		};
-	}, [forceUpdate, roomId]);
+	}, [roomId]);
+
+	if (!provider) {
+		return null;
+	}
 
 	return (
-		<Context.Provider value={{ doc, provider: providerRef.current }}>
+		<Context.Provider value={{ doc, provider }}>
 			{children}
 		</Context.Provider>
 	);

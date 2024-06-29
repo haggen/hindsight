@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 /**
  * Tell if component is mounted or not.
  */
-export function useMount() {
+export function useMounted() {
 	const mounted = useRef(false);
 	useEffect(() => {
 		mounted.current = true;

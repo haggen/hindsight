@@ -6,7 +6,7 @@ import { Button } from "~/src/components/Button";
 import { Display } from "~/src/components/Display";
 import { Flex } from "~/src/components/Flex";
 import { Player } from "~/src/components/Player";
-import { useMount } from "~/src/hooks/useMount";
+import { useMounted } from "~/src/hooks/useMounted";
 import { useAwareness, usePresentation, useTimer } from "~/src/lib/data";
 import { pluralize } from "~/src/lib/pluralize";
 
@@ -87,7 +87,7 @@ type Props = {
 
 export function Layout({ children }: Props) {
 	const timer = useTimer();
-	const mounted = useMount();
+	const mounted = useMounted();
 
 	useEffect(() => {
 		void Notification.requestPermission();

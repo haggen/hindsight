@@ -2,12 +2,11 @@ import { useRef } from "react";
 
 import * as classes from "./style.module.css";
 
-import { useMount } from "~/src/hooks/useMount";
 import { useRaf } from "~/src/hooks/useRaf";
 import { ClassList } from "~/src/lib/classList";
 
-function format(target: number) {
-	const missing = Math.ceil((target - Date.now()) / 1000);
+function format(value: number) {
+	const missing = Math.ceil((value - Date.now()) / 1000);
 	const minutes = Math.floor(missing / 60).toString();
 	const seconds = Math.floor(missing % 60).toString();
 
@@ -24,12 +23,12 @@ type Props = {
 
 export function Display({ target, active }: Props) {
 	const elementRef = useRef<HTMLOutputElement>(null);
-	const mounted = useMount();
 
 	useRaf(() => {
-		if (elementRef.current && mounted) {
-			elementRef.current.textContent = format(target);
+		if (!elementRef.current) {
+			return;
 		}
+		elementRef.current.textContent = format(target);
 	});
 
 	const classList = new ClassList();

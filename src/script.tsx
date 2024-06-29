@@ -5,7 +5,7 @@ import { App } from "~/src/components/App";
 
 const element = document.getElementById("root");
 
-if (element === null) {
+if (!element) {
 	throw new Error("Root element wasn't found");
 }
 
