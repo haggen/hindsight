@@ -3,7 +3,7 @@ import { type ElementType, forwardRef } from "react";
 import * as classes from "./style.module.css";
 
 import { ClassList } from "~/src/lib/classList";
-import type { PolymorphicPropsWithRef, PolymorphicRef } from "~/src/lib/shared";
+import type { PolymorphicPropsWithRef, PolymorphicRef } from "~/src/lib/react";
 
 type Props = {
 	color?: "active" | "negative" | "positive";
