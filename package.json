@@ -1,43 +1,36 @@
 {
-  "private": true,
-  "name": "hindsight",
-  "version": "1.0.0",
-  "author": "Arthur <arthur@corenzan.com>",
-  "license": "Apache-2.0",
-  "source": "src/index.html",
-  "browserslist": "> 1% and last 2 versions and not dead",
-  "scripts": {
-    "lint": "eslint . && tsc --noemit && prettier --check .",
-    "start": "parcel",
-    "build": "parcel build"
-  },
-  "dependencies": {
-    "parcel": "^2.8.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-player": "^2.11.2",
-    "resetize": "^30.0.1",
-    "ulid": "^2.3.0",
-    "wouter": "^2.10.0",
-    "y-webrtc": "^10.2.4",
-    "yjs": "^13.5.45"
-  },
-  "devDependencies": {
-    "@types/node": "^18.13.0",
-    "@types/react": "^18.0.27",
-    "@types/react-dom": "^18.0.10",
-    "@typescript-eslint/eslint-plugin": "^5.51.0",
-    "buffer": "^5.5.0",
-    "eslint": "^8.33.0",
-    "eslint-config-prettier": "^8.6.0",
-    "eslint-import-resolver-typescript": "^3.5.3",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-react": "^7.32.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "prettier": "^2.8.4",
-    "process": "^0.11.10",
-    "typescript": "^4.9.5",
-    "typescript-plugin-css-modules": "^4.1.1"
-  }
+	"private": true,
+	"name": "hindsight",
+	"version": "1.0.0",
+	"author": "Arthur <arthur@corenzan.com>",
+	"license": "Apache-2.0",
+	"type": "module",
+	"source": "src/index.html",
+	"browserslist": "> 1% and last 2 versions and not dead",
+	"scripts": {
+		"check": "tsc --noemit && biome check",
+		"start": "parcel",
+		"build": "parcel build"
+	},
+	"dependencies": {
+		"parcel": "^2.12.0",
+		"react": "^18.3.1",
+		"react-dom": "^18.3.1",
+		"react-player": "^2.16.0",
+		"resetize": "^31.2.0",
+		"ulid": "^2.3.0",
+		"wouter": "^3.3.0",
+		"y-webrtc": "^10.3.0",
+		"yjs": "^13.6.18"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.8.3",
+		"@types/node": "^20.14.9",
+		"@types/react": "^18.3.3",
+		"@types/react-dom": "^18.3.0",
+		"buffer": "^6.0.3",
+		"process": "^0.11.10",
+		"typescript": "^5.5.2",
+		"typescript-plugin-css-modules": "^5.1.0"
+	}
 }
