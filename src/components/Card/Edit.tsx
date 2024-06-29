@@ -1,88 +1,87 @@
-import { FormEvent, KeyboardEvent } from "react";
+import type { FormEvent, KeyboardEvent } from "react";
 
 import * as classes from "./style.module.css";
 
 import { Button } from "~/src/components/Button";
-import { TCard, useCards } from "~/src/lib/data";
+import { type TCard, useCards } from "~/src/lib/data";
 
 type Props = {
-  card: TCard;
-  onFinish?: () => void;
+	card: TCard;
+	onFinish?: () => void;
 };
 
 export function Edit({ card, onFinish }: Props) {
-  const cards = useCards();
+	const cards = useCards();
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
 
-    const inputs = e.currentTarget.elements as unknown as {
-      description: HTMLTextAreaElement;
-    };
+		const inputs = e.currentTarget.elements as unknown as {
+			description: HTMLTextAreaElement;
+		};
 
-    cards.update({ id: card.id, description: inputs.description.value });
+		cards.update({ id: card.id, description: inputs.description.value });
 
-    e.currentTarget.reset();
+		e.currentTarget.reset();
 
-    onFinish?.();
-  };
+		onFinish?.();
+	};
 
-  const handleDelete = () => {
-    cards.destroy(card.id);
-  };
+	const handleDelete = () => {
+		cards.destroy(card.id);
+	};
 
-  const handleCancel = () => {
-    onFinish?.();
-  };
+	const handleCancel = () => {
+		onFinish?.();
+	};
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    switch (e.key) {
-      case "Escape": {
-        handleCancel();
-        break;
-      }
-      case "Enter": {
-        e.currentTarget.form?.requestSubmit();
-        break;
-      }
-      default:
-        return;
-    }
+	const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+		switch (e.key) {
+			case "Escape": {
+				handleCancel();
+				break;
+			}
+			case "Enter": {
+				e.currentTarget.form?.requestSubmit();
+				break;
+			}
+			default:
+				return;
+		}
 
-    e.preventDefault();
-  };
+		e.preventDefault();
+	};
 
-  return (
-    <form className={classes.form} onSubmit={handleSubmit}>
-      <textarea
-        name="description"
-        placeholder="Type something…"
-        onKeyDown={handleKeyDown}
-        rows={3}
-        autoFocus
-        maxLength={112}
-        defaultValue={card?.description}
-        required
-      />
-      <menu className={classes.menu}>
-        <li>
-          <Button onClick={handleDelete} color="negative">
-            Delete
-          </Button>
-        </li>
-        <li>
-          <ul>
-            <li>
-              <Button type="submit" color="positive">
-                Save
-              </Button>
-            </li>
-            <li>
-              <Button onClick={handleCancel}>Cancel</Button>
-            </li>
-          </ul>
-        </li>
-      </menu>
-    </form>
-  );
+	return (
+		<form className={classes.form} onSubmit={handleSubmit}>
+			<textarea
+				name="description"
+				placeholder="Type something…"
+				onKeyDown={handleKeyDown}
+				rows={3}
+				maxLength={112}
+				defaultValue={card?.description}
+				required
+			/>
+			<menu className={classes.menu}>
+				<li>
+					<Button onClick={handleDelete} color="negative">
+						Delete
+					</Button>
+				</li>
+				<li>
+					<ul>
+						<li>
+							<Button type="submit" color="positive">
+								Save
+							</Button>
+						</li>
+						<li>
+							<Button onClick={handleCancel}>Cancel</Button>
+						</li>
+					</ul>
+				</li>
+			</menu>
+		</form>
+	);
 }

@@ -1,14 +1,15 @@
 {
-  "compilerOptions": {
-    "target": "esnext",
-    "moduleResolution": "node",
-    "strictNullChecks": true,
-    "jsx": "react-jsx",
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["./*"]
-    },
-    "plugins": [{ "name": "typescript-plugin-css-modules" }]
-  },
-  "exclude": ["node_modules"]
+	"compilerOptions": {
+		"target": "esnext",
+		"moduleResolution": "bundler",
+		"strictNullChecks": true,
+		"strict": true,
+		"jsx": "react-jsx",
+		"baseUrl": ".",
+		"paths": {
+			"~/*": ["./*"]
+		},
+		"plugins": [{ "name": "typescript-plugin-css-modules" }]
+	},
+	"exclude": ["node_modules"]
 }

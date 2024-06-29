@@ -4,16 +4,16 @@
 
 > <https://hindsight.crz.li>
 
-**Hindsight** is a retrospective board for Scrum practitioners.
+**Hindsight** is a real-time retrospective board for small teams.
 
 - 👉 Free, open-source and hosted on the edge.
-- 🖼️ Clean and focused design (you can check it out on [Figma](https://www.figma.com/file/6SbO2KH3lDlHjgg8RZcwPA/Hindsight?node-id=1%3A144&t=Np6HYeUHQLPBjCTE-4)).
-- 🔒 No back-end. Data is encrypted and shared directly between connected browsers.
-- ⏰ Built-in Timer and 🎵 Music player.
+- 🖼️ Clean and focused design. You can check it out on [Figma](https://www.figma.com/file/6SbO2KH3lDlHjgg8RZcwPA/Hindsight?node-id=1%3A144&t=Np6HYeUHQLPBjCTE-4)).
+- 🔒 No back-end. Data is encrypted and shared directly between connected browsers using WebRTC.
+- 🍀 No sign-up. Invite others by sharing the URL.
 
 ## Development
 
-This web application is built using [Parcel](https://parceljs.org). Node.js v18+ is recommended.
+This web application is built using [Parcel](https://parceljs.org). Node.js v20+ is recommended.
 
 To install the dependencies:
 
@@ -27,10 +27,10 @@ To start the development server.
 npm start
 ```
 
-After changes you should run the `lint` script to lint, type check and format the code:
+Before commiting you should run the `check` script to lint, type check and format the code:
 
 ```sh
-npm run lint
+npm run check
 ```
 
 ## Legal

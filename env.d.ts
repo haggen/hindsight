@@ -2,10 +2,10 @@
  * Stylesheet module.
  */
 declare module "*.module.css" {
-  const stylesheet: {
-    [key: string]: string;
-  };
-  export = stylesheet;
+	const stylesheet: {
+		[key: string]: string;
+	};
+	export = stylesheet;
 }
 
 /**
