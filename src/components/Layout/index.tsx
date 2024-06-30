@@ -5,7 +5,6 @@ import * as classes from "./style.module.css";
 import { Button } from "~/src/components/Button";
 import { Display } from "~/src/components/Display";
 import { Flex } from "~/src/components/Flex";
-import { Player } from "~/src/components/Player";
 import { useMounted } from "~/src/hooks/useMounted";
 import { useAwareness, usePresentation, useTimer } from "~/src/lib/data";
 import { pluralize } from "~/src/lib/pluralize";
@@ -60,7 +59,7 @@ function Pagination() {
 			<menu>
 				<li>
 					<Button onClick={handleNext} disabled={!presentation.hasNext}>
-						Start →
+						Start presentation →
 					</Button>
 				</li>
 			</menu>
@@ -86,8 +85,8 @@ type Props = {
 };
 
 export function Layout({ children }: Props) {
-	const timer = useTimer();
 	const mounted = useMounted();
+	const timer = useTimer();
 
 	useEffect(() => {
 		void Notification.requestPermission();
@@ -112,31 +111,24 @@ export function Layout({ children }: Props) {
 						</a>
 					</h1>
 
-					<Flex gap="3rem">
-						<People />
-
-						<Flex as="menu" style={{ paddingInlineEnd: ".375rem" }}>
-							<li>
-								<Button
-									onClick={() => timer.clear()}
-									disabled={!timer.active}
-									color="negative"
-								>
-									Clear
-								</Button>
-							</li>
-							<li>
-								<Button onClick={() => timer.add(5 * 60)}>+5 min.</Button>
-							</li>
-						</Flex>
-					</Flex>
+					<People />
 				</Flex>
 
-				<Display target={timer.target} active={timer.active} />
+				<Flex gap=".75rem">
+					<Button
+						onClick={() => timer.clear()}
+						disabled={!timer.active}
+						color="negative"
+					>
+						Clear
+					</Button>
 
-				<Flex justify="space-between" style={{ flex: "1 0 0" }}>
-					<Player />
+					<Display target={timer.target} active={timer.active} />
 
+					<Button onClick={() => timer.add(5 * 60)}>+5 min.</Button>
+				</Flex>
+
+				<Flex justify="flex-end" style={{ flex: "1 0 0" }}>
 					<Pagination />
 				</Flex>
 			</Flex>
@@ -145,8 +137,11 @@ export function Layout({ children }: Props) {
 
 			<footer className={classes.footer}>
 				<p>
-					Made by <a href="https://twitter.com/haggen">me</a>. Source and
-					feedback on{" "}
+					Made by{" "}
+					<a href="https://twitter.com/haggen" target="_blank" rel="noreferrer">
+						me
+					</a>
+					. Source and feedback on{" "}
 					<a
 						href="https://github.com/haggen/hindsight"
 						target="_blank"

@@ -5,11 +5,9 @@ import {
 	useContext,
 	useEffect,
 	useMemo,
-	useRef,
 	useState,
+	useSyncExternalStore,
 } from "react";
-import type YouTubePlayer from "react-player/youtube";
-import type { YouTubePlayerProps } from "react-player/youtube";
 import { ulid } from "ulid";
 import type { Awareness } from "y-protocols/awareness";
 import { WebrtcProvider } from "y-webrtc";
@@ -138,18 +136,12 @@ export function Provider({ roomId, children }: Props) {
 	}
 
 	return (
-		<Context.Provider value={{ doc, provider }}>
-			{children}
-		</Context.Provider>
+		<Context.Provider value={{ doc, provider }}>{children}</Context.Provider>
 	);
 }
 
-function getSharedMapSnapshot<T extends object>(
-	map: Y.Map<T[keyof T]>,
-	// initialValue: T = {} as T
-) {
-	return map.toJSON() as T;
-	// return map.size === 0 ? initialValue : (map.toJSON() as T);
+function getSharedMapSnapshot<T extends object>(map: Y.Map<T[keyof T]>) {
+	return JSON.stringify(map.toJSON());
 }
 
 /**
@@ -160,19 +152,15 @@ export function useSharedMap<T extends object>(name: string) {
 
 	const map = doc.getMap<T[keyof T]>(name);
 
-	const [snapshot, setSnapshot] = useState<T>(getSharedMapSnapshot<T>(map));
-
-	useEffect(() => {
-		const onChange = () => {
-			const value = getSharedMapSnapshot<T>(map);
-			setSnapshot(value);
-		};
-		map.observe(onChange);
-
-		return () => {
-			map.unobserve(onChange);
-		};
-	}, [map]);
+	const snapshot = useSyncExternalStore(
+		(onStoreChange) => {
+			map.observe(onStoreChange);
+			return () => {
+				map.unobserve(onStoreChange);
+			};
+		},
+		() => getSharedMapSnapshot<T>(map),
+	);
 
 	const mutate = useCallback(
 		(updator: (map: Y.Map<T[keyof T]>) => void) => {
@@ -181,7 +169,10 @@ export function useSharedMap<T extends object>(name: string) {
 		[doc, map],
 	);
 
-	return [snapshot, mutate] as const;
+	return [
+		useMemo(() => JSON.parse(snapshot) as T, [snapshot]),
+		mutate,
+	] as const;
 }
 
 // ---
@@ -458,152 +449,5 @@ export function useAwareness<T extends object>() {
 		count: Object.keys(states).length,
 		states,
 		setLocalState,
-	} as const;
-}
-
-type Player = {
-	playing: boolean;
-	played: number;
-	state: string;
-	url: string;
-	queue: string[];
-};
-
-function sanitizeVideoUrl(raw: string) {
-	const url = new URL(raw);
-	url.searchParams.delete("index");
-	url.searchParams.delete("list");
-	return url.toString();
-}
-
-/**
- * Music player state.
- */
-export function usePlayer() {
-	const [{ playing = false, played = 0, url = "", queue = [] }, mutate] =
-		useSharedMap<Player>(SharedState.Player);
-	const [volume, setVolume] = useState(0.5);
-	const [muted, setMuted] = useState(true);
-	const [ended, setEnded] = useState(false);
-	const ref = useRef<YouTubePlayer>(null);
-
-	useEffect(() => {
-		const now = ref.current?.getCurrentTime();
-		if (now === undefined) {
-			return;
-		}
-		const diff = Math.abs(played - now);
-		if (diff > 3) {
-			ref.current?.seekTo(played, "seconds");
-		}
-	}, [played]);
-
-	const handleProgress: YouTubePlayerProps["onProgress"] = (progress) => {
-		if (progress.playedSeconds > played) {
-			mutate((map) => {
-				map.set("played", progress.playedSeconds);
-			});
-		}
-	};
-
-	const handleEnded = () => {
-		// People are (hopefully) 2 seconds off at most, so we wait 1 second before	starting the next song.
-		// setTimeout(() => next(), 1000);
-		next();
-	};
-
-	const handlePlay = () => {
-		if (!playing) {
-			play();
-		}
-	};
-
-	const handlePause = () => {
-		if (playing) {
-			pause();
-		}
-	};
-
-	const play = (newUrl?: string) => {
-		setEnded(false);
-
-		mutate((map) => {
-			map.set("playing", true);
-
-			if (newUrl === url) {
-				map.set("played", 0);
-			} else if (newUrl) {
-				map.set("url", sanitizeVideoUrl(newUrl));
-			}
-		});
-	};
-
-	const next = () => {
-		const index = queue.indexOf(url);
-		const nextUrl = queue[index + 1];
-		if (nextUrl) {
-			play(nextUrl);
-		} else {
-			mutate((map) => {
-				map.set("playing", false);
-				map.set("played", 0);
-			});
-		}
-	};
-
-	const pause = () => {
-		mutate((map) => {
-			map.set("playing", false);
-		});
-	};
-
-	const add = (url: string) => {
-		mutate((map) => {
-			map.set("queue", [...queue, url]);
-		});
-	};
-
-	const remove = (target: string) => {
-		mutate((map) => {
-			map.set(
-				"queue",
-				queue.filter((url) => url !== target),
-			);
-			if (target === url) {
-				map.set("url", "");
-				map.set("playing", false);
-			}
-		});
-	};
-
-	const mute = () => {
-		setMuted(true);
-	};
-
-	const unmute = () => {
-		setMuted(false);
-	};
-
-	return {
-		ref,
-		playing: playing && !ended,
-		url,
-		volume,
-		muted,
-		next,
-		play,
-		pause,
-		handlePlay,
-		handlePause,
-		setVolume,
-		mute,
-		unmute,
-		played,
-		handleProgress,
-		ended,
-		handleEnded,
-		queue,
-		add,
-		remove,
 	} as const;
 }

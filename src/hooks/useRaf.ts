@@ -19,7 +19,7 @@ export function useRaf(callback: (elapsed: number) => void) {
 			callbackRef.current(elapsed);
 			rafRef.current = requestAnimationFrame(handler);
 		},
-		[callbackRef],
+		[callbackRef, mounted],
 	);
 
 	useEffect(() => {
