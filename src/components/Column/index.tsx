@@ -2,10 +2,11 @@
 
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
-import { FormEvent, useState } from "react";
+import type { Column as TColumn } from "@/lib/server/prisma";
+import { type FormEvent, useState } from "react";
 
 type FormProps = {
-  data: any;
+  data: TColumn;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onCancel: () => void;
 };
@@ -32,7 +33,7 @@ function Form({ data, onSubmit, onCancel }: FormProps) {
 }
 
 type HeadProps = {
-  data: any;
+  data: TColumn;
   onEdit: () => void;
 };
 
@@ -51,7 +52,7 @@ function Head({ data, onEdit }: HeadProps) {
 }
 
 type ColumnProps = {
-  data: any;
+  data: TColumn;
 };
 
 export function Column({ data }: ColumnProps) {

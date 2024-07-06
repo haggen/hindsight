@@ -3,11 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-  input[type="text"],
-  textarea {
-    background-color: transparent;
-  }
-
   :focus-visible {
     outline-offset: 0.25rem;
   }

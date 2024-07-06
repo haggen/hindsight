@@ -1,11 +1,11 @@
 "use client";
 
+import { Button } from "@/components/Button";
+import type { Card as TCard } from "@/lib/server/prisma";
 import { type FormEvent, useState } from "react";
 
-import { Button } from "@/components/Button";
-
 type FormProps = {
-  data: any;
+  data: TCard;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onCancel: () => void;
 };
@@ -37,7 +37,7 @@ function Form({ data, onSubmit, onCancel }: FormProps) {
 }
 
 type ContentProps = {
-  data: any;
+  data: TCard;
   onEdit: () => void;
 };
 
@@ -49,7 +49,7 @@ function Content({ data, onEdit }: ContentProps) {
       <div className="flex justify-between">
         <menu className="flex gap-3">
           <li>
-            <Button>Vote ({data.voters.length})</Button>
+            <Button>Vote ({data.votes.length})</Button>
           </li>
         </menu>
         <menu className="flex gap-3 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
@@ -62,7 +62,9 @@ function Content({ data, onEdit }: ContentProps) {
   );
 }
 
-type CardProps = { data: any };
+type CardProps = {
+  data: TCard;
+};
 
 export function Card({ data }: CardProps) {
   const [editing, setEditing] = useState(false);

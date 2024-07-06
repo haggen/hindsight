@@ -12,5 +12,8 @@
     "rules": {
       "recommended": true
     }
+  },
+  "files": {
+    "ignore": [".next"]
   }
 }

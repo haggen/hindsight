@@ -1,5 +1,5 @@
-import { createId } from "@/lib/createId";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/server/prisma";
+import { createId } from "@/lib/shared/createId";
 
 export async function POST(request: Request) {
   const board = await prisma.board.create({

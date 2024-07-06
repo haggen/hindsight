@@ -1,23 +1,20 @@
 import { Button } from "@/components/Button";
-import { Card } from "@/components/Card";
 import { Column } from "@/components/Column";
+import { Timer } from "@/components/Timer";
+import { prisma } from "@/lib/server/prisma";
 
-const columns = [
-  {
-    id: "1",
-    description: "Column 1",
-    cards: [
-      {
-        id: "1",
-        description:
-          "Est assumenda a libero quisquam minus sit et, doloremque ab, quia quos blanditiis quasi quaerat alias totam recusandae quo sapiente impedit amet.",
-        voters: ["1"],
-      },
-    ],
-  },
-];
+type Props = {
+  params: {
+    boardId: string;
+  };
+};
 
-export default function Home() {
+export default async function Page({ params }: Props) {
+  const board = await prisma.board.findUniqueOrThrow({
+    where: { id: params.boardId },
+    include: { columns: { include: { cards: { include: { votes: true } } } } },
+  });
+
   return (
     <div className="container mx-auto py-6 flex flex-col gap-6">
       <div className="flex items-center gap-12">
@@ -29,15 +26,7 @@ export default function Home() {
           <span>👤 ×8</span>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Button className="text-red-600">Clear</Button>
-
-          <span className="font-mono text-white px-4 py-2 rounded-3xl bg-violet-600">
-            00:00
-          </span>
-
-          <Button>+5 min.</Button>
-        </div>
+        <Timer boardId={params.boardId} />
 
         <div className="flex items-center flex-grow justify-end">
           <Button>Start presentation &rarr;</Button>
@@ -45,7 +34,7 @@ export default function Home() {
       </div>
 
       <div className="flex gap-3 overflow-x-auto">
-        {columns.map((column) => (
+        {board.columns.map((column) => (
           <Column key={column.id} data={column} />
         ))}
       </div>
