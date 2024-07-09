@@ -17,6 +17,21 @@ export async function GET(request: Request, { params }: { params: Params }) {
   return Response.json(card);
 }
 
+export async function PATCH(request: Request, { params }: { params: Params }) {
+  const data = await request.json();
+
+  const card = await prisma.card.update({
+    where: {
+      id: params.cardId,
+    },
+    data: {
+      description: data.description,
+    },
+  });
+
+  return Response.json(card);
+}
+
 export async function DELETE(request: Request, { params }: { params: Params }) {
   await prisma.card.delete({
     where: {
@@ -24,5 +39,5 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     },
   });
 
-  return Response.json(null, { status: 204 });
+  return new Response(null, { status: 204 });
 }

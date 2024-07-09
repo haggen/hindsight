@@ -3,7 +3,7 @@ CREATE TABLE "Board" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    "alertsAt" INTEGER DEFAULT 0
+    "presentsAt" DATETIME
 );
 
 -- CreateTable

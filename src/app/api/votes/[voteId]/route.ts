@@ -5,11 +5,11 @@ type Params = {
 };
 
 export async function DELETE(request: Request, { params }: { params: Params }) {
-  await prisma.column.delete({
+  await prisma.vote.delete({
     where: {
       id: params.voteId,
     },
   });
 
-  return Response.json(null, { status: 204 });
+  return new Response(null, { status: 204 });
 }

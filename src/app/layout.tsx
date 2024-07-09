@@ -1,4 +1,7 @@
+import { Providers } from "@/components/Providers";
+import { getUserId } from "@/lib/server/userId";
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 
 import "./globals.css";
@@ -13,9 +16,13 @@ type Props = {
 };
 
 export default function RootLayout({ children }: Props) {
+  const userId = getUserId();
+
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Providers userId={userId}>{children}</Providers>
+      </body>
     </html>
   );
 }

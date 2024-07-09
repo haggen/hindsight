@@ -10,7 +10,7 @@ export async function POST(request: Request) {
   const card = await prisma.card.create({
     data: {
       id: createId(),
-      columnId: data.columnId,
+      column: { connect: { id: data.columnId } },
       description: data.description,
       authorId: userId,
       votes: {

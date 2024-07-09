@@ -6,4 +6,10 @@
   :focus-visible {
     outline-offset: 0.25rem;
   }
+
+  input[type="text"],
+  input:not([type]),
+  textarea {
+    background-color: transparent;
+  }
 }

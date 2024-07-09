@@ -1,10 +1,9 @@
 "use client";
 
 import { Button } from "@/components/Button";
-import { api } from "@/lib/client/api";
-import type { Board, Id } from "@/lib/server/prisma";
+import { type Board, type Mutation, api } from "@/lib/client/api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import useSWR from "swr";
 
 function format(timestamp: number) {
   const value = timestamp - Date.now();
@@ -32,61 +31,79 @@ function Display({ timestamp }: DisplayProps) {
     };
   }, []);
 
-  if (timestamp < Date.now()) {
+  if (Date.now() >= timestamp) {
     return (
-      <span className="font-mono text-white px-4 py-2 rounded-3xl bg-slate-600">
+      <span className="font-mono text-lg text-white px-3 py-2 rounded-3xl bg-slate-400">
         00:00
       </span>
     );
   }
 
   return (
-    <span className="font-mono text-white px-4 py-2 rounded-3xl bg-violet-600">
+    <span className="font-mono text-lg text-white px-3 py-2 rounded-3xl bg-violet-600">
       {format(timestamp)}
     </span>
   );
 }
 
+function getTime(value: undefined | string) {
+  if (!value) {
+    return Date.now();
+  }
+
+  return new Date(value).getTime();
+}
+
 type Props = {
-  boardId: Id;
+  board: Board;
 };
 
-export function Timer({ boardId }: Props) {
-  const {
-    data: board,
-    error,
-    isLoading,
-    mutate,
-  } = useSWR<Board>(`/api/boards/${boardId}`, api.get);
+export function Timer({ board: data }: Props) {
+  const queryClient = useQueryClient();
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const { data: board } = useQuery<Board>({
+    queryKey: ["boards", data.id],
+    queryFn: () => api.get(`/api/boards/${data.id}`),
+    initialData: data,
+  });
 
-  if (!board) {
-    return <div>Error!</div>;
-  }
+  const { mutate } = useMutation({
+    mutationKey: ["boards", board.id],
+    mutationFn(data: Mutation<Board>) {
+      return api.patch<Board>(`/api/boards/${board.id}`, data);
+    },
+    onSuccess() {
+      queryClient.invalidateQueries({ queryKey: ["boards", board.id] });
+    },
+  });
 
-  const timestamp = board.alertsAt ?? 0;
-
-  const onChange = async (timestamp: number) => {
-    mutate(await api.patch(`/api/boards/${boardId}`, { alertsAt: timestamp }));
+  const handleChange = async (value: null | number) => {
+    mutate({ presentsAt: value ? new Date(value).toISOString() : null });
   };
 
   return (
     <div className="flex items-center gap-3">
       <Button
         className="text-red-600"
-        onClick={() => onChange(0)}
-        disabled={timestamp === 0}
+        onClick={() => handleChange(null)}
+        disabled={!board.presentsAt}
       >
         Clear
       </Button>
 
-      <Display timestamp={timestamp} />
+      <Display
+        timestamp={board.presentsAt ? new Date(board.presentsAt).getTime() : 0}
+      />
 
       <Button
-        onClick={() => onChange((timestamp || Date.now()) + 1000 * 60 * 5)}
+        onClick={() =>
+          handleChange(
+            new Date(
+              Math.max(Date.now(), getTime(board.presentsAt)),
+            ).getTime() +
+              1000 * 2,
+          )
+        }
       >
         +5 min.
       </Button>

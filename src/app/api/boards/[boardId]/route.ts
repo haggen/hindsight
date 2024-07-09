@@ -30,7 +30,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
 
   const board = await prisma.board.update({
     data: {
-      alertsAt: data.alertsAt,
+      presentsAt: data.presentsAt,
     },
     where: {
       id: params.boardId,

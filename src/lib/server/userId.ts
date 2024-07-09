@@ -11,14 +11,5 @@ export function getUserId() {
     return cookie.value;
   }
 
-  const userId = acquireUserId();
-
-  cookies().set({
-    name: "userId",
-    value: userId,
-    expires: 60 * 60 * 24 * 365,
-    httpOnly: true,
-  });
-
-  return userId;
+  return acquireUserId();
 }
