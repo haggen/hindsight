@@ -1,16 +1,21 @@
-import {
-  createMergeableStore,
-  type NoValuesSchema,
-} from "tinybase/with-schemas";
+import { createLocalPersister } from "tinybase/persisters/persister-browser/with-schemas";
 import * as UiReact from "tinybase/ui-react/with-schemas";
-import { createLocalPersister } from "tinybase/persisters/persister-browser";
+import {
+  createIndexes,
+  createMergeableStore,
+  createMetrics,
+  createQueries,
+  createRelationships,
+} from "tinybase/with-schemas";
+
+const valuesSchema = {} as const;
 
 const tablesSchema = {
   boards: {
-    timer: { type: "number" },
+    countdown: { type: "number" },
   },
-  users: {
-    name: { type: "string" },
+  participants: {
+    boardId: { type: "string" },
   },
   columns: {
     boardId: { type: "string" },
@@ -27,12 +32,40 @@ const tablesSchema = {
   },
 } as const;
 
-export const store =
-  createMergeableStore("hindsight").setTablesSchema(tablesSchema);
+export type Schema = [typeof tablesSchema, typeof valuesSchema];
 
-export const { useTable, useRow } = UiReact as UiReact.WithSchemas<
-  [typeof tablesSchema, NoValuesSchema]
->;
+export const store = createMergeableStore()
+  .setValuesSchema(valuesSchema)
+  .setTablesSchema(tablesSchema);
+
+// ---
+
+const TypedUiReact = UiReact as UiReact.WithSchemas<Schema>;
+
+export { TypedUiReact as UiReact };
+
+// ---
+
+export const queries = createQueries(store);
+
+// ---
+
+export const metrics = createMetrics(store);
+
+// ---
+
+export const relationships = createRelationships(store);
+
+// ---
+
+export const indexes = createIndexes(store);
+
+indexes.setIndexDefinition("votesByCardId", "votes", "cardId");
+indexes.setIndexDefinition("cardsByColumnId", "cards", "columnId");
+indexes.setIndexDefinition("columnsByBoardId", "columns", "boardId");
+indexes.setIndexDefinition("participantsByBoardId", "participants", "boardId");
+
+// ---
 
 export const persister = createLocalPersister(store, "store");
 

@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 @layer base {
-  :focus-visible {
+  /* :focus-visible {
     outline-offset: 0.25rem;
-  }
+  } */
 
   input[type="text"],
   input:not([type]),

@@ -1,4 +1,5 @@
-import { render } from "preact";
+import { createRoot } from "react-dom/client";
+import { StrictMode } from "react";
 
 import "./global.css";
 
@@ -10,4 +11,8 @@ if (!root) {
   throw new Error("Root element not found");
 }
 
-render(<App />, root);
+createRoot(root).render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);
