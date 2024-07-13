@@ -1,8 +1,8 @@
-import { useState, type FormEvent } from "react";
+import { type FormEvent, type ReactNode, useState } from "react";
 import { Button } from "~/components/Button";
 import { Card } from "~/components/Card";
 import { createId } from "~/lib/createId";
-import { store, UiReact } from "~/lib/store";
+import { UiReact, store } from "~/lib/store";
 
 type FormProps = {
   data?: { description: string };
@@ -34,6 +34,7 @@ function Form({ data, onSave, onCancel, onDelete }: FormProps) {
         autoComplete="off"
         className="font-bold text-lg"
         defaultValue={data?.description}
+        // biome-ignore lint/a11y/noAutofocus: <explanation>
         autoFocus
       />
 
@@ -61,11 +62,12 @@ function Form({ data, onSave, onCancel, onDelete }: FormProps) {
 
 type ColumnProps = {
   columnId: string;
+  children?: ReactNode;
 };
 
-export function Column({ columnId }: ColumnProps) {
+export function Column({ columnId, children }: ColumnProps) {
   const [editing, setEditing] = useState(false);
-  const { description } = UiReact.useRow("columns", columnId);
+  const { description, boardId } = UiReact.useRow("columns", columnId);
   const cardIds = UiReact.useSliceRowIds("cardsByColumnId", columnId);
 
   const handleEdit = () => {
@@ -106,16 +108,18 @@ export function Column({ columnId }: ColumnProps) {
         </header>
       )}
 
-      <ul className="flex flex-col gap-3">
-        {cardIds.map((id) => (
-          <li key={id}>
-            <Card cardId={id} />
+      {children ?? (
+        <ul className="flex flex-col gap-3">
+          {cardIds.map((id) => (
+            <li key={id}>
+              <Card cardId={id} />
+            </li>
+          ))}
+          <li>
+            <Card.Blank defaults={{ boardId, columnId }} />
           </li>
-        ))}
-        <li>
-          <Card.Blank defaults={{ columnId }} />
-        </li>
-      </ul>
+        </ul>
+      )}
     </section>
   );
 }
@@ -126,8 +130,10 @@ type BlankProps = {
 
 function Blank({ defaults }: BlankProps) {
   const handleSave = (data: { description: string }) => {
-    store.setRow("columns", createId(), {
+    const columnId = createId();
+    store.setRow("columns", columnId, {
       boardId: defaults.boardId,
+      createdAt: Date.now(),
       description: data.description,
     });
   };

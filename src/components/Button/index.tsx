@@ -1,5 +1,6 @@
-import type { ComponentProps, ElementType } from "react";
+import type { ComponentPropsWithRef, ElementType, ForwardedRef } from "react";
 import { Link } from "wouter";
+import { type DistributiveOmit, fixedForwardRef } from "~/lib/react";
 
 const variants = {
   neutral: "",
@@ -8,31 +9,42 @@ const variants = {
   negative: "text-red-600",
 };
 
-// biome-ignore lint/complexity/noBannedTypes: <explanation>
-function hasHref(props: {}): props is ComponentProps<typeof Link> {
-  return "href" in props;
-}
-
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-type AcceptableElements = ElementType<any, "button"> | typeof Link;
+type AcceptableElements = typeof Link | ElementType<any, "a" | "button">;
 
 type Props<E extends AcceptableElements> = {
   as?: E;
   variant?: "neutral" | "active" | "positive" | "negative";
-} & Omit<ComponentProps<AcceptableElements>, "variant">;
+  disabled?: boolean;
+} & DistributiveOmit<
+  ComponentPropsWithRef<ElementType extends E ? "a" : E>, // This "a" makes no sense but it works.
+  "as" | "variant" | "disabled"
+>;
 
-export function Button<E extends AcceptableElements>({
-  as = "button" as E,
-  variant = "neutral",
-  ...props
-}: Props<E>) {
-  props.className = `text-sm font-bold ${variants[variant]} ${props.className}`;
+function Button<E extends AcceptableElements>(
+  { as, variant = "neutral", ...props }: Props<E>,
+  ref: ForwardedRef<E>,
+) {
+  const Component = as ?? ("href" in props ? (Link as E) : "button");
 
-  if (hasHref(props)) {
-    return <Link {...props} />;
+  props.className = `${props.className} text-sm font-bold`;
+
+  if (props.disabled) {
+    props.className = `${props.className} text-slate-400 cursor-not-allowed`;
+  } else {
+    props.className = `${props.className} ${variants[variant]}`;
   }
 
-  props.type ??= "button";
+  if (as === "button") {
+    props.type ??= "button";
+  } else if (props.disabled) {
+    props.href = "";
+    props.disabled = undefined;
+  }
 
-  return <button {...props} />;
+  return <Component {...props} ref={ref} />;
 }
+
+const forwardedButton = fixedForwardRef(Button);
+
+export { forwardedButton as Button };

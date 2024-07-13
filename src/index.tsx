@@ -1,5 +1,5 @@
-import { createRoot } from "react-dom/client";
 import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 
 import "./global.css";
 
@@ -14,5 +14,5 @@ if (!root) {
 createRoot(root).render(
   <StrictMode>
     <App />
-  </StrictMode>
+  </StrictMode>,
 );

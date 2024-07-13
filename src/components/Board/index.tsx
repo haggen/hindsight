@@ -1,8 +1,8 @@
 import { type ReactNode, useEffect, useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation, useRoute } from "wouter";
 import { Button } from "~/components/Button";
-import { store, UiReact } from "~/lib/store";
-import { getUserId } from "~/lib/userId";
+import { getParticipantId } from "~/lib/participantId";
+import { UiReact, indexes, store } from "~/lib/store";
 
 function format(timestamp: number) {
   const delta = Math.ceil((timestamp - Date.now()) / 1000);
@@ -68,6 +68,88 @@ export function Countdown({ value, onChange }: CountdownProps) {
   );
 }
 
+function compareCardIds(a: string, b: string) {
+  const cards = [store.getRow("cards", a), store.getRow("cards", b)];
+  const columns = [
+    store.getRow("columns", cards[0].columnId),
+    store.getRow("columns", cards[1].columnId),
+  ];
+  const votes = [
+    indexes.getSliceRowIds("votesByCardId", a).length,
+    indexes.getSliceRowIds("votesByCardId", b).length,
+  ];
+
+  if (cards[0].columnId === cards[1].columnId) {
+    if (votes[0] === votes[1]) {
+      return cards[0].createdAt - cards[1].createdAt;
+    }
+
+    return votes[1] - votes[0];
+  }
+
+  return columns[0].createdAt - columns[1].createdAt;
+}
+
+type PaginationProps = {
+  boardId: string;
+};
+
+function Pagination({ boardId }: PaginationProps) {
+  const [presenting, params] = useRoute<{
+    cardId: string;
+  }>("/boards/:boardId/cards/:cardId");
+  const [isFinished] = useRoute("/boards/:boardId/finished");
+  const unsortedCardIds = UiReact.useSliceRowIds("cardsByBoardId", boardId);
+  const cardIds = [...unsortedCardIds].sort(compareCardIds);
+  const cardId = params?.cardId ?? "";
+  const index = cardIds.indexOf(cardId);
+  const isFirst = index === 0;
+  const isLast = index === cardIds.length - 1;
+  const prevIndex = Math.max(0, index - 1);
+  const nextIndex = Math.min(cardIds.length - 1, index + 1);
+
+  return (
+    <div className="flex items-center flex-grow justify-end">
+      {presenting || isFinished ? (
+        <menu className="flex items-center gap-3">
+          <li>
+            <Button
+              href={
+                isFinished
+                  ? `/boards/${boardId}/cards/${cardIds[cardIds.length - 1]}`
+                  : isFirst
+                    ? `/boards/${boardId}`
+                    : `/boards/${boardId}/cards/${cardIds[prevIndex]}`
+              }
+            >
+              &larr; Back
+            </Button>
+          </li>
+          <li>
+            <Button
+              href={
+                isLast
+                  ? `/boards/${boardId}/finished`
+                  : `/boards/${boardId}/cards/${cardIds[nextIndex]}`
+              }
+              disabled={isFinished}
+            >
+              Next &rarr;
+            </Button>
+          </li>
+        </menu>
+      ) : (
+        <Button
+          href={`/boards/${boardId}/cards/${cardIds[0]}`}
+          disabled={cardIds.length === 0}
+        >
+          Start presentation &rarr;
+        </Button>
+      )}
+    </div>
+  );
+}
+
 type BoardProps = {
   boardId: string;
   children: ReactNode;
@@ -77,38 +159,38 @@ export function Board({ boardId, children }: BoardProps) {
   const { countdown } = UiReact.useRow("boards", boardId);
   const participantIds = UiReact.useSliceRowIds(
     "participantsByBoardId",
-    boardId
+    boardId,
   );
-  const userId = getUserId();
+  const participantId = getParticipantId();
 
   useEffect(() => {
-    store.setRow("participants", userId, { boardId });
+    store.setRow("participants", participantId, { boardId });
 
     const handleVisibilityChange = () => {
       switch (document.visibilityState) {
         case "visible":
-          store.setRow("participants", userId, { boardId });
+          store.setRow("participants", participantId, { boardId });
           break;
         case "hidden":
-          store.delRow("participants", userId);
+          store.delRow("participants", participantId);
           break;
       }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      store.delRow("participants", userId);
+      store.delRow("participants", participantId);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [boardId, userId]);
+  }, [boardId, participantId]);
 
-  const handleChangeCountdown = (value: number) => {
+  const handleCountdownChange = (value: number) => {
     store.setCell("boards", boardId, "countdown", value);
   };
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center gap-12">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-12">
         <div className="flex items-center flex-grow justify-between">
           <h1 className="text-2xl font-black">
             <Link href="/boards">Hindsight</Link>
@@ -132,16 +214,12 @@ export function Board({ boardId, children }: BoardProps) {
           </span>
         </div>
 
-        <Countdown value={countdown ?? 0} onChange={handleChangeCountdown} />
+        <Countdown value={countdown ?? 0} onChange={handleCountdownChange} />
 
-        <div className="flex items-center flex-grow justify-end">
-          <Button href={`/boards/${boardId}/`}>
-            Start presentation &rarr;
-          </Button>
-        </div>
+        <Pagination boardId={boardId} />
       </div>
 
-      <div className="flex gap-3 overflow-x-auto">{children}</div>
+      {children}
     </div>
   );
 }

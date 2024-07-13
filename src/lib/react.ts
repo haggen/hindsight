@@ -1,31 +1,18 @@
-import type {
-  ComponentPropsWithRef,
-  ComponentPropsWithoutRef,
-  ElementType,
+import {
+  type ReactNode,
+  type Ref,
+  type RefAttributes,
+  forwardRef,
 } from "react";
 
-/**
- * Extend component properties with an `as` property and the selected element intrinsic attributes.
- */
-export type PolymorphicPropsWithoutRef<
-  E extends ElementType,
-  P extends object,
-> = {
-  as?: E;
-} & Omit<P, "as"> &
-  Omit<ComponentPropsWithoutRef<E>, keyof P | "as">;
+// biome-ignore lint/complexity/noBannedTypes: <explanation>
+type FixedForwardRef = <T, P = {}>(
+  render: (props: P, ref: Ref<T>) => ReactNode,
+) => (props: P & RefAttributes<T>) => ReactNode;
 
-/**
- * Like ComponentPropsWithoutRef but for forwardRef components.
- */
-export type PolymorphicPropsWithRef<E extends ElementType, P extends object> = {
-  as?: E;
-  ref?: PolymorphicRef<E>;
-} & Omit<P, "as"> &
-  Omit<ComponentPropsWithoutRef<E>, keyof P | "as" | "ref">;
+export const fixedForwardRef = forwardRef as FixedForwardRef;
 
-/**
- * Forward reference type for a polymorphic component.
- */
-export type PolymorphicRef<E extends ElementType> =
-  ComponentPropsWithRef<E>["ref"];
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+export type DistributiveOmit<T, TOmitted extends PropertyKey> = T extends any
+  ? Omit<T, TOmitted>
+  : never;

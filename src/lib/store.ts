@@ -15,20 +15,23 @@ const tablesSchema = {
     countdown: { type: "number" },
   },
   participants: {
-    boardId: { type: "string" },
+    boardId: { type: "string", default: "" },
   },
   columns: {
-    boardId: { type: "string" },
-    description: { type: "string" },
+    boardId: { type: "string", default: "" },
+    createdAt: { type: "number", default: 0 },
+    description: { type: "string", default: "" },
   },
   cards: {
-    authorId: { type: "string" },
-    columnId: { type: "string" },
-    description: { type: "string" },
+    boardId: { type: "string", default: "" },
+    columnId: { type: "string", default: "" },
+    authorId: { type: "string", default: "" },
+    createdAt: { type: "number", default: 0 },
+    description: { type: "string", default: "" },
   },
   votes: {
-    cardId: { type: "string" },
-    voterId: { type: "string" },
+    cardId: { type: "string", default: "" },
+    voterId: { type: "string", default: "" },
   },
 } as const;
 
@@ -61,9 +64,10 @@ export const relationships = createRelationships(store);
 export const indexes = createIndexes(store);
 
 indexes.setIndexDefinition("votesByCardId", "votes", "cardId");
-indexes.setIndexDefinition("cardsByColumnId", "cards", "columnId");
 indexes.setIndexDefinition("columnsByBoardId", "columns", "boardId");
 indexes.setIndexDefinition("participantsByBoardId", "participants", "boardId");
+indexes.setIndexDefinition("cardsByColumnId", "cards", "columnId");
+indexes.setIndexDefinition("cardsByBoardId", "cards", "boardId");
 
 // ---
 

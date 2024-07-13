@@ -1,11 +1,11 @@
 import Cookies from "js-cookie";
 import { createId } from "~/lib/createId";
 
-export function getUserId() {
-  let value = Cookies.get("userId");
+export function getParticipantId() {
+  let value = Cookies.get("participantId");
   if (!value) {
     value = createId();
-    Cookies.set("userId", value, {
+    Cookies.set("participantId", value, {
       path: "/",
       expires: 3650,
     });

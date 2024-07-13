@@ -1,8 +1,8 @@
-import { useState, type FormEvent } from "react";
+import { type FormEvent, type KeyboardEvent, useState } from "react";
 import { Button } from "~/components/Button";
 import { createId } from "~/lib/createId";
-import { store, UiReact } from "~/lib/store";
-import { getUserId } from "~/lib/userId";
+import { getParticipantId } from "~/lib/participantId";
+import { UiReact, store } from "~/lib/store";
 
 type FormProps = {
   data?: { description: string };
@@ -24,6 +24,13 @@ function Form({ data, onSave, onDelete, onCancel }: FormProps) {
     event.currentTarget.reset();
   };
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      event.currentTarget.form?.requestSubmit();
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
       <textarea
@@ -33,7 +40,9 @@ function Form({ data, onSave, onDelete, onCancel }: FormProps) {
         aria-label="Card"
         autoComplete="off"
         defaultValue={data?.description}
+        // biome-ignore lint/a11y/noAutofocus: <explanation>
         autoFocus
+        onKeyDown={handleKeyDown}
       />
 
       {data ? (
@@ -60,27 +69,30 @@ function Form({ data, onSave, onDelete, onCancel }: FormProps) {
 
 type CardProps = {
   cardId: string;
+  presentation?: boolean;
 };
 
-export function Card({ cardId }: CardProps) {
+export function Card({ cardId, presentation }: CardProps) {
   const [editing, setEditing] = useState(false);
   const { description } = UiReact.useRow("cards", cardId);
   const voteIds = UiReact.useSliceRowIds("votesByCardId", cardId);
   const myVoteId = voteIds.find((voteId) => {
     const voterId = store.getCell("votes", voteId, "voterId");
-    return voterId === getUserId();
+    return voterId === getParticipantId();
   });
 
   const handleVote = () => {
     const voteId = createId();
-
     store.setRow("votes", voteId, {
       cardId,
-      voterId: getUserId(),
+      voterId: getParticipantId(),
     });
   };
 
   const handleUnvote = () => {
+    if (!myVoteId) {
+      throw new Error("Can't unvote without a voteId");
+    }
     store.delRow("votes", myVoteId);
   };
 
@@ -112,27 +124,31 @@ export function Card({ cardId }: CardProps) {
         />
       ) : (
         <>
-          <p>{description}</p>
+          <p className={`${presentation ? "text-2xl" : ""}`}>{description}</p>
 
-          <div className="flex items-center justify-between">
-            <menu className="flex items-center gap-3">
-              <li>
-                {myVoteId ? (
-                  <Button variant="active" onClick={handleUnvote}>
-                    Unvote ({voteIds.length})
-                  </Button>
-                ) : (
-                  <Button onClick={handleVote}>Vote ({voteIds.length})</Button>
-                )}
-              </li>
-            </menu>
+          {presentation ? null : (
+            <div className="flex items-center justify-between">
+              <menu className="flex items-center gap-3">
+                <li>
+                  {myVoteId ? (
+                    <Button variant="active" onClick={handleUnvote}>
+                      Unvote ({voteIds.length})
+                    </Button>
+                  ) : (
+                    <Button onClick={handleVote}>
+                      Vote ({voteIds.length})
+                    </Button>
+                  )}
+                </li>
+              </menu>
 
-            <menu className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-              <li>
-                <Button onClick={handleEdit}>Edit</Button>
-              </li>
-            </menu>
-          </div>
+              <menu className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                <li>
+                  <Button onClick={handleEdit}>Edit</Button>
+                </li>
+              </menu>
+            </div>
+          )}
         </>
       )}
     </div>
@@ -140,21 +156,27 @@ export function Card({ cardId }: CardProps) {
 }
 
 type BlankProps = {
-  defaults: { columnId: string };
+  defaults: { columnId: string; boardId: string };
 };
 
 function Blank({ defaults }: BlankProps) {
+  const participantId = getParticipantId();
+
   const handleSave = (data: { description: string }) => {
     const cardId = createId();
 
     store.setRow("cards", cardId, {
+      authorId: participantId,
+      boardId: defaults.boardId,
       columnId: defaults.columnId,
+      createdAt: Date.now(),
       description: data.description,
     });
 
-    store.setRow("votes", createId(), {
+    const voteId = createId();
+    store.setRow("votes", voteId, {
       cardId,
-      voterId: getUserId(),
+      voterId: participantId,
     });
   };
 
