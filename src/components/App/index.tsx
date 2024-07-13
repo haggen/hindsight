@@ -15,7 +15,7 @@ export function App() {
       metrics={metrics}
       indexes={indexes}
     >
-      <div className="container mx-auto py-6 ">
+      <div className="container mx-auto min-w-[64rem]">
         <Switch>
           <Route path="/" component={Welcome} />
           <Route path="/boards" component={Boards} />

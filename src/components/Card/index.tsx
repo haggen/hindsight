@@ -2,7 +2,10 @@ import { type FormEvent, type KeyboardEvent, useState } from "react";
 import { Button } from "~/components/Button";
 import { createId } from "~/lib/createId";
 import { getParticipantId } from "~/lib/participantId";
-import { UiReact, store } from "~/lib/store";
+import { store } from "~/lib/store";
+import { useCard } from "~/lib/useCard";
+import { useParticipantVoteId } from "~/lib/useParticipantVoteId";
+import { useVoteIdsByCardId } from "~/lib/useVoteIds";
 
 type FormProps = {
   data?: { description: string };
@@ -43,6 +46,7 @@ function Form({ data, onSave, onDelete, onCancel }: FormProps) {
         // biome-ignore lint/a11y/noAutofocus: <explanation>
         autoFocus
         onKeyDown={handleKeyDown}
+        required
       />
 
       {data ? (
@@ -74,26 +78,25 @@ type CardProps = {
 
 export function Card({ cardId, presentation }: CardProps) {
   const [editing, setEditing] = useState(false);
-  const { description } = UiReact.useRow("cards", cardId);
-  const voteIds = UiReact.useSliceRowIds("votesByCardId", cardId);
-  const myVoteId = voteIds.find((voteId) => {
-    const voterId = store.getCell("votes", voteId, "voterId");
-    return voterId === getParticipantId();
-  });
+  const { boardId, description } = useCard(cardId);
+  const voteIds = useVoteIdsByCardId(cardId);
+  const participantVoteId = useParticipantVoteId(cardId);
 
   const handleVote = () => {
     const voteId = createId();
+
     store.setRow("votes", voteId, {
+      boardId,
       cardId,
       voterId: getParticipantId(),
     });
   };
 
   const handleUnvote = () => {
-    if (!myVoteId) {
+    if (!participantVoteId) {
       throw new Error("Can't unvote without a voteId");
     }
-    store.delRow("votes", myVoteId);
+    store.delRow("votes", participantVoteId);
   };
 
   const handleEdit = () => {
@@ -130,7 +133,7 @@ export function Card({ cardId, presentation }: CardProps) {
             <div className="flex items-center justify-between">
               <menu className="flex items-center gap-3">
                 <li>
-                  {myVoteId ? (
+                  {participantVoteId ? (
                     <Button variant="active" onClick={handleUnvote}>
                       Unvote ({voteIds.length})
                     </Button>
@@ -142,7 +145,7 @@ export function Card({ cardId, presentation }: CardProps) {
                 </li>
               </menu>
 
-              <menu className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+              <menu className="flex items-center gap-3 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 transition-opacity">
                 <li>
                   <Button onClick={handleEdit}>Edit</Button>
                 </li>
@@ -174,8 +177,10 @@ function Blank({ defaults }: BlankProps) {
     });
 
     const voteId = createId();
+
     store.setRow("votes", voteId, {
       cardId,
+      boardId: defaults.boardId,
       voterId: participantId,
     });
   };

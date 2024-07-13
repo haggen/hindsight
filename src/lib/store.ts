@@ -7,6 +7,7 @@ import {
   createQueries,
   createRelationships,
 } from "tinybase/with-schemas";
+import "ws";
 
 const valuesSchema = {} as const;
 
@@ -30,6 +31,7 @@ const tablesSchema = {
     description: { type: "string", default: "" },
   },
   votes: {
+    boardId: { type: "string", default: "" },
     cardId: { type: "string", default: "" },
     voterId: { type: "string", default: "" },
   },
@@ -64,6 +66,7 @@ export const relationships = createRelationships(store);
 export const indexes = createIndexes(store);
 
 indexes.setIndexDefinition("votesByCardId", "votes", "cardId");
+indexes.setIndexDefinition("votesByBoardId", "votes", "boardId");
 indexes.setIndexDefinition("columnsByBoardId", "columns", "boardId");
 indexes.setIndexDefinition("participantsByBoardId", "participants", "boardId");
 indexes.setIndexDefinition("cardsByColumnId", "cards", "columnId");
@@ -73,5 +76,5 @@ indexes.setIndexDefinition("cardsByBoardId", "cards", "boardId");
 
 export const persister = createLocalPersister(store, "store");
 
-await persister.startAutoLoad();
-await persister.startAutoSave();
+// await persister.startAutoLoad();
+// await persister.startAutoSave();

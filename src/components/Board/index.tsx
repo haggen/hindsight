@@ -1,8 +1,12 @@
 import { type ReactNode, useEffect, useState } from "react";
-import { Link, useLocation, useRoute } from "wouter";
+import { createWsSynchronizer } from "tinybase/synchronizers/synchronizer-ws-client/with-schemas";
+import { Link, useRoute } from "wouter";
 import { Button } from "~/components/Button";
 import { getParticipantId } from "~/lib/participantId";
-import { UiReact, indexes, store } from "~/lib/store";
+import { UiReact, store } from "~/lib/store";
+import { useBoard } from "~/lib/useBoard";
+import { useSortedCardIdsByBoardId } from "~/lib/useCardIds";
+import { useParticipantIds } from "~/lib/useParticipantIds";
 
 function format(timestamp: number) {
   const delta = Math.ceil((timestamp - Date.now()) / 1000);
@@ -23,7 +27,7 @@ function Display({ value }: DisplayProps) {
   useEffect(() => {
     const interval = setInterval(() => {
       update({});
-    }, 100);
+    }, 50);
 
     return () => {
       clearInterval(interval);
@@ -68,28 +72,6 @@ export function Countdown({ value, onChange }: CountdownProps) {
   );
 }
 
-function compareCardIds(a: string, b: string) {
-  const cards = [store.getRow("cards", a), store.getRow("cards", b)];
-  const columns = [
-    store.getRow("columns", cards[0].columnId),
-    store.getRow("columns", cards[1].columnId),
-  ];
-  const votes = [
-    indexes.getSliceRowIds("votesByCardId", a).length,
-    indexes.getSliceRowIds("votesByCardId", b).length,
-  ];
-
-  if (cards[0].columnId === cards[1].columnId) {
-    if (votes[0] === votes[1]) {
-      return cards[0].createdAt - cards[1].createdAt;
-    }
-
-    return votes[1] - votes[0];
-  }
-
-  return columns[0].createdAt - columns[1].createdAt;
-}
-
 type PaginationProps = {
   boardId: string;
 };
@@ -99,8 +81,7 @@ function Pagination({ boardId }: PaginationProps) {
     cardId: string;
   }>("/boards/:boardId/cards/:cardId");
   const [isFinished] = useRoute("/boards/:boardId/finished");
-  const unsortedCardIds = UiReact.useSliceRowIds("cardsByBoardId", boardId);
-  const cardIds = [...unsortedCardIds].sort(compareCardIds);
+  const cardIds = useSortedCardIdsByBoardId(boardId);
   const cardId = params?.cardId ?? "";
   const index = cardIds.indexOf(cardId);
   const isFirst = index === 0;
@@ -109,7 +90,7 @@ function Pagination({ boardId }: PaginationProps) {
   const nextIndex = Math.min(cardIds.length - 1, index + 1);
 
   return (
-    <div className="flex items-center flex-grow justify-end">
+    <div className="flex flex-grow items-center justify-end">
       {presenting || isFinished ? (
         <menu className="flex items-center gap-3">
           <li>
@@ -139,12 +120,16 @@ function Pagination({ boardId }: PaginationProps) {
           </li>
         </menu>
       ) : (
-        <Button
-          href={`/boards/${boardId}/cards/${cardIds[0]}`}
-          disabled={cardIds.length === 0}
-        >
-          Start presentation &rarr;
-        </Button>
+        <menu>
+          <li>
+            <Button
+              href={`/boards/${boardId}/cards/${cardIds[0]}`}
+              disabled={cardIds.length === 0}
+            >
+              Start presentation &rarr;
+            </Button>
+          </li>
+        </menu>
       )}
     </div>
   );
@@ -156,12 +141,24 @@ type BoardProps = {
 };
 
 export function Board({ boardId, children }: BoardProps) {
-  const { countdown } = UiReact.useRow("boards", boardId);
-  const participantIds = UiReact.useSliceRowIds(
-    "participantsByBoardId",
-    boardId,
-  );
+  const { countdown } = useBoard(boardId);
+  const participantIds = useParticipantIds(boardId);
   const participantId = getParticipantId();
+
+  UiReact.useCreateSynchronizer(
+    store,
+    async (store) => {
+      const synchronizer = await createWsSynchronizer(
+        store,
+        new WebSocket(
+          `wss://tinybase-synchronizer.crz.li/hindsight/${boardId}`,
+        ),
+      );
+      await synchronizer.startSync();
+      return synchronizer;
+    },
+    [boardId],
+  );
 
   useEffect(() => {
     store.setRow("participants", participantId, { boardId });
@@ -189,7 +186,7 @@ export function Board({ boardId, children }: BoardProps) {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 py-6 h-dvh">
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-12">
         <div className="flex items-center flex-grow justify-between">
           <h1 className="text-2xl font-black">
@@ -219,7 +216,31 @@ export function Board({ boardId, children }: BoardProps) {
         <Pagination boardId={boardId} />
       </div>
 
-      {children}
+      <div className="overflow-auto grow">{children}</div>
+
+      <footer className="text-center">
+        <p>
+          Made by{" "}
+          <a
+            className="underline"
+            href="https://x.com/haggen"
+            target="_blank"
+            rel="noreferrer"
+          >
+            me
+          </a>
+          . Source on{" "}
+          <a
+            className="underline"
+            href="https://github.com/haggen/hindsight"
+            target="_blank"
+            rel="noreferrer"
+          >
+            GitHub
+          </a>
+          .
+        </p>
+      </footer>
     </div>
   );
 }

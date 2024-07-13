@@ -2,7 +2,9 @@ import { type FormEvent, type ReactNode, useState } from "react";
 import { Button } from "~/components/Button";
 import { Card } from "~/components/Card";
 import { createId } from "~/lib/createId";
-import { UiReact, store } from "~/lib/store";
+import { store } from "~/lib/store";
+import { useCardIdsByColumnId } from "~/lib/useCardIds";
+import { useColumn } from "~/lib/useColumn";
 
 type FormProps = {
   data?: { description: string };
@@ -36,6 +38,7 @@ function Form({ data, onSave, onCancel, onDelete }: FormProps) {
         defaultValue={data?.description}
         // biome-ignore lint/a11y/noAutofocus: <explanation>
         autoFocus
+        required
       />
 
       {data ? (
@@ -67,8 +70,8 @@ type ColumnProps = {
 
 export function Column({ columnId, children }: ColumnProps) {
   const [editing, setEditing] = useState(false);
-  const { description, boardId } = UiReact.useRow("columns", columnId);
-  const cardIds = UiReact.useSliceRowIds("cardsByColumnId", columnId);
+  const { description, boardId } = useColumn(columnId);
+  const cardIds = useCardIdsByColumnId(columnId);
 
   const handleEdit = () => {
     setEditing(true);
@@ -79,6 +82,9 @@ export function Column({ columnId, children }: ColumnProps) {
   };
 
   const handleDelete = () => {
+    for (const cardId of cardIds) {
+      store.delRow("cards", cardId);
+    }
     store.delRow("columns", columnId);
   };
 
@@ -100,7 +106,7 @@ export function Column({ columnId, children }: ColumnProps) {
         <header className="flex justify-between items-center group">
           <h2 className="font-bold text-lg">{description}</h2>
 
-          <menu className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+          <menu className="flex items-center gap-3 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 transition-opacity">
             <li>
               <Button onClick={handleEdit}>Edit</Button>
             </li>

@@ -3,9 +3,13 @@
 @tailwind utilities;
 
 @layer base {
-  /* :focus-visible {
-    outline-offset: 0.25rem;
-  } */
+  html {
+    scrollbar-gutter: stable;
+  }
+
+  :focus-visible {
+    outline-offset: 0.125rem;
+  }
 
   input[type="text"],
   input:not([type]),

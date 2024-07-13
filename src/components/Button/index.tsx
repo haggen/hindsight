@@ -35,7 +35,7 @@ function Button<E extends AcceptableElements>(
     props.className = `${props.className} ${variants[variant]}`;
   }
 
-  if (as === "button") {
+  if (Component === "button") {
     props.type ??= "button";
   } else if (props.disabled) {
     props.href = "";
