@@ -1,5 +1,5 @@
 import { UiReact } from "~/lib/store";
 
-export function useCardIds(boardId: string) {
+export function useColumnIdsByBoardId(boardId: string) {
   return UiReact.useSliceRowIds("columnsByBoardId", boardId);
 }

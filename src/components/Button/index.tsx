@@ -4,8 +4,8 @@ import { type DistributiveOmit, fixedForwardRef } from "~/lib/react";
 
 const variants = {
   neutral: "",
-  active: "text-purple-600",
-  positive: "text-green-600",
+  active: "text-lime-600",
+  positive: "text-blue-600",
   negative: "text-red-600",
 };
 
@@ -23,7 +23,7 @@ type Props<E extends AcceptableElements> = {
 
 function Button<E extends AcceptableElements>(
   { as, variant = "neutral", ...props }: Props<E>,
-  ref: ForwardedRef<E>,
+  ref: ForwardedRef<E>
 ) {
   const Component = as ?? ("href" in props ? (Link as E) : "button");
 

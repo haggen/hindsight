@@ -1,8 +1,11 @@
 import { type FormEvent, type KeyboardEvent, useState } from "react";
 import { Button } from "~/components/Button";
-import { createId } from "~/lib/createId";
+import { createCard } from "~/lib/createCard";
+import { createVote } from "~/lib/createVote";
+import { deleteCard } from "~/lib/deleteCard";
+import { deleteVote } from "~/lib/deleteVote";
 import { getParticipantId } from "~/lib/participantId";
-import { store } from "~/lib/store";
+import { updateCard } from "~/lib/updateCard";
 import { useCard } from "~/lib/useCard";
 import { useParticipantVoteId } from "~/lib/useParticipantVoteId";
 import { useVoteIdsByCardId } from "~/lib/useVoteIds";
@@ -78,25 +81,19 @@ type CardProps = {
 
 export function Card({ cardId, presentation }: CardProps) {
   const [editing, setEditing] = useState(false);
-  const { boardId, description } = useCard(cardId);
+  const { description } = useCard(cardId);
   const voteIds = useVoteIdsByCardId(cardId);
   const participantVoteId = useParticipantVoteId(cardId);
 
   const handleVote = () => {
-    const voteId = createId();
-
-    store.setRow("votes", voteId, {
-      boardId,
-      cardId,
-      voterId: getParticipantId(),
-    });
+    createVote({ participantId: getParticipantId(), cardId });
   };
 
   const handleUnvote = () => {
     if (!participantVoteId) {
       throw new Error("Can't unvote without a voteId");
     }
-    store.delRow("votes", participantVoteId);
+    deleteVote(participantVoteId);
   };
 
   const handleEdit = () => {
@@ -108,11 +105,11 @@ export function Card({ cardId, presentation }: CardProps) {
   };
 
   const handleDelete = () => {
-    store.delRow("cards", cardId);
+    deleteCard(cardId);
   };
 
   const handleSave = (data: { description: string }) => {
-    store.setCell("cards", cardId, "description", data.description);
+    updateCard(cardId, data);
     setEditing(false);
   };
 
@@ -166,22 +163,10 @@ function Blank({ defaults }: BlankProps) {
   const participantId = getParticipantId();
 
   const handleSave = (data: { description: string }) => {
-    const cardId = createId();
-
-    store.setRow("cards", cardId, {
-      authorId: participantId,
-      boardId: defaults.boardId,
+    createCard({
+      participantId,
       columnId: defaults.columnId,
-      createdAt: Date.now(),
       description: data.description,
-    });
-
-    const voteId = createId();
-
-    store.setRow("votes", voteId, {
-      cardId,
-      boardId: defaults.boardId,
-      voterId: participantId,
     });
   };
 

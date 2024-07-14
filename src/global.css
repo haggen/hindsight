@@ -3,10 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-  html {
-    scrollbar-gutter: stable;
-  }
-
   :focus-visible {
     outline-offset: 0.125rem;
   }

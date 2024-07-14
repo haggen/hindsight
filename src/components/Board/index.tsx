@@ -36,14 +36,14 @@ function Display({ value }: DisplayProps) {
 
   if (value < Date.now()) {
     return (
-      <span className="font-mono text-lg text-white px-3 py-2 rounded-3xl bg-slate-400">
+      <span className="font-mono text-lg text-white px-4 py-2 rounded-3xl bg-stone-600">
         00:00
       </span>
     );
   }
 
   return (
-    <span className="font-mono text-lg text-white px-3 py-2 rounded-3xl bg-violet-600">
+    <span className="font-mono text-lg text-white px-4 py-2 rounded-3xl bg-lime-600">
       {format(value)}
     </span>
   );
@@ -99,8 +99,8 @@ function Pagination({ boardId }: PaginationProps) {
                 isFinished
                   ? `/boards/${boardId}/cards/${cardIds[cardIds.length - 1]}`
                   : isFirst
-                    ? `/boards/${boardId}`
-                    : `/boards/${boardId}/cards/${cardIds[prevIndex]}`
+                  ? `/boards/${boardId}`
+                  : `/boards/${boardId}/cards/${cardIds[prevIndex]}`
               }
             >
               &larr; Back
@@ -126,7 +126,7 @@ function Pagination({ boardId }: PaginationProps) {
               href={`/boards/${boardId}/cards/${cardIds[0]}`}
               disabled={cardIds.length === 0}
             >
-              Start presentation &rarr;
+              Start reading &rarr;
             </Button>
           </li>
         </menu>
@@ -150,14 +150,12 @@ export function Board({ boardId, children }: BoardProps) {
     async (store) => {
       const synchronizer = await createWsSynchronizer(
         store,
-        new WebSocket(
-          `wss://tinybase-synchronizer.crz.li/hindsight/${boardId}`,
-        ),
+        new WebSocket(`wss://tinybase-synchronizer.crz.li/hindsight/${boardId}`)
       );
       await synchronizer.startSync();
       return synchronizer;
     },
-    [boardId],
+    [boardId]
   );
 
   useEffect(() => {
@@ -190,7 +188,7 @@ export function Board({ boardId, children }: BoardProps) {
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-12">
         <div className="flex items-center flex-grow justify-between">
           <h1 className="text-2xl font-black">
-            <Link href="/boards">Hindsight</Link>
+            <Link href="/">Hindsight</Link>
           </h1>
 
           <span

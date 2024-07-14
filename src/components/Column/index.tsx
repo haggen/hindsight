@@ -1,8 +1,9 @@
 import { type FormEvent, type ReactNode, useState } from "react";
 import { Button } from "~/components/Button";
 import { Card } from "~/components/Card";
-import { createId } from "~/lib/createId";
-import { store } from "~/lib/store";
+import { createColumn } from "~/lib/createColumn";
+import { deleteColumn } from "~/lib/deleteColumn";
+import { updateColumn } from "~/lib/updateColumn";
 import { useCardIdsByColumnId } from "~/lib/useCardIds";
 import { useColumn } from "~/lib/useColumn";
 
@@ -82,19 +83,16 @@ export function Column({ columnId, children }: ColumnProps) {
   };
 
   const handleDelete = () => {
-    for (const cardId of cardIds) {
-      store.delRow("cards", cardId);
-    }
-    store.delRow("columns", columnId);
+    deleteColumn(columnId);
   };
 
   const handleSave = (data: { description: string }) => {
-    store.setCell("columns", columnId, "description", data.description);
+    updateColumn(columnId, data);
     setEditing(false);
   };
 
   return (
-    <section className="bg-slate-100 p-3 rounded-md flex flex-col gap-6">
+    <section className="bg-stone-100 p-3 rounded-md flex flex-col gap-6">
       {editing ? (
         <Form
           data={{ description }}
@@ -136,16 +134,14 @@ type BlankProps = {
 
 function Blank({ defaults }: BlankProps) {
   const handleSave = (data: { description: string }) => {
-    const columnId = createId();
-    store.setRow("columns", columnId, {
+    createColumn({
       boardId: defaults.boardId,
-      createdAt: Date.now(),
       description: data.description,
     });
   };
 
   return (
-    <div className="bg-slate-100 p-3 rounded-md flex flex-col gap-3">
+    <div className="bg-stone-100 p-3 rounded-md flex flex-col gap-3">
       <Form onSave={handleSave} />
     </div>
   );
