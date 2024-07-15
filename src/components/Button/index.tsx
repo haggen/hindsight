@@ -23,11 +23,11 @@ type Props<E extends AcceptableElements> = {
 
 function Button<E extends AcceptableElements>(
   { as, variant = "neutral", ...props }: Props<E>,
-  ref: ForwardedRef<E>
+  ref: ForwardedRef<E>,
 ) {
   const Component = as ?? ("href" in props ? (Link as E) : "button");
 
-  props.className = `${props.className} inline-flex items-center gap-1 text-sm font-bold`;
+  props.className = `${props.className} text-sm font-bold`;
 
   if (props.disabled) {
     props.className = `${props.className} text-stone-400 cursor-not-allowed`;

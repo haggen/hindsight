@@ -101,8 +101,8 @@ function Pagination({ boardId }: PaginationProps) {
                 isFinished
                   ? `/boards/${boardId}/cards/${cardIds[cardIds.length - 1]}`
                   : isFirst
-                  ? `/boards/${boardId}`
-                  : `/boards/${boardId}/cards/${cardIds[prevIndex]}`
+                    ? `/boards/${boardId}`
+                    : `/boards/${boardId}/cards/${cardIds[prevIndex]}`
               }
             >
               <Icon symbol="arrow-left" /> Back
@@ -152,12 +152,14 @@ export function Board({ boardId, children }: BoardProps) {
     async (store) => {
       const synchronizer = await createWsSynchronizer(
         store,
-        new WebSocket(`wss://tinybase-synchronizer.crz.li/hindsight/${boardId}`)
+        new WebSocket(
+          `wss://tinybase-synchronizer.crz.li/hindsight/${boardId}`,
+        ),
       );
       await synchronizer.startSync();
       return synchronizer;
     },
-    [boardId]
+    [boardId],
   );
 
   useEffect(() => {
@@ -197,7 +199,8 @@ export function Board({ boardId, children }: BoardProps) {
             className="flex items-center gap-1"
             aria-label={`${participantIds.length} people connected.`}
           >
-            <Icon symbol="user-square" size="1.5em" />×{participantIds.length}
+            <Icon symbol="user-square" className="text-2xl" />×
+            {participantIds.length}
           </div>
         </div>
 

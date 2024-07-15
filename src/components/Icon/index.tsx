@@ -61,19 +61,17 @@ const symbols = {
 
 type Props = {
   symbol: keyof typeof symbols;
-  size?: string;
   className?: string;
   label?: string;
 };
 
-export function Icon({ symbol, size = "1em", className, label }: Props) {
+export function Icon({ symbol, className, label }: Props) {
   return (
     // biome-ignore lint/a11y/noSvgWithoutTitle: We switch visiblity based on label.
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      className={`w-[1em] h-[1em] ${className}`}
-      style={{ fontSize: size }}
+      className={`inline-block w-[1em] h-[1em] ${className}`}
       aria-hidden={label ? undefined : "true"}
       aria-label={label}
     >

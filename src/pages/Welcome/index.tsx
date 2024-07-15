@@ -19,12 +19,12 @@ export default function Page() {
 
             <ul className="text-sm flex gap-6">
               <li className="flex items-center gap-1">
-                <Icon symbol="check-square" size="1.25em" /> Free, open-source,
-                no sign-up required.
+                <Icon symbol="check-square" className="text-xl" /> Free,
+                open-source, no sign-up required.
               </li>
               <li className="flex items-center gap-1">
-                <Icon symbol="check-square" size="1.25em" /> Locally stored, no
-                ads, no telemetry.
+                <Icon symbol="check-square" className="text-xl" /> Locally
+                stored, no ads, no telemetry.
               </li>
             </ul>
           </div>
@@ -33,7 +33,8 @@ export default function Page() {
             href="/boards"
             className="flex items-center gap-1 px-6 h-14 rounded-full bg-stone-500 shadow-xl shadow-stone-200 text-xl text-white font-bold transition-all hover:bg-stone-600"
           >
-            Start new board <Icon symbol="arrow-right" size="1.25em" />
+            Start new board{" "}
+            <Icon symbol="arrow-right" className="text-2xl block" />
           </Link>
         </div>
 
