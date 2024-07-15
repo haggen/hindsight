@@ -8,6 +8,7 @@ import { getParticipantId } from "~/lib/participantId";
 import { UiReact, store } from "~/lib/store";
 import { useBoard } from "~/lib/useBoard";
 import { useSortedCardIdsByBoardId } from "~/lib/useCardIds";
+import { useInterval } from "~/lib/useInterval";
 import { useParticipantIds } from "~/lib/useParticipantIds";
 
 function format(timestamp: number) {
@@ -20,34 +21,37 @@ function format(timestamp: number) {
 }
 
 type DisplayProps = {
+  onClick: () => void;
   value: number;
 };
 
-function Display({ value }: DisplayProps) {
+function Display({ value, onClick }: DisplayProps) {
   const [, update] = useState({});
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      update({});
-    }, 50);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
+  useInterval(() => {
+    update({});
+  }, 50);
 
   if (value < Date.now()) {
     return (
-      <span className="font-mono text-lg text-white px-4 py-2 rounded-3xl bg-stone-600">
+      <button
+        type="button"
+        onClick={onClick}
+        className="font-mono text-lg text-white px-4 py-2 rounded-3xl bg-stone-600"
+      >
         00:00
-      </span>
+      </button>
     );
   }
 
   return (
-    <span className="font-mono text-lg text-white px-4 py-2 rounded-3xl bg-lime-600">
+    <button
+      type="button"
+      onClick={onClick}
+      className="font-mono text-lg text-white px-4 py-2 rounded-3xl bg-lime-600"
+    >
       {format(value)}
-    </span>
+    </button>
   );
 }
 
@@ -57,17 +61,29 @@ type CountdownProps = {
 };
 
 export function Countdown({ value, onChange }: CountdownProps) {
+  const [active, setActive] = useState(value > Date.now());
+
+  useInterval(() => {
+    setActive(value > Date.now());
+
+    if (active && value > 0 && Date.now() > value) {
+      new Notification("Time is up!");
+    }
+  }, 50);
+
+  const handleNotifRequest = () => {
+    Notification.requestPermission();
+  };
+
   return (
     <div className="flex items-center gap-3">
-      <Button variant="negative" onClick={() => onChange(0)} disabled={!value}>
+      <Button variant="negative" onClick={() => onChange(0)} disabled={!active}>
         Clear
       </Button>
 
-      <Display value={value} />
+      <Display value={value} onClick={handleNotifRequest} />
 
-      <Button
-        onClick={() => onChange(Math.max(Date.now(), value) + 5 * 60 * 1000)}
-      >
+      <Button onClick={() => onChange(Math.max(Date.now(), value) + 1 * 1000)}>
         +5 min.
       </Button>
     </div>
