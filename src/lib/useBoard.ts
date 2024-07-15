@@ -9,16 +9,16 @@ export function useBoardIdByCardId(cardId: string) {
   if (!columnId) {
     throw new Error(
       `Can't find remote column row for local card row "${JSON.stringify(
-        cardId
-      )}"`
+        cardId,
+      )}"`,
     );
   }
   const boardId = UiReact.useRemoteRowId("columnsBoard", columnId);
   if (!boardId) {
     throw new Error(
       `Can't find remote board row for local column row "${JSON.stringify(
-        columnId
-      )}"`
+        columnId,
+      )}"`,
     );
   }
   return boardId;

@@ -1,5 +1,5 @@
-import type { Ids } from "tinybase";
 import { useMemo, useSyncExternalStore } from "react";
+import type { Ids } from "tinybase";
 import { UiReact, indexes, relationships, store } from "~/lib/store";
 import { useColumnIdsByBoardId } from "~/lib/useColumnIds";
 import { useVoteIdsByBoardId } from "~/lib/useVoteIds";
@@ -40,8 +40,8 @@ export function useCardIdsByBoardId(boardId: string) {
     (onChange) => {
       const listenerIds = columnIds.map((columnId) =>
         relationships.addLocalRowIdsListener("cardsColumn", columnId, () =>
-          onChange()
-        )
+          onChange(),
+        ),
       );
       return () => {
         for (const listenerId of listenerIds) {
@@ -52,9 +52,9 @@ export function useCardIdsByBoardId(boardId: string) {
     () =>
       JSON.stringify(
         columnIds.flatMap((columnId) =>
-          relationships.getLocalRowIds("cardsColumn", columnId)
-        )
-      )
+          relationships.getLocalRowIds("cardsColumn", columnId),
+        ),
+      ),
   );
 
   return useMemo(() => JSON.parse(cardIdsSnapshot) as Ids, [cardIdsSnapshot]);

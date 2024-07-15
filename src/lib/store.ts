@@ -63,25 +63,25 @@ relationships.setRelationshipDefinition(
   "columnsBoard",
   "columns",
   "boards",
-  "boardId"
+  "boardId",
 );
 relationships.setRelationshipDefinition(
   "cardsColumn",
   "cards",
   "columns",
-  "columnId"
+  "columnId",
 );
 relationships.setRelationshipDefinition(
   "votesCard",
   "votes",
   "cards",
-  "cardId"
+  "cardId",
 );
 relationships.setRelationshipDefinition(
   "participantsBoard",
   "participants",
   "boards",
-  "boardId"
+  "boardId",
 );
 
 // ---

@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    @apply text-stone-700;
+  }
+
   :focus-visible {
     outline-offset: 0.125rem;
   }
@@ -10,6 +14,8 @@
   input[type="text"],
   input:not([type]),
   textarea {
+    @apply placeholder-stone-400;
+
     background-color: transparent;
   }
 }

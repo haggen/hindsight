@@ -1,6 +1,6 @@
-import type { Ids } from "tinybase";
 import { useMemo, useSyncExternalStore } from "react";
-import { relationships, UiReact } from "~/lib/store";
+import type { Ids } from "tinybase";
+import { UiReact, relationships } from "~/lib/store";
 import { useCardIdsByBoardId, useCardIdsByColumnId } from "~/lib/useCardIds";
 
 export function useVoteIdsByCardId(cardId: string) {
@@ -14,7 +14,7 @@ export function useVoteIdsByColumnId(columnId: string) {
     (onChange) => {
       const listenerIds = cardIds.map((cardId) => {
         return relationships.addLocalRowIdsListener("votesCard", cardId, () =>
-          onChange()
+          onChange(),
         );
       });
       return () => {
@@ -26,9 +26,9 @@ export function useVoteIdsByColumnId(columnId: string) {
     () =>
       JSON.stringify(
         cardIds.flatMap((cardId) =>
-          relationships.getLocalRowIds("votesCard", cardId)
-        )
-      )
+          relationships.getLocalRowIds("votesCard", cardId),
+        ),
+      ),
   );
 
   return useMemo(() => JSON.parse(voteIdsSnapshot) as Ids, [voteIdsSnapshot]);
@@ -41,8 +41,8 @@ export function useVoteIdsByBoardId(boardId: string) {
     (onChange) => {
       const listenerIds = cardIds.map((cardId) =>
         relationships.addLocalRowIdsListener("votesCard", cardId, () =>
-          onChange()
-        )
+          onChange(),
+        ),
       );
       return () => {
         for (const listenerId of listenerIds) {
@@ -53,9 +53,9 @@ export function useVoteIdsByBoardId(boardId: string) {
     () =>
       JSON.stringify(
         cardIds.flatMap((cardId) =>
-          relationships.getLocalRowIds("votesCard", cardId)
-        )
-      )
+          relationships.getLocalRowIds("votesCard", cardId),
+        ),
+      ),
   );
 
   return useMemo(() => JSON.parse(voteIdsSnapshot) as Ids, [voteIdsSnapshot]);

@@ -27,10 +27,10 @@ function Button<E extends AcceptableElements>(
 ) {
   const Component = as ?? ("href" in props ? (Link as E) : "button");
 
-  props.className = `${props.className} text-sm font-bold`;
+  props.className = `${props.className} inline-flex items-center gap-1 text-sm font-bold`;
 
   if (props.disabled) {
-    props.className = `${props.className} text-slate-400 cursor-not-allowed`;
+    props.className = `${props.className} text-stone-400 cursor-not-allowed`;
   } else {
     props.className = `${props.className} ${variants[variant]}`;
   }
