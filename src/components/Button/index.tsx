@@ -3,10 +3,10 @@ import { Link } from "wouter";
 import { type DistributiveOmit, fixedForwardRef } from "~/lib/react";
 
 const variants = {
-  neutral: "",
-  active: "text-lime-600",
-  positive: "text-blue-600",
-  negative: "text-red-600",
+  neutral: "hover:text-stone-500",
+  active: "text-lime-700 hover:text-lime-600",
+  positive: "text-blue-600 hover:text-blue-400",
+  negative: "text-red-600 hover:text-red-400",
 };
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -23,11 +23,11 @@ type Props<E extends AcceptableElements> = {
 
 function Button<E extends AcceptableElements>(
   { as, variant = "neutral", ...props }: Props<E>,
-  ref: ForwardedRef<E>,
+  ref: ForwardedRef<E>
 ) {
   const Component = as ?? ("href" in props ? (Link as E) : "button");
 
-  props.className = `${props.className} text-sm font-bold`;
+  props.className = `${props.className} text-sm font-bold transition-colors`;
 
   if (props.disabled) {
     props.className = `${props.className} text-stone-400 cursor-not-allowed`;

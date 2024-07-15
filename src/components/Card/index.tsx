@@ -113,8 +113,18 @@ export function Card({ cardId, presentation }: CardProps) {
     setEditing(false);
   };
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Escape") {
+      event.stopPropagation();
+      setEditing(false);
+    }
+  };
+
   return (
-    <div className="bg-white rounded-md shadow p-3 flex flex-col gap-3 group">
+    <div
+      className="bg-white rounded-md shadow p-3 flex flex-col gap-3 group"
+      onKeyDown={handleKeyDown}
+    >
       {editing ? (
         <Form
           data={{ description }}

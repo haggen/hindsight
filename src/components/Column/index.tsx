@@ -1,4 +1,4 @@
-import { type FormEvent, type ReactNode, useState } from "react";
+import { type FormEvent, KeyboardEvent, type ReactNode, useState } from "react";
 import { Button } from "~/components/Button";
 import { Card } from "~/components/Card";
 import { createColumn } from "~/lib/createColumn";
@@ -27,6 +27,13 @@ function Form({ data, onSave, onCancel, onDelete }: FormProps) {
     event.currentTarget.reset();
   };
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      event.currentTarget.form?.requestSubmit();
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
       <input
@@ -40,6 +47,7 @@ function Form({ data, onSave, onCancel, onDelete }: FormProps) {
         // biome-ignore lint/a11y/noAutofocus: <explanation>
         autoFocus
         required
+        onKeyDown={handleKeyDown}
       />
 
       {data ? (
@@ -91,8 +99,18 @@ export function Column({ columnId, children }: ColumnProps) {
     setEditing(false);
   };
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Escape") {
+      event.stopPropagation();
+      setEditing(false);
+    }
+  };
+
   return (
-    <section className="bg-stone-100 p-3 rounded-md flex flex-col gap-6">
+    <section
+      className="bg-stone-100 p-3 rounded-md flex flex-col gap-6"
+      onKeyDown={handleKeyDown}
+    >
       {editing ? (
         <Form
           data={{ description }}
