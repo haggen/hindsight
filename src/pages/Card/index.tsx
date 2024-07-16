@@ -2,7 +2,7 @@ import { Board } from "~/components/Board";
 import { Card } from "~/components/Card";
 import { Column } from "~/components/Column";
 import { useCard } from "~/lib/useCard";
-import { useSortedCardIdsByBoardId } from "~/lib/useCardIds";
+import { useSortedCardIds } from "~/lib/useCardIds";
 
 type Props = {
   params: { boardId: string; cardId: string };
@@ -10,7 +10,7 @@ type Props = {
 
 export default function Page({ params: { boardId, cardId } }: Props) {
   const { columnId } = useCard(cardId);
-  const cardIds = useSortedCardIdsByBoardId(boardId);
+  const cardIds = useSortedCardIds();
   const index = cardIds.indexOf(cardId);
 
   return (

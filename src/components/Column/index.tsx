@@ -84,7 +84,7 @@ type ColumnProps = {
 
 export function Column({ columnId, children }: ColumnProps) {
   const [editing, setEditing] = useState(false);
-  const { description, boardId } = useColumn(columnId);
+  const { description } = useColumn(columnId);
   const cardIds = useCardIdsByColumnId(columnId);
 
   const handleEdit = () => {
@@ -143,7 +143,7 @@ export function Column({ columnId, children }: ColumnProps) {
             </li>
           ))}
           <li>
-            <Card.Blank defaults={{ boardId, columnId }} />
+            <Card.Blank defaults={{ columnId }} />
           </li>
         </ul>
       )}
@@ -151,14 +151,9 @@ export function Column({ columnId, children }: ColumnProps) {
   );
 }
 
-type BlankProps = {
-  defaults: { boardId: string };
-};
-
-function Blank({ defaults }: BlankProps) {
+function Blank() {
   const handleSave = (data: { description: string }) => {
     createColumn({
-      boardId: defaults.boardId,
       description: data.description,
     });
   };

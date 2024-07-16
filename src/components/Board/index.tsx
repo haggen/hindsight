@@ -1,13 +1,12 @@
-import { type ReactNode, useEffect, useState } from "react";
-import { createWsSynchronizer } from "tinybase/synchronizers/synchronizer-ws-client/with-schemas";
+import { type ReactNode, useState } from "react";
 import { Link, useRoute } from "wouter";
 import { Button } from "~/components/Button";
 import { Footer } from "~/components/Footer";
 import { Icon } from "~/components/Icon";
-import { getParticipantId } from "~/lib/participantId";
-import { UiReact, store } from "~/lib/store";
+import { Provider } from "~/components/Provider";
+import { store } from "~/lib/store";
 import { useBoard } from "~/lib/useBoard";
-import { useSortedCardIdsByBoardId } from "~/lib/useCardIds";
+import { useSortedCardIds } from "~/lib/useCardIds";
 import { useInterval } from "~/lib/useInterval";
 import { useParticipantIds } from "~/lib/useParticipantIds";
 
@@ -55,18 +54,14 @@ function Display({ value, onClick }: DisplayProps) {
   );
 }
 
-type CountdownProps = {
-  value: number;
-  onChange: (value: number) => void;
-};
-
-export function Countdown({ value, onChange }: CountdownProps) {
-  const [active, setActive] = useState(value > Date.now());
+export function Timer() {
+  const { timer } = useBoard();
+  const [active, setActive] = useState(timer > Date.now());
 
   useInterval(() => {
-    setActive(value > Date.now());
+    setActive(timer > Date.now());
 
-    if (active && value > 0 && Date.now() > value) {
+    if (active && timer > 0 && Date.now() > timer) {
       new Notification("Time is up!");
     }
   }, 50);
@@ -75,16 +70,26 @@ export function Countdown({ value, onChange }: CountdownProps) {
     Notification.requestPermission();
   };
 
+  const handleChange = (value: number) => {
+    store.setValue("timer", value);
+  };
+
   return (
     <div className="flex items-center gap-3">
-      <Button variant="negative" onClick={() => onChange(0)} disabled={!active}>
+      <Button
+        variant="negative"
+        onClick={() => handleChange(0)}
+        disabled={!active}
+      >
         Clear
       </Button>
 
-      <Display value={value} onClick={handleNotifRequest} />
+      <Display value={timer} onClick={handleNotifRequest} />
 
       <Button
-        onClick={() => onChange(Math.max(Date.now(), value) + 5 * 60 * 1000)}
+        onClick={() =>
+          handleChange(Math.max(Date.now(), timer) + 5 * 60 * 1000)
+        }
       >
         +5 min.
       </Button>
@@ -100,25 +105,25 @@ function Pagination({ boardId }: PaginationProps) {
   const [presenting, params] = useRoute<{
     cardId: string;
   }>("/boards/:boardId/cards/:cardId");
-  const [isFinished] = useRoute("/boards/:boardId/finished");
-  const cardIds = useSortedCardIdsByBoardId(boardId);
+  const [finished] = useRoute("/boards/:boardId/finished");
+  const cardIds = useSortedCardIds();
   const cardId = params?.cardId ?? "";
   const index = cardIds.indexOf(cardId);
-  const isFirst = index === 0;
-  const isLast = index === cardIds.length - 1;
+  const hasPrev = index === 0;
+  const hasNext = index === cardIds.length - 1;
   const prevIndex = Math.max(0, index - 1);
   const nextIndex = Math.min(cardIds.length - 1, index + 1);
 
   return (
     <div className="flex flex-grow items-center justify-end">
-      {presenting || isFinished ? (
+      {presenting || finished ? (
         <menu className="flex items-center gap-3">
           <li>
             <Button
               href={
-                isFinished
+                finished
                   ? `/boards/${boardId}/cards/${cardIds[cardIds.length - 1]}`
-                  : isFirst
+                  : hasPrev
                     ? `/boards/${boardId}`
                     : `/boards/${boardId}/cards/${cardIds[prevIndex]}`
               }
@@ -129,11 +134,11 @@ function Pagination({ boardId }: PaginationProps) {
           <li>
             <Button
               href={
-                isLast
+                hasNext
                   ? `/boards/${boardId}/finished`
                   : `/boards/${boardId}/cards/${cardIds[nextIndex]}`
               }
-              disabled={isFinished}
+              disabled={finished}
             >
               Next <Icon symbol="arrow-right" />
             </Button>
@@ -155,81 +160,46 @@ function Pagination({ boardId }: PaginationProps) {
   );
 }
 
+function Audience() {
+  const participantIds = useParticipantIds();
+
+  return (
+    <div
+      className="flex items-center gap-1"
+      aria-label={`${participantIds.length} people connected.`}
+    >
+      <Icon symbol="user-square" className="text-2xl" />×{participantIds.length}
+    </div>
+  );
+}
+
 type BoardProps = {
   boardId: string;
   children: ReactNode;
 };
 
 export function Board({ boardId, children }: BoardProps) {
-  const { countdown } = useBoard(boardId);
-  const participantIds = useParticipantIds(boardId);
-  const participantId = getParticipantId();
-
-  UiReact.useCreateSynchronizer(
-    store,
-    async (store) => {
-      const synchronizer = await createWsSynchronizer(
-        store,
-        new WebSocket(
-          `wss://tinybase-synchronizer.crz.li/hindsight/${boardId}`,
-        ),
-      );
-      await synchronizer.startSync();
-      return synchronizer;
-    },
-    [boardId],
-  );
-
-  useEffect(() => {
-    store.setRow("participants", participantId, { boardId });
-
-    const handleVisibilityChange = () => {
-      switch (document.visibilityState) {
-        case "visible":
-          store.setRow("participants", participantId, { boardId });
-          break;
-        case "hidden":
-          store.delRow("participants", participantId);
-          break;
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      store.delRow("participants", participantId);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [boardId, participantId]);
-
-  const handleCountdownChange = (value: number) => {
-    store.setCell("boards", boardId, "countdown", value);
-  };
-
   return (
-    <div className="flex flex-col px-6 h-dvh">
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-12 h-24">
-        <div className="flex items-center flex-grow justify-between">
-          <h1 className="text-2xl font-black">
-            <Link href="/">Hindsight</Link>
-          </h1>
+    <Provider boardId={boardId}>
+      <div className="flex flex-col px-6 h-dvh">
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-12 h-24">
+          <div className="flex items-center flex-grow justify-between">
+            <h1 className="text-2xl font-black">
+              <Link href="/">Hindsight</Link>
+            </h1>
 
-          <div
-            className="flex items-center gap-1"
-            aria-label={`${participantIds.length} people connected.`}
-          >
-            <Icon symbol="user-square" className="text-2xl" />×
-            {participantIds.length}
+            <Audience />
           </div>
+
+          <Timer />
+
+          <Pagination boardId={boardId} />
         </div>
 
-        <Countdown value={countdown ?? 0} onChange={handleCountdownChange} />
+        <div className="overflow-auto grow">{children}</div>
 
-        <Pagination boardId={boardId} />
+        <Footer />
       </div>
-
-      <div className="overflow-auto grow">{children}</div>
-
-      <Footer />
-    </div>
+    </Provider>
   );
 }

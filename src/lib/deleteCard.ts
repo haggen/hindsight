@@ -1,9 +1,9 @@
 import type { Id } from "tinybase";
-import { indexes, store } from "~/lib/store";
+import { relationships, store } from "~/lib/store";
 
 export function deleteCard(cardId: Id) {
   store.transaction(() => {
-    const voteIds = indexes.getSliceRowIds("votesByCardId", cardId);
+    const voteIds = relationships.getLocalRowIds("votesCard", cardId);
     for (const voteId of voteIds) {
       store.delRow("votes", voteId);
     }

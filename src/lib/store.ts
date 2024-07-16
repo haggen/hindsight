@@ -1,4 +1,3 @@
-import { createLocalPersister } from "tinybase/persisters/persister-browser/with-schemas";
 import * as UiReact from "tinybase/ui-react/with-schemas";
 import {
   createIndexes,
@@ -9,17 +8,15 @@ import {
 } from "tinybase/with-schemas";
 import "ws";
 
-const valuesSchema = {} as const;
+const valuesSchema = {
+  timer: { type: "number", default: 0 },
+} as const;
 
 const tablesSchema = {
-  boards: {
-    countdown: { type: "number" },
-  },
   participants: {
-    boardId: { type: "string", default: "" },
+    name: { type: "string", default: "Anonymous" },
   },
   columns: {
-    boardId: { type: "string", default: "" },
     createdAt: { type: "number", default: 0 },
     description: { type: "string", default: "" },
   },
@@ -60,28 +57,16 @@ export const metrics = createMetrics(store);
 export const relationships = createRelationships(store);
 
 relationships.setRelationshipDefinition(
-  "columnsBoard",
-  "columns",
-  "boards",
-  "boardId"
-);
-relationships.setRelationshipDefinition(
   "cardsColumn",
   "cards",
   "columns",
-  "columnId"
+  "columnId",
 );
 relationships.setRelationshipDefinition(
   "votesCard",
   "votes",
   "cards",
-  "cardId"
-);
-relationships.setRelationshipDefinition(
-  "participantsBoard",
-  "participants",
-  "boards",
-  "boardId"
+  "cardId",
 );
 
 // ---
@@ -90,12 +75,3 @@ export const indexes = createIndexes(store);
 
 indexes.setIndexDefinition("votesByCardId", "votes", "cardId");
 indexes.setIndexDefinition("cardsByColumnId", "cards", "columnId");
-indexes.setIndexDefinition("columnsByBoardId", "columns", "boardId");
-indexes.setIndexDefinition("participantsByBoardId", "participants", "boardId");
-
-// ---
-
-export const persister = createLocalPersister(store, "store");
-
-void persister.startAutoLoad();
-void persister.startAutoSave();

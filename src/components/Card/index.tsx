@@ -166,7 +166,7 @@ export function Card({ cardId, presentation }: CardProps) {
 }
 
 type BlankProps = {
-  defaults: { columnId: string; boardId: string };
+  defaults: { columnId: string };
 };
 
 function Blank({ defaults }: BlankProps) {
