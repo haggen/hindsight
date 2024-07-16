@@ -37,7 +37,7 @@ function Display({ value, onClick }: DisplayProps) {
       <button
         type="button"
         onClick={onClick}
-        className="font-mono text-lg text-white px-4 py-2 rounded-3xl bg-stone-600"
+        className="font-mono text-lg text-white px-4 py-2 rounded-3xl bg-stone-400"
       >
         00:00
       </button>
@@ -83,7 +83,9 @@ export function Countdown({ value, onChange }: CountdownProps) {
 
       <Display value={value} onClick={handleNotifRequest} />
 
-      <Button onClick={() => onChange(Math.max(Date.now(), value) + 1 * 1000)}>
+      <Button
+        onClick={() => onChange(Math.max(Date.now(), value) + 5 * 60 * 1000)}
+      >
         +5 min.
       </Button>
     </div>

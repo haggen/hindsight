@@ -4,7 +4,7 @@ import { type DistributiveOmit, fixedForwardRef } from "~/lib/react";
 
 const variants = {
   neutral: "hover:text-stone-500",
-  active: "text-lime-700 hover:text-lime-600",
+  active: "text-lime-600 hover:text-lime-500",
   positive: "text-blue-600 hover:text-blue-400",
   negative: "text-red-600 hover:text-red-400",
 };
