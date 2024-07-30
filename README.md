@@ -4,12 +4,12 @@
 
 **Hindsight** is a real-time retrospective board for evergreen teams.
 
-- 👉 Free, open-source, and no sign-up required.
+- 👉 Free, open-source, no sign-up required.
 - 🔒 Locally stored, no ads, no telemetry.
 
 ## Development
 
-This web application is built using [Vite](https://parceljs.org). Node.js v22+ is recommended.
+This web application is built using [Vite](https://vite.dev). Node.js v24+ is recommended.
 
 To install the dependencies:
 

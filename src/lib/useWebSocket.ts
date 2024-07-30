@@ -4,21 +4,9 @@ export function useWebSocket(url: string) {
   const [webSocket, setWebSocket] = useState<WebSocket>();
 
   useEffect(() => {
-    if (!url) {
-      return;
-    }
-
     const webSocket = new WebSocket(url);
 
-    const handleOpen = () => {
-      setWebSocket(webSocket);
-    };
-    webSocket.addEventListener("open", handleOpen);
-
-    const handleClose = () => {
-      setWebSocket(undefined);
-    };
-    webSocket.addEventListener("close", handleClose);
+    setWebSocket(webSocket);
 
     return () => {
       if (webSocket.readyState === WebSocket.OPEN) {
@@ -28,9 +16,6 @@ export function useWebSocket(url: string) {
           webSocket.close();
         });
       }
-
-      webSocket.removeEventListener("open", handleOpen);
-      webSocket.removeEventListener("close", handleClose);
     };
   }, [url]);
 

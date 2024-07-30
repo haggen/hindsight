@@ -6,7 +6,7 @@ export default function Page() {
   return (
     <div className="grid grid-rows-[1fr_auto] h-dvh">
       <div className="grid grid-rows-[1fr_auto_1fr] gap-12">
-        <div className="flex flex-col items-center justify-end gap-1.5">
+        <div className="flex flex-col items-center justify-end gap-3">
           <Link href="/">
             <h2 className="text-4xl font-black">Hindsight</h2>
           </Link>
@@ -16,7 +16,7 @@ export default function Page() {
             <strong className="text-lime-600">evergreen</strong> teams.
           </p>
 
-          <ul className="text-sm flex gap-6">
+          <ul className="flex gap-6 text-sm">
             <li className="flex items-center gap-1">
               <Icon symbol="check-square" className="text-lg" /> Free,
               open-source, no sign-up required.
@@ -31,16 +31,16 @@ export default function Page() {
         <div className="flex flex-col items-center justify-end">
           <Link
             href="/boards"
-            className="flex items-center gap-1 px-6 h-14 rounded-full bg-stone-500 shadow-xl shadow-stone-200 text-xl text-white font-bold transition-all hover:bg-stone-600"
+            className="flex items-center gap-1 px-6 text-xl font-bold text-white transition-all rounded-full shadow-xl h-14 bg-stone-500 shadow-stone-200 hover:bg-stone-600"
           >
             Start new board{" "}
-            <Icon symbol="arrow-right" className="text-2xl block" />
+            <Icon symbol="arrow-right" className="block text-2xl" />
           </Link>
         </div>
 
         <div className="relative overflow-hidden">
           <img
-            className="rounded-xl w-3/4 -translate-x-1/2 left-1/2 border-stone-100 border-8 absolute"
+            className="absolute w-3/4 -translate-x-1/2 border-8 rounded-xl left-1/2 border-stone-100"
             src="/screenshot.webp"
             alt="Screenshot of a sample board on Hindsight."
             width={1349}

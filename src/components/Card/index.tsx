@@ -1,14 +1,17 @@
 import { type FormEvent, type KeyboardEvent, useState } from "react";
 import { Button } from "~/components/Button";
-import { createCard } from "~/lib/createCard";
-import { createVote } from "~/lib/createVote";
-import { deleteCard } from "~/lib/deleteCard";
-import { deleteVote } from "~/lib/deleteVote";
+import {
+  createCard,
+  createVote,
+  deleteCard,
+  deleteVote,
+  updateCard,
+  useCard,
+  useParticipantVoteId,
+  useVoteIdsByCardId,
+} from "~/lib/data";
 import { getParticipantId } from "~/lib/participantId";
-import { updateCard } from "~/lib/updateCard";
-import { useCard } from "~/lib/useCard";
-import { useParticipantVoteId } from "~/lib/useParticipantVoteId";
-import { useVoteIdsByCardId } from "~/lib/useVoteIds";
+import { useStoreContext } from "~/lib/store";
 
 type FormProps = {
   data?: { description: string };
@@ -35,6 +38,11 @@ function Form({ data, onSave, onDelete, onCancel }: FormProps) {
       event.preventDefault();
       event.currentTarget.form?.requestSubmit();
     }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      onCancel?.();
+    }
   };
 
   return (
@@ -46,14 +54,14 @@ function Form({ data, onSave, onDelete, onCancel }: FormProps) {
         aria-label="Card"
         autoComplete="off"
         defaultValue={data?.description}
-        // biome-ignore lint/a11y/noAutofocus: <explanation>
+        // biome-ignore lint/a11y/noAutofocus: ...
         autoFocus
         onKeyDown={handleKeyDown}
         required
       />
 
       {data ? (
-        <footer className="flex items-center gap-3 justify-between">
+        <footer className="flex items-center justify-between gap-3">
           <Button variant="negative" onClick={onDelete}>
             Delete
           </Button>
@@ -80,20 +88,21 @@ type CardProps = {
 };
 
 export function Card({ cardId, presentation }: CardProps) {
+  const context = useStoreContext();
   const [editing, setEditing] = useState(false);
   const { description } = useCard(cardId);
   const voteIds = useVoteIdsByCardId(cardId);
   const participantVoteId = useParticipantVoteId(cardId);
 
   const handleVote = () => {
-    createVote({ participantId: getParticipantId(), cardId });
+    createVote(context, { participantId: getParticipantId(), cardId });
   };
 
   const handleUnvote = () => {
     if (!participantVoteId) {
       throw new Error("Can't unvote without a voteId");
     }
-    deleteVote(participantVoteId);
+    deleteVote(context, participantVoteId);
   };
 
   const handleEdit = () => {
@@ -105,26 +114,16 @@ export function Card({ cardId, presentation }: CardProps) {
   };
 
   const handleDelete = () => {
-    deleteCard(cardId);
+    deleteCard(context, cardId);
   };
 
   const handleSave = (data: { description: string }) => {
-    updateCard(cardId, data);
+    updateCard(context, cardId, data);
     setEditing(false);
   };
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Escape") {
-      event.stopPropagation();
-      setEditing(false);
-    }
-  };
-
   return (
-    <div
-      className="bg-white rounded-md shadow p-3 flex flex-col gap-3 group"
-      onKeyDown={handleKeyDown}
-    >
+    <div className="flex flex-col gap-3 p-3 bg-white rounded-md shadow group">
       {editing ? (
         <Form
           data={{ description }}
@@ -134,7 +133,9 @@ export function Card({ cardId, presentation }: CardProps) {
         />
       ) : (
         <>
-          <p className={`${presentation ? "text-2xl" : ""}`}>{description}</p>
+          <p className={`${presentation ? "text-xl p-3" : ""}`}>
+            {description}
+          </p>
 
           {presentation ? null : (
             <div className="flex items-center justify-between">
@@ -152,7 +153,7 @@ export function Card({ cardId, presentation }: CardProps) {
                 </li>
               </menu>
 
-              <menu className="flex items-center gap-3 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 transition-opacity">
+              <menu className="flex items-center gap-3 transition-opacity opacity-0 group-focus-within:opacity-100 group-hover:opacity-100">
                 <li>
                   <Button onClick={handleEdit}>Edit</Button>
                 </li>
@@ -170,10 +171,11 @@ type BlankProps = {
 };
 
 function Blank({ defaults }: BlankProps) {
+  const context = useStoreContext();
   const participantId = getParticipantId();
 
   const handleSave = (data: { description: string }) => {
-    createCard({
+    createCard(context, {
       participantId,
       columnId: defaults.columnId,
       description: data.description,
@@ -181,7 +183,7 @@ function Blank({ defaults }: BlankProps) {
   };
 
   return (
-    <div className="bg-white rounded-md p-3">
+    <div className="p-3 bg-white rounded-md">
       <Form onSave={handleSave} />
     </div>
   );

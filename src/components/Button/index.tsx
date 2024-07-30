@@ -9,7 +9,7 @@ const variants = {
   negative: "text-red-600 hover:text-red-400",
 };
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore lint/suspicious/noExplicitAny: ...
 type AcceptableElements = typeof Link | ElementType<any, "a" | "button">;
 
 type Props<E extends AcceptableElements> = {
@@ -17,7 +17,7 @@ type Props<E extends AcceptableElements> = {
   variant?: "neutral" | "active" | "positive" | "negative";
   disabled?: boolean;
 } & DistributiveOmit<
-  ComponentPropsWithRef<ElementType extends E ? "a" : E>, // This "a" makes no sense but it works.
+  ComponentPropsWithRef<ElementType extends E ? "a" : E>, // This "a" makes no sense to me but it works.
   "as" | "variant" | "disabled"
 >;
 
@@ -25,7 +25,8 @@ function Button<E extends AcceptableElements>(
   { as, variant = "neutral", ...props }: Props<E>,
   ref: ForwardedRef<E>,
 ) {
-  const Component = as ?? ("href" in props ? (Link as E) : "button");
+  const Component =
+    as ?? ("href" in props ? (props.disabled ? "a" : (Link as E)) : "button");
 
   props.className = `${props.className} text-sm font-bold transition-colors`;
 
@@ -38,7 +39,7 @@ function Button<E extends AcceptableElements>(
   if (Component === "button") {
     props.type ??= "button";
   } else if (props.disabled) {
-    props.href = "";
+    props.href = undefined;
     props.disabled = undefined;
   }
 

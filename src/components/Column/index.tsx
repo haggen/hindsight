@@ -6,11 +6,14 @@ import {
 } from "react";
 import { Button } from "~/components/Button";
 import { Card } from "~/components/Card";
-import { createColumn } from "~/lib/createColumn";
-import { deleteColumn } from "~/lib/deleteColumn";
-import { updateColumn } from "~/lib/updateColumn";
-import { useCardIdsByColumnId } from "~/lib/useCardIds";
-import { useColumn } from "~/lib/useColumn";
+import {
+  createColumn,
+  deleteColumn,
+  updateColumn,
+  useCardIdsByColumnId,
+  useColumn,
+} from "~/lib/data";
+import { useStoreContext } from "~/lib/store";
 
 type FormProps = {
   data?: { description: string };
@@ -37,6 +40,11 @@ function Form({ data, onSave, onCancel, onDelete }: FormProps) {
       event.preventDefault();
       event.currentTarget.form?.requestSubmit();
     }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      onCancel?.();
+    }
   };
 
   return (
@@ -47,16 +55,16 @@ function Form({ data, onSave, onCancel, onDelete }: FormProps) {
         placeholder="Type something..."
         aria-label="Column"
         autoComplete="off"
-        className="font-bold text-lg"
+        className="text-lg font-black"
         defaultValue={data?.description}
-        // biome-ignore lint/a11y/noAutofocus: <explanation>
+        // biome-ignore lint/a11y/noAutofocus: ...
         autoFocus
         required
         onKeyDown={handleKeyDown}
       />
 
       {data ? (
-        <footer className="flex items-center gap-3 justify-between">
+        <footer className="flex items-center justify-between gap-3">
           <Button variant="negative" onClick={onDelete}>
             Delete
           </Button>
@@ -83,6 +91,7 @@ type ColumnProps = {
 };
 
 export function Column({ columnId, children }: ColumnProps) {
+  const context = useStoreContext();
   const [editing, setEditing] = useState(false);
   const { description } = useColumn(columnId);
   const cardIds = useCardIdsByColumnId(columnId);
@@ -96,26 +105,16 @@ export function Column({ columnId, children }: ColumnProps) {
   };
 
   const handleDelete = () => {
-    deleteColumn(columnId);
+    deleteColumn(context, columnId);
   };
 
   const handleSave = (data: { description: string }) => {
-    updateColumn(columnId, data);
+    updateColumn(context, columnId, data);
     setEditing(false);
   };
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Escape") {
-      event.stopPropagation();
-      setEditing(false);
-    }
-  };
-
   return (
-    <section
-      className="bg-stone-100 p-3 rounded-md flex flex-col gap-6"
-      onKeyDown={handleKeyDown}
-    >
+    <section className="flex flex-col gap-6 p-3 rounded-md bg-stone-100">
       {editing ? (
         <Form
           data={{ description }}
@@ -124,10 +123,10 @@ export function Column({ columnId, children }: ColumnProps) {
           onDelete={handleDelete}
         />
       ) : (
-        <header className="flex justify-between items-center group">
-          <h2 className="font-bold text-lg">{description}</h2>
+        <header className="flex items-center justify-between group">
+          <h2 className="text-lg font-black">{description}</h2>
 
-          <menu className="flex items-center gap-3 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 transition-opacity">
+          <menu className="flex items-center gap-3 transition-opacity opacity-0 group-focus-within:opacity-100 group-hover:opacity-100">
             <li>
               <Button onClick={handleEdit}>Edit</Button>
             </li>
@@ -152,14 +151,16 @@ export function Column({ columnId, children }: ColumnProps) {
 }
 
 function Blank() {
+  const context = useStoreContext();
+
   const handleSave = (data: { description: string }) => {
-    createColumn({
+    createColumn(context, {
       description: data.description,
     });
   };
 
   return (
-    <div className="bg-stone-100 p-3 rounded-md flex flex-col gap-3">
+    <div className="flex flex-col gap-3 p-3 rounded-md bg-stone-100">
       <Form onSave={handleSave} />
     </div>
   );
