@@ -1,9 +1,11 @@
-import { type ReactNode, useEffect } from "react";
+import type { ReactNode } from "react";
 import { createLocalPersister } from "tinybase/persisters/persister-browser/with-schemas";
 import { createWsSynchronizer } from "tinybase/synchronizers/synchronizer-ws-client/with-schemas";
+import { createId } from "~/lib/createId";
 import { getParticipantId } from "~/lib/participantId";
-import { UiReact, indexes, metrics, relationships, store } from "~/lib/store";
-import { useWebSocket } from "~/lib/useWebSocket";
+
+import { UiReact, useCreateContext } from "~/lib/store";
+import { useAsyncEffect } from "~/lib/useAsyncEffect";
 
 type Props = {
   boardId: string;
@@ -12,67 +14,48 @@ type Props = {
 
 export function Provider({ boardId, children }: Props) {
   const participantId = getParticipantId();
+  const context = useCreateContext();
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Participant need to be re-registered when the board changes.
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      switch (document.visibilityState) {
-        case "visible":
-          store.setRow("participants", participantId, {});
-          break;
-        case "hidden":
-          store.delRow("participants", participantId);
-          break;
-      }
+  useAsyncEffect(async () => {
+    const id = createId();
+
+    console.log(`Effect ${id}`);
+
+    const persister = createLocalPersister(context.store, boardId);
+    await persister.load();
+    await persister.startAutoSave();
+
+    const webSocket = await new Promise<WebSocket>((resolve) => {
+      const webSocket = new WebSocket(
+        `wss://tinysync.crz.li/hindsight/${boardId}`,
+      );
+      webSocket.addEventListener("open", () => {
+        resolve(webSocket);
+      });
+    });
+
+    const synchronizer = await createWsSynchronizer(context.store, webSocket);
+    await synchronizer.startSync();
+
+    context.store.setRow("participants", participantId, {});
+
+    return async () => {
+      console.log(`Clean up ${id}`);
+
+      context.store.delRow("participants", participantId);
+      synchronizer.destroy();
+      webSocket.close();
+      persister.destroy();
     };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [boardId, participantId]);
-
-  UiReact.useCreatePersister(
-    store,
-    (store) => createLocalPersister(store, boardId),
-    [boardId],
-    async (persister) => {
-      await persister.startAutoLoad();
-      await persister.startAutoSave();
-
-      // Bug: If I set the participant row before the persister, the participants table gets overwriten.
-      store.setRow("participants", participantId, {});
-    },
-  );
-
-  const webSocket = useWebSocket(
-    boardId ? `wss://tinybase-synchronizer.crz.li/hindsight/${boardId}` : "",
-  );
-
-  UiReact.useCreateSynchronizer(
-    store,
-    async (store) => {
-      if (!webSocket) {
-        return;
-      }
-
-      const synchronizer = await createWsSynchronizer(store, webSocket);
-      synchronizer.startSync();
-      return synchronizer;
-    },
-    [boardId, webSocket],
-  );
-
-  if (!webSocket) {
-    return null;
-  }
+  }, [context.store, boardId, participantId]);
 
   return (
     <UiReact.Provider
-      store={store}
-      relationships={relationships}
-      metrics={metrics}
-      indexes={indexes}
+      store={context.store}
+      relationships={context.relationships}
+      queries={context.queries}
+      metrics={context.metrics}
+      indexes={context.indexes}
     >
       {children}
     </UiReact.Provider>

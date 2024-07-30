@@ -1,14 +1,17 @@
 import { type FormEvent, type KeyboardEvent, useState } from "react";
 import { Button } from "~/components/Button";
-import { createCard } from "~/lib/createCard";
-import { createVote } from "~/lib/createVote";
-import { deleteCard } from "~/lib/deleteCard";
-import { deleteVote } from "~/lib/deleteVote";
+import {
+  createCard,
+  createVote,
+  deleteCard,
+  deleteVote,
+  updateCard,
+  useCard,
+  useParticipantVoteId,
+  useVoteIdsByCardId,
+} from "~/lib/data";
 import { getParticipantId } from "~/lib/participantId";
-import { updateCard } from "~/lib/updateCard";
-import { useCard } from "~/lib/useCard";
-import { useParticipantVoteId } from "~/lib/useParticipantVoteId";
-import { useVoteIdsByCardId } from "~/lib/useVoteIds";
+import { useStoreContext } from "~/lib/store";
 
 type FormProps = {
   data?: { description: string };
@@ -80,20 +83,21 @@ type CardProps = {
 };
 
 export function Card({ cardId, presentation }: CardProps) {
+  const context = useStoreContext();
   const [editing, setEditing] = useState(false);
   const { description } = useCard(cardId);
   const voteIds = useVoteIdsByCardId(cardId);
   const participantVoteId = useParticipantVoteId(cardId);
 
   const handleVote = () => {
-    createVote({ participantId: getParticipantId(), cardId });
+    createVote(context, { participantId: getParticipantId(), cardId });
   };
 
   const handleUnvote = () => {
     if (!participantVoteId) {
       throw new Error("Can't unvote without a voteId");
     }
-    deleteVote(participantVoteId);
+    deleteVote(context, participantVoteId);
   };
 
   const handleEdit = () => {
@@ -105,11 +109,11 @@ export function Card({ cardId, presentation }: CardProps) {
   };
 
   const handleDelete = () => {
-    deleteCard(cardId);
+    deleteCard(context, cardId);
   };
 
   const handleSave = (data: { description: string }) => {
-    updateCard(cardId, data);
+    updateCard(context, cardId, data);
     setEditing(false);
   };
 
@@ -134,7 +138,9 @@ export function Card({ cardId, presentation }: CardProps) {
         />
       ) : (
         <>
-          <p className={`${presentation ? "text-2xl" : ""}`}>{description}</p>
+          <p className={`${presentation ? "text-xl p-3" : ""}`}>
+            {description}
+          </p>
 
           {presentation ? null : (
             <div className="flex items-center justify-between">
@@ -170,10 +176,11 @@ type BlankProps = {
 };
 
 function Blank({ defaults }: BlankProps) {
+  const context = useStoreContext();
   const participantId = getParticipantId();
 
   const handleSave = (data: { description: string }) => {
-    createCard({
+    createCard(context, {
       participantId,
       columnId: defaults.columnId,
       description: data.description,

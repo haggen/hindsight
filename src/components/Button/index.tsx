@@ -17,7 +17,7 @@ type Props<E extends AcceptableElements> = {
   variant?: "neutral" | "active" | "positive" | "negative";
   disabled?: boolean;
 } & DistributiveOmit<
-  ComponentPropsWithRef<ElementType extends E ? "a" : E>, // This "a" makes no sense but it works.
+  ComponentPropsWithRef<ElementType extends E ? "a" : E>, // This "a" makes no sense to me but it works.
   "as" | "variant" | "disabled"
 >;
 

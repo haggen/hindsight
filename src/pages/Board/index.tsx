@@ -1,13 +1,13 @@
 import { Board } from "~/components/Board";
 import { Columns } from "~/components/Columns";
 
-type Props = {
-  params: { boardId: string };
-};
+// type Props = {
+//   params: { boardId: string };
+// };
 
-export default function Page({ params: { boardId } }: Props) {
+export default function Page() {
   return (
-    <Board boardId={boardId}>
+    <Board>
       <Columns />
     </Board>
   );

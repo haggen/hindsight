@@ -3,12 +3,9 @@ import { Link, useRoute } from "wouter";
 import { Button } from "~/components/Button";
 import { Footer } from "~/components/Footer";
 import { Icon } from "~/components/Icon";
-import { Provider } from "~/components/Provider";
-import { store } from "~/lib/store";
-import { useBoard } from "~/lib/useBoard";
-import { useSortedCardIds } from "~/lib/useCardIds";
+import { useBoard, useParticipantIds, useSortedCardIds } from "~/lib/data";
+import { UiReact } from "~/lib/store";
 import { useInterval } from "~/lib/useInterval";
-import { useParticipantIds } from "~/lib/useParticipantIds";
 
 function format(timestamp: number) {
   const delta = Math.ceil((timestamp - Date.now()) / 1000);
@@ -36,9 +33,9 @@ function Display({ value, onClick }: DisplayProps) {
       <button
         type="button"
         onClick={onClick}
-        className="font-mono text-lg text-white px-4 py-2 rounded-3xl bg-stone-400"
+        className="font-mono text-white px-4 py-2 rounded-3xl bg-stone-400"
       >
-        00:00
+        --:--
       </button>
     );
   }
@@ -47,7 +44,7 @@ function Display({ value, onClick }: DisplayProps) {
     <button
       type="button"
       onClick={onClick}
-      className="font-mono text-lg text-white px-4 py-2 rounded-3xl bg-lime-600"
+      className="font-mono text-white px-4 py-2 rounded-3xl bg-lime-600"
     >
       {format(value)}
     </button>
@@ -55,12 +52,15 @@ function Display({ value, onClick }: DisplayProps) {
 }
 
 export function Timer() {
+  const store = UiReact.useStore();
   const { timer } = useBoard();
   const [active, setActive] = useState(timer > Date.now());
 
   useInterval(() => {
     setActive(timer > Date.now());
 
+    // It must be active, greater than 0 (meaning it has been set) and in the past.
+    // Since we updated the state above, next time it ticks `active` will be false.
     if (active && timer > 0 && Date.now() > timer) {
       new Notification("Time is up!");
     }
@@ -71,7 +71,7 @@ export function Timer() {
   };
 
   const handleChange = (value: number) => {
-    store.setValue("timer", value);
+    store?.setValue("timer", value);
   };
 
   return (
@@ -97,15 +97,11 @@ export function Timer() {
   );
 }
 
-type PaginationProps = {
-  boardId: string;
-};
-
-function Pagination({ boardId }: PaginationProps) {
+function Pagination() {
   const [presenting, params] = useRoute<{
     cardId: string;
-  }>("/boards/:boardId/cards/:cardId");
-  const [finished] = useRoute("/boards/:boardId/finished");
+  }>("/cards/:cardId");
+  const [finished] = useRoute("/finished");
   const cardIds = useSortedCardIds();
   const cardId = params?.cardId ?? "";
   const index = cardIds.indexOf(cardId);
@@ -122,10 +118,10 @@ function Pagination({ boardId }: PaginationProps) {
             <Button
               href={
                 finished
-                  ? `/boards/${boardId}/cards/${cardIds[cardIds.length - 1]}`
+                  ? `/cards/${cardIds[cardIds.length - 1]}`
                   : hasPrev
-                    ? `/boards/${boardId}`
-                    : `/boards/${boardId}/cards/${cardIds[prevIndex]}`
+                    ? "/"
+                    : `/cards/${cardIds[prevIndex]}`
               }
             >
               <Icon symbol="arrow-left" /> Back
@@ -133,11 +129,7 @@ function Pagination({ boardId }: PaginationProps) {
           </li>
           <li>
             <Button
-              href={
-                hasNext
-                  ? `/boards/${boardId}/finished`
-                  : `/boards/${boardId}/cards/${cardIds[nextIndex]}`
-              }
+              href={hasNext ? "/finished" : `/cards/${cardIds[nextIndex]}`}
               disabled={finished}
             >
               Next <Icon symbol="arrow-right" />
@@ -145,10 +137,10 @@ function Pagination({ boardId }: PaginationProps) {
           </li>
         </menu>
       ) : (
-        <menu>
+        <menu className="flex items-center gap-3">
           <li>
             <Button
-              href={`/boards/${boardId}/cards/${cardIds[0]}`}
+              href={`/cards/${cardIds[0]}`}
               disabled={cardIds.length === 0}
             >
               Start reading <Icon symbol="arrow-right" />
@@ -174,32 +166,29 @@ function Audience() {
 }
 
 type BoardProps = {
-  boardId: string;
   children: ReactNode;
 };
 
-export function Board({ boardId, children }: BoardProps) {
+export function Board({ children }: BoardProps) {
   return (
-    <Provider boardId={boardId}>
-      <div className="flex flex-col px-6 h-dvh">
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-12 h-24">
-          <div className="flex items-center flex-grow justify-between">
-            <h1 className="text-2xl font-black">
-              <Link href="/">Hindsight</Link>
-            </h1>
+    <div className="grid grid-rows-[auto_1fr_auto] px-6 h-dvh">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-12 h-24">
+        <div className="flex items-center flex-grow justify-between">
+          <h1 className="text-2xl font-black">
+            <Link href="~/">Hindsight</Link>
+          </h1>
 
-            <Audience />
-          </div>
-
-          <Timer />
-
-          <Pagination boardId={boardId} />
+          <Audience />
         </div>
 
-        <div className="overflow-auto grow">{children}</div>
+        <Timer />
 
-        <Footer />
+        <Pagination />
       </div>
-    </Provider>
+
+      <div className="overflow-auto grow">{children}</div>
+
+      <Footer />
+    </div>
   );
 }

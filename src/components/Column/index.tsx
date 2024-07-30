@@ -6,11 +6,14 @@ import {
 } from "react";
 import { Button } from "~/components/Button";
 import { Card } from "~/components/Card";
-import { createColumn } from "~/lib/createColumn";
-import { deleteColumn } from "~/lib/deleteColumn";
-import { updateColumn } from "~/lib/updateColumn";
-import { useCardIdsByColumnId } from "~/lib/useCardIds";
-import { useColumn } from "~/lib/useColumn";
+import {
+  createColumn,
+  deleteColumn,
+  updateColumn,
+  useCardIdsByColumnId,
+  useColumn,
+} from "~/lib/data";
+import { useStoreContext } from "~/lib/store";
 
 type FormProps = {
   data?: { description: string };
@@ -47,7 +50,7 @@ function Form({ data, onSave, onCancel, onDelete }: FormProps) {
         placeholder="Type something..."
         aria-label="Column"
         autoComplete="off"
-        className="font-bold text-lg"
+        className="font-black text-lg"
         defaultValue={data?.description}
         // biome-ignore lint/a11y/noAutofocus: <explanation>
         autoFocus
@@ -83,6 +86,7 @@ type ColumnProps = {
 };
 
 export function Column({ columnId, children }: ColumnProps) {
+  const context = useStoreContext();
   const [editing, setEditing] = useState(false);
   const { description } = useColumn(columnId);
   const cardIds = useCardIdsByColumnId(columnId);
@@ -96,11 +100,11 @@ export function Column({ columnId, children }: ColumnProps) {
   };
 
   const handleDelete = () => {
-    deleteColumn(columnId);
+    deleteColumn(context, columnId);
   };
 
   const handleSave = (data: { description: string }) => {
-    updateColumn(columnId, data);
+    updateColumn(context, columnId, data);
     setEditing(false);
   };
 
@@ -125,7 +129,7 @@ export function Column({ columnId, children }: ColumnProps) {
         />
       ) : (
         <header className="flex justify-between items-center group">
-          <h2 className="font-bold text-lg">{description}</h2>
+          <h2 className="font-black text-lg">{description}</h2>
 
           <menu className="flex items-center gap-3 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 transition-opacity">
             <li>
@@ -152,8 +156,10 @@ export function Column({ columnId, children }: ColumnProps) {
 }
 
 function Blank() {
+  const context = useStoreContext();
+
   const handleSave = (data: { description: string }) => {
-    createColumn({
+    createColumn(context, {
       description: data.description,
     });
   };
