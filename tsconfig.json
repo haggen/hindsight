@@ -1,15 +1,12 @@
 {
+	"extends": "@tsconfig/vite-react/tsconfig.json",
 	"compilerOptions": {
-		"target": "esnext",
-		"moduleResolution": "bundler",
-		"strictNullChecks": true,
-		"strict": true,
-		"jsx": "react-jsx",
-		"baseUrl": ".",
 		"paths": {
-			"~/*": ["./*"]
-		},
-		"plugins": [{ "name": "typescript-plugin-css-modules" }]
-	},
-	"exclude": ["node_modules"]
+			"~/*": ["./*"],
+			"react": ["./node_modules/preact/compat/"],
+			"react/jsx-runtime": ["./node_modules/preact/jsx-runtime"],
+			"react-dom": ["./node_modules/preact/compat/"],
+			"react-dom/*": ["./node_modules/preact/compat/*"]
+		}
+	}
 }

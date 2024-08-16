@@ -1,17 +1,11 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import "preact/debug";
 
+import { render } from "preact";
 import { App } from "~/src/components/App";
+const root = document.getElementById("root");
 
-const element = document.getElementById("root");
-
-if (!element) {
-	throw new Error("Root element wasn't found");
+if (!root) {
+	throw new Error("Root element not found");
 }
 
-const root = createRoot(element);
-root.render(
-	<StrictMode>
-		<App />
-	</StrictMode>,
-);
+render(<App />, root);
