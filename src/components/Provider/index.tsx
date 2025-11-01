@@ -18,7 +18,7 @@ export function Provider({ boardId, children }: Props) {
   useAsyncEffect(async () => {
     const webSocket = await new Promise<WebSocket>((resolve, reject) => {
       const webSocket = new WebSocket(
-        `ws://tinysync.local.crz.li/hindsight/${boardId}`,
+        `wss://tinysync.crz.li/hindsight/${boardId}`,
       );
       webSocket.addEventListener("open", () => {
         resolve(webSocket);

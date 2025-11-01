@@ -2,11 +2,7 @@ import { useMemo, useSyncExternalStore } from "react";
 import type { Id, Ids } from "tinybase/with-schemas";
 import { createId } from "~/lib/createId";
 import { getParticipantId } from "~/lib/participantId";
-import {
-  type Context,
-  UiReact,
-  useStoreContext
-} from "~/lib/store";
+import { type Context, UiReact, useStoreContext } from "~/lib/store";
 
 // --
 // --

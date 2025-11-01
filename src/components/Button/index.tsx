@@ -1,51 +1,40 @@
-import type { ComponentPropsWithRef, ElementType, ForwardedRef } from "react";
-import { Link } from "wouter";
-import { type DistributiveOmit, fixedForwardRef } from "~/lib/react";
+import { Slot } from "@radix-ui/react-slot";
+import type { ComponentProps } from "react";
+import { createStyles, type StyleProps } from "~/lib/styles";
 
-const variants = {
-  neutral: "hover:text-stone-500",
-  active: "text-lime-600 hover:text-lime-500",
-  positive: "text-blue-600 hover:text-blue-400",
-  negative: "text-red-600 hover:text-red-400",
-};
+const styles = createStyles("text-sm font-bold transition-colors", {
+  variant: {
+    neutral: "hover:text-stone-500",
+    active: "text-lime-600 hover:text-lime-500",
+    positive: "text-blue-600 hover:text-blue-400",
+    negative: "text-red-600 hover:text-red-400",
+  },
+  disabled: {
+    true: "text-stone-400 cursor-not-allowed",
+  },
+});
 
-// biome-ignore lint/suspicious/noExplicitAny: ...
-type AcceptableElements = typeof Link | ElementType<any, "a" | "button">;
+type Props = ComponentProps<"button"> &
+  StyleProps<typeof styles> & {
+    asChild?: boolean;
+  };
 
-type Props<E extends AcceptableElements> = {
-  as?: E;
-  variant?: "neutral" | "active" | "positive" | "negative";
-  disabled?: boolean;
-} & DistributiveOmit<
-  ComponentPropsWithRef<ElementType extends E ? "a" : E>, // This "a" makes no sense to me but it works.
-  "as" | "variant" | "disabled"
->;
-
-function Button<E extends AcceptableElements>(
-  { as, variant = "neutral", ...props }: Props<E>,
-  ref: ForwardedRef<E>,
-) {
-  const Component =
-    as ?? ("href" in props ? (props.disabled ? "a" : (Link as E)) : "button");
-
-  props.className = `${props.className} text-sm font-bold transition-colors`;
-
-  if (props.disabled) {
-    props.className = `${props.className} text-stone-400 cursor-not-allowed`;
-  } else {
-    props.className = `${props.className} ${variants[variant]}`;
-  }
+export function Button({
+  asChild,
+  variant = "neutral",
+  className,
+  ...props
+}: Props) {
+  const Component = asChild ? Slot : "button";
 
   if (Component === "button") {
     props.type ??= "button";
-  } else if (props.disabled) {
-    props.href = undefined;
-    props.disabled = undefined;
   }
 
-  return <Component {...props} ref={ref} />;
+  return (
+    <Component
+      className={styles({ variant, disabled: props.disabled, className })}
+      {...props}
+    />
+  );
 }
-
-const forwardedButton = fixedForwardRef(Button);
-
-export { forwardedButton as Button };

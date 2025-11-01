@@ -115,35 +115,37 @@ function Pagination() {
       {presenting || finished ? (
         <menu className="flex items-center gap-3">
           <li>
-            <Button
-              href={
-                finished
-                  ? `/cards/${cardIds[cardIds.length - 1]}`
-                  : hasPrev
-                    ? "/"
-                    : `/cards/${cardIds[prevIndex]}`
-              }
-            >
-              <Icon symbol="arrow-left" /> Back
+            <Button>
+              <Link
+                href={
+                  finished
+                    ? `/cards/${cardIds[cardIds.length - 1]}`
+                    : hasPrev
+                      ? "/"
+                      : `/cards/${cardIds[prevIndex]}`
+                }
+              >
+                <Icon symbol="arrow-left" /> Back
+              </Link>
             </Button>
           </li>
           <li>
-            <Button
-              href={hasNext ? "/finished" : `/cards/${cardIds[nextIndex]}`}
-              disabled={finished}
-            >
-              Next <Icon symbol="arrow-right" />
+            <Button asChild disabled={finished}>
+              <Link
+                href={finished ? "" : hasNext ? "/finished" : `/cards/${cardIds[nextIndex]}`}
+              >
+                Next <Icon symbol="arrow-right" />
+              </Link>
             </Button>
           </li>
         </menu>
       ) : (
         <menu className="flex items-center gap-3">
           <li>
-            <Button
-              href={`/cards/${cardIds[0]}`}
-              disabled={cardIds.length === 0}
-            >
-              Start reading <Icon symbol="arrow-right" />
+            <Button asChild disabled={cardIds.length === 0}>
+              <Link href={cardIds.length === 0 ? "" : `/cards/${cardIds[0]}`}>
+                Start reading <Icon symbol="arrow-right" />
+              </Link>
             </Button>
           </li>
         </menu>
