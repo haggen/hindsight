@@ -1,9 +1,8 @@
-import { type ReactNode, useEffect } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { createLocalPersister } from "tinybase/persisters/persister-browser/with-schemas";
 import { createWsSynchronizer } from "tinybase/synchronizers/synchronizer-ws-client/with-schemas";
 import { getParticipantId } from "~/lib/participantId";
-
-import { UiReact, useCreateContext } from "~/lib/store";
+import { createContext, TypedUiReact } from "~/lib/store";
 import { useAsyncEffect } from "~/lib/useAsyncEffect";
 
 type Props = {
@@ -13,29 +12,20 @@ type Props = {
 
 export function Provider({ boardId, children }: Props) {
   const participantId = getParticipantId();
-  const context = useCreateContext();
+  const [context] = useState(() => createContext());
 
   useAsyncEffect(async () => {
-    const webSocket = await new Promise<WebSocket>((resolve, reject) => {
-      const webSocket = new WebSocket(
-        `wss://tinysync.crz.li/hindsight/${boardId}`,
-      );
-      webSocket.addEventListener("open", () => {
-        resolve(webSocket);
-      });
-      webSocket.addEventListener("error", (event) => {
-        reject(event);
-      });
-    });
+    const webSocket = new WebSocket(
+      `wss://tinysync.crz.li/hindsight/${boardId}`,
+    );
 
     const synchronizer = await createWsSynchronizer(context.store, webSocket);
     await synchronizer.startSync();
 
     const persister = createLocalPersister(context.store, boardId);
-    await persister.load();
-    await persister.startAutoSave();
+    await persister.startAutoPersisting();
 
-    context.store.setRow("participants", participantId, {});
+    context.store.setCell("participants", participantId, "present", true);
 
     return () => {
       persister.destroy();
@@ -48,10 +38,15 @@ export function Provider({ boardId, children }: Props) {
     const handleVisibilityChange = () => {
       switch (document.visibilityState) {
         case "visible":
-          context.store.setRow("participants", participantId, {});
+          context.store.setCell("participants", participantId, "present", true);
           break;
         case "hidden":
-          context.store.delRow("participants", participantId);
+          context.store.setCell(
+            "participants",
+            participantId,
+            "present",
+            false,
+          );
           break;
       }
     };
@@ -63,7 +58,7 @@ export function Provider({ boardId, children }: Props) {
   }, [context.store, participantId]);
 
   return (
-    <UiReact.Provider
+    <TypedUiReact.Provider
       store={context.store}
       relationships={context.relationships}
       queries={context.queries}
@@ -71,6 +66,6 @@ export function Provider({ boardId, children }: Props) {
       indexes={context.indexes}
     >
       {children}
-    </UiReact.Provider>
+    </TypedUiReact.Provider>
   );
 }

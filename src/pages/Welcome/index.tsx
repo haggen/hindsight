@@ -1,6 +1,6 @@
+import { ArrowRightIcon, CheckCircleIcon } from "lucide-react";
 import { Link } from "wouter";
 import { Footer } from "~/components/Footer";
-import { Icon } from "~/components/Icon";
 
 export default function Page() {
   return (
@@ -18,12 +18,12 @@ export default function Page() {
 
           <ul className="flex gap-6 text-sm">
             <li className="flex items-center gap-1">
-              <Icon symbol="check-square" className="text-lg" /> Free,
-              open-source, no sign-up required.
+              <CheckCircleIcon size={20} /> Free, open-source, no sign-up
+              required.
             </li>
             <li className="flex items-center gap-1">
-              <Icon symbol="check-square" className="text-lg" /> Locally stored,
-              no ads, no telemetry.
+              <CheckCircleIcon size={20} /> Locally stored, no ads, no
+              telemetry.
             </li>
           </ul>
         </div>
@@ -31,10 +31,9 @@ export default function Page() {
         <div className="flex flex-col items-center justify-end">
           <Link
             href="/boards"
-            className="flex items-center gap-1 px-6 text-xl font-bold text-white transition-all rounded-full shadow-xl h-14 bg-stone-500 shadow-stone-200 hover:bg-stone-600"
+            className="flex items-center gap-1 px-6 text-xl font-bold text-white transition-all rounded-full shadow-xl h-14 bg-lime-600 shadow-lime-800/20 hover:bg-lime-700"
           >
-            Start new board{" "}
-            <Icon symbol="arrow-right" className="block text-2xl" />
+            Start new board <ArrowRightIcon className="block text-2xl" />
           </Link>
         </div>
 
@@ -46,7 +45,7 @@ export default function Page() {
             width={1349}
             height={785}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white" />
+          <div className="absolute inset-0 bg-linear-to-b from-transparent to-white" />
         </div>
       </div>
 

@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import * as UiReact from "tinybase/ui-react/with-schemas";
 import {
   createIndexes,
@@ -15,6 +14,8 @@ export const schema = {
   tables: {
     participants: {
       name: { type: "string", default: "Anonymous" },
+      location: { type: "string", default: "/" },
+      present: { type: "boolean", default: false },
     },
     columns: {
       createdAt: { type: "number", default: 0 },
@@ -35,23 +36,15 @@ export const schema = {
 
 export type Schema = [typeof schema.tables, typeof schema.values];
 
-const TypedUiReact = UiReact as UiReact.WithSchemas<Schema>;
+export const TypedUiReact = UiReact as UiReact.WithSchemas<Schema>;
 
-export { TypedUiReact as UiReact };
+export function createContext() {
+  const store = createMergeableStore().setSchema(schema.tables, schema.values);
 
-export function useCreateContext() {
-  const store = useMemo(
-    () =>
-      createMergeableStore()
-        .setValuesSchema(schema.values)
-        .setTablesSchema(schema.tables),
-    [],
-  );
-
-  const relationships = useMemo(() => createRelationships(store), [store]);
-  const queries = useMemo(() => createQueries(store), [store]);
-  const metrics = useMemo(() => createMetrics(store), [store]);
-  const indexes = useMemo(() => createIndexes(store), [store]);
+  const relationships = createRelationships(store);
+  const queries = createQueries(store);
+  const metrics = createMetrics(store);
+  const indexes = createIndexes(store);
 
   relationships.setRelationshipDefinition(
     "cardsColumn",
@@ -59,6 +52,7 @@ export function useCreateContext() {
     "columns",
     "columnId",
   );
+
   relationships.setRelationshipDefinition(
     "votesCard",
     "votes",
@@ -66,11 +60,18 @@ export function useCreateContext() {
     "cardId",
   );
 
+  indexes.setIndexDefinition(
+    "participantsByLocation",
+    "participants",
+    "location",
+  );
   indexes.setIndexDefinition("votesByCardId", "votes", "cardId");
   indexes.setIndexDefinition("cardsByColumnId", "cards", "columnId");
 
   return { store, relationships, queries, metrics, indexes } as const;
 }
+
+export type Context = ReturnType<typeof useContext>;
 
 export function useStore() {
   const store = TypedUiReact.useStore();
@@ -122,7 +123,7 @@ export function useIndexes() {
   return indexes;
 }
 
-export function useStoreContext() {
+export function useContext() {
   const store = useStore();
   const relationships = useRelationships();
   const queries = useQueries();
@@ -131,5 +132,3 @@ export function useStoreContext() {
 
   return { store, relationships, queries, metrics, indexes } as const;
 }
-
-export type Context = ReturnType<typeof useStoreContext>;

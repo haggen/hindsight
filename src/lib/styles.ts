@@ -4,7 +4,7 @@ type StyleSchema = Record<string, Record<string, string>>;
 
 export type StyleProps<T> = T extends (props: infer P) => string ? P : never;
 
-type ParseProp<T> = T extends "true" | "false" ? boolean : string;
+type ParseProp<T> = T extends "true" | "false" ? boolean : T;
 
 export function createStyles<T extends StyleSchema>(base: string, schema: T) {
   return ({

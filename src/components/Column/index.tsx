@@ -13,7 +13,7 @@ import {
   useCardIdsByColumnId,
   useColumn,
 } from "~/lib/data";
-import { useStoreContext } from "~/lib/store";
+import { useContext } from "~/lib/store";
 
 type FormProps = {
   data?: { description: string };
@@ -91,7 +91,7 @@ type ColumnProps = {
 };
 
 export function Column({ columnId, children }: ColumnProps) {
-  const context = useStoreContext();
+  const context = useContext();
   const [editing, setEditing] = useState(false);
   const { description } = useColumn(columnId);
   const cardIds = useCardIdsByColumnId(columnId);
@@ -151,7 +151,7 @@ export function Column({ columnId, children }: ColumnProps) {
 }
 
 function Blank() {
-  const context = useStoreContext();
+  const context = useContext();
 
   const handleSave = (data: { description: string }) => {
     createColumn(context, {

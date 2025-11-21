@@ -5,12 +5,12 @@ import Board from "~/pages/Board";
 import Boards from "~/pages/Boards";
 import Card from "~/pages/Card";
 import Finished from "~/pages/Finished";
-import Home from "~/pages/Home";
+import Welcome from "~/pages/Welcome";
 
 export function App() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/" component={Welcome} />
       <Route path="/boards" component={Boards} />
       <Route path="/boards/:boardId" nest>
         {(params) => (

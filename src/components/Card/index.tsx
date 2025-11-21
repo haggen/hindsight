@@ -11,7 +11,7 @@ import {
   useVoteIdsByCardId,
 } from "~/lib/data";
 import { getParticipantId } from "~/lib/participantId";
-import { useStoreContext } from "~/lib/store";
+import { useContext } from "~/lib/store";
 
 type FormProps = {
   data?: { description: string };
@@ -88,7 +88,7 @@ type CardProps = {
 };
 
 export function Card({ cardId, presentation }: CardProps) {
-  const context = useStoreContext();
+  const context = useContext();
   const [editing, setEditing] = useState(false);
   const { description } = useCard(cardId);
   const voteIds = useVoteIdsByCardId(cardId);
@@ -171,7 +171,7 @@ type BlankProps = {
 };
 
 function Blank({ defaults }: BlankProps) {
-  const context = useStoreContext();
+  const context = useContext();
   const participantId = getParticipantId();
 
   const handleSave = (data: { description: string }) => {

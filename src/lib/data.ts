@@ -2,14 +2,14 @@ import { useMemo, useSyncExternalStore } from "react";
 import type { Id, Ids } from "tinybase/with-schemas";
 import { createId } from "~/lib/createId";
 import { getParticipantId } from "~/lib/participantId";
-import { type Context, UiReact, useStoreContext } from "~/lib/store";
+import { type Context, TypedUiReact, useContext } from "~/lib/store";
 
 // --
 // --
 // --
 
 export function useBoard() {
-  return UiReact.useValues();
+  return TypedUiReact.useValues();
 }
 
 // --
@@ -17,7 +17,11 @@ export function useBoard() {
 // --
 
 export function useParticipantIds() {
-  return UiReact.useRowIds("participants");
+  return TypedUiReact.useRowIds("participants");
+}
+
+export function useParticipants() {
+  return TypedUiReact.useTable("participants");
 }
 
 // --
@@ -55,11 +59,11 @@ export function updateColumn(
 }
 
 export function useColumnIds() {
-  return UiReact.useRowIds("columns");
+  return TypedUiReact.useRowIds("columns");
 }
 
 export function useColumn(columnId: string) {
-  return UiReact.useRow("columns", columnId);
+  return TypedUiReact.useRow("columns", columnId);
 }
 
 // --
@@ -82,7 +86,7 @@ export function deleteVote({ store }: Context, voteId: Id) {
 }
 
 export function useVoteIdsByCardId(cardId: string) {
-  return UiReact.useLocalRowIds("votesCard", cardId);
+  return TypedUiReact.useLocalRowIds("votesCard", cardId);
 }
 
 export function useVoteIdsByColumnId(context: Context, columnId: string) {
@@ -115,11 +119,11 @@ export function useVoteIdsByColumnId(context: Context, columnId: string) {
 }
 
 export function useVoteIds() {
-  return UiReact.useRowIds("votes");
+  return TypedUiReact.useRowIds("votes");
 }
 
 export function useParticipantVoteId(cardId: string) {
-  const { store } = useStoreContext();
+  const { store } = useContext();
   const participantId = getParticipantId();
   const voteIds = useVoteIdsByCardId(cardId);
 
@@ -208,17 +212,17 @@ function compareCards({ store, relationships }: Context, a: string, b: string) {
 }
 
 export function useCardIds() {
-  return UiReact.useRowIds("cards");
+  return TypedUiReact.useRowIds("cards");
 }
 
 export function useCardIdsByColumnId(columnId: string) {
-  return UiReact.useLocalRowIds("cardsColumn", columnId);
+  return TypedUiReact.useLocalRowIds("cardsColumn", columnId);
 }
 
 export function useSortedCardIds() {
-  const context = useStoreContext();
-  const cardIds = UiReact.useRowIds("cards");
-  const voteIds = UiReact.useRowIds("votes");
+  const context = useContext();
+  const cardIds = TypedUiReact.useRowIds("cards");
+  const voteIds = TypedUiReact.useRowIds("votes");
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Since we use vote count in the comparison, we need to invalidate the array when the votes change.
   return useMemo(
@@ -228,7 +232,7 @@ export function useSortedCardIds() {
 }
 
 export function useCard(cardId: string) {
-  return UiReact.useRow("cards", cardId);
+  return TypedUiReact.useRow("cards", cardId);
 }
 
 // --
